@@ -1,17 +1,14 @@
 import axios from "axios";
-import { api } from "../constant/constant";
 
 const instance = axios.create({
-  baseURL: api,
+  baseURL: "http://localhost:5000/api",
 });
 
-const handleRemoveToken = async () => {
-  try {
-    await localStorage.removeItem("jwt");
-  } catch (error) {
-    throw error;
-  }
-};
+export const axiosPrivate = axios.create({
+  baseURL: "http://localhost:5000/api",
+  headers: { "Content-Type": "application/json" },
+  withCredentials: true,
+});
 
 instance.interceptors.request.use(
   async (config) => {
@@ -25,12 +22,11 @@ instance.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-
 instance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response.status === 401) {
-      handleRemoveToken();
+    if (error?.response?.status === 401) {
+      // handleRemoveToken();
     }
     return Promise.reject(error);
   }

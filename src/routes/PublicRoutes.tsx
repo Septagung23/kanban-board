@@ -1,8 +1,8 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useCurrentUser } from "../contexts/CurrentUserContext";
+import { useAuth } from "../hooks/useAuth";
 
 export default function PublicRoutes() {
-  const { currentUser } = useCurrentUser();
+  const { auth }: any = useAuth();
 
-  return !currentUser ? <Outlet /> : <Navigate to="/" replace />;
+  return !auth ? <Outlet /> : <Navigate to="/" replace />;
 }

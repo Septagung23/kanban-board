@@ -1,19 +1,39 @@
-import {
-  Box,
-  TextField,
-  Button,
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-} from "@mui/material";
-import AddTaskIcon from "@mui/icons-material/AddTask";
+import { Box, TextField, Button, Typography } from "@mui/material";
+
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
+
 import Appbar from "../components/Appbar";
-import { NavLink } from "react-router-dom";
+
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 export default function CreateClient() {
+  const [nama, setNama] = useState<string>("");
+  const [perusahaan, setPerusahaan] = useState<string>("");
+  const [alamat, setAlamat] = useState<string>("");
+  const [nomor, setNomor] = useState<string>("");
+  const axiosPrivate = useAxiosPrivate();
+  const navigate = useNavigate();
+  const goBack = () => navigate(-1);
+
+  const createClient = async (e: any) => {
+    e.preventDefault();
+    try {
+      const res = await axiosPrivate.post("/client", {
+        nama,
+        perusahaan,
+        alamat,
+        nomor_hp: nomor,
+      });
+      goBack();
+      console.log(res);
+    } catch (error: any) {
+      console.log(error);
+      console.log(error.response.data);
+    }
+  };
+
   return (
     <>
       <Appbar />
@@ -37,39 +57,60 @@ export default function CreateClient() {
         <Box
           className="input"
           component="form"
+          onSubmit={createClient}
           sx={{ width: "80%", alignSelf: "center", my: 2, gap: 3 }}
         >
-          <FormControl fullWidth>
-            <Typography sx={{ my: 1 }}>Nama</Typography>
-            <TextField required id="outlined-required" label="Nama" fullWidth />
-            <Typography sx={{ my: 1 }}>Nomor Handphone</Typography>
-            <TextField
-              required
-              id="outlined-required"
-              label="Nomor"
-              fullWidth
-            />
+          <Typography sx={{ my: 1 }}>Nama</Typography>
+          <TextField
+            required
+            fullWidth
+            id="outlined-required"
+            label="Nama"
+            value={nama}
+            onChange={(event) => setNama(event.target.value)}
+          />
+          <Typography sx={{ my: 1 }}>Nomor Handphone</Typography>
+          <TextField
+            required
+            id="outlined-required"
+            label="Nomor"
+            fullWidth
+            value={nomor}
+            onChange={(event) => setNomor(event.target.value)}
+          />
 
-            <Typography sx={{ my: 1 }}>Perusahaan</Typography>
-            <TextField id="outlined-required" label="Perusahaan" fullWidth />
-            <Typography sx={{ my: 1 }}>Alamat</Typography>
-            <TextField
-              multiline
-              id="outlined-required"
-              label="Alamat"
-              fullWidth
-              minRows={2}
-            />
+          <Typography sx={{ mt: 1 }}>Perusahaan</Typography>
+          <TextField
+            id="outlined-required"
+            label="Perusahaan"
+            fullWidth
+            value={perusahaan}
+            onChange={(event) => setPerusahaan(event.target.value)}
+          />
+          <Typography sx={{ my: 1 }}>Alamat</Typography>
+          <TextField
+            multiline
+            id="outlined-required"
+            label="Alamat"
+            fullWidth
+            minRows={2}
+            value={alamat}
+            onChange={(event) => setAlamat(event.target.value)}
+          />
+          <div style={{ marginTop: 5, textAlign: "right" }}>
             {/* Button */}
-            <Box className="button" sx={{ my: 3, textAlign: "right" }}>
-              <NavLink to="/" style={{ textDecoration: "none" }}>
-                <Button variant="contained" sx={{ mr: 1 }} color="error">
-                  Back
-                </Button>
-              </NavLink>
-              <Button variant="contained">Submit</Button>
-            </Box>
-          </FormControl>
+            <Button
+              variant="contained"
+              sx={{ mr: 1 }}
+              color="error"
+              onClick={goBack}
+            >
+              Back
+            </Button>
+            <Button variant="contained" type="submit">
+              Submit
+            </Button>
+          </div>
         </Box>
       </Box>
     </>

@@ -1,8 +1,9 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useCurrentUser } from "../contexts/CurrentUserContext";
+import { useAuth } from "../hooks/useAuth";
 
 export default function PrivateRoutes() {
-  const { currentUser } = useCurrentUser();
+  const { auth }: any = useAuth();
+  // console.log("refresh Token : ", auth.accessToken);
 
-  return currentUser ? <Outlet /> : <Navigate to="/login" replace />;
+  return auth?.accessToken ? <Outlet /> : <Navigate to="/login" replace />;
 }

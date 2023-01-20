@@ -9,7 +9,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import AddTaskIcon from "@mui/icons-material/AddTask";
+import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import { Editor } from "react-draft-wysiwyg";
 import { Link } from "react-router-dom";
 import Appbar from "../components/Appbar";
@@ -18,7 +18,7 @@ const editorStyleObject = {
   borderRadius: "4px",
 };
 
-export default function CreateTask() {
+export default function UpdateTask() {
   return (
     <>
       <Appbar />
@@ -36,8 +36,8 @@ export default function CreateTask() {
       >
         {/* Judul + Logo */}
         <Box className="judul" sx={{ textAlign: "center" }}>
-          <AddTaskIcon sx={{ fontSize: "60px" }} />
-          <Typography variant="h3">Tambah Task</Typography>
+          <BorderColorOutlinedIcon sx={{ fontSize: "60px" }} />
+          <Typography variant="h3">Edit Task</Typography>
         </Box>
 
         {/* Input */}

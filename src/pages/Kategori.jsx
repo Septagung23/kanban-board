@@ -1,15 +1,13 @@
 import { useState } from "react";
-import "@asseinfo/react-kanban/dist/styles.css";
-import Board, { moveCard, moveColumn } from "@asseinfo/react-kanban";
+import { Link } from "react-router-dom";
 import {
   Box,
-  Button,
+  IconButton,
   Card,
   CardContent,
   Typography,
   Divider,
   Modal,
-  Fab,
   List,
   ListItemButton,
   ListItemText,
@@ -17,11 +15,21 @@ import {
   Chip,
 } from "@mui/material";
 
-import AddIcon from "@mui/icons-material/Add";
+import "@asseinfo/react-kanban/dist/styles.css";
+import Board, { moveCard, moveColumn } from "@asseinfo/react-kanban";
+
 import SubjectIcon from "@mui/icons-material/Subject";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ClearIcon from "@mui/icons-material/Clear";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+
+import CreateSubTask from "../components/CreateSubTask";
+import UpdateSubTask from "../components/UpdateSubTask";
+import CreateKategori from "../components/CreateKategori";
+import MenuKategori from "../components/MenuKategori";
 
 const board = {
   columns: [
@@ -78,7 +86,7 @@ const board = {
 
 export default function Task() {
   const [controlledBoard, setBoard] = useState(board);
-  const [openModal, setOpenModal] = useState(false);
+  const [openModalDetail, setOpenModalDetail] = useState(false);
   const [openList, setOpenList] = useState(false);
 
   const handleOpenList = () => {
@@ -93,19 +101,12 @@ export default function Task() {
     const updateColumn = moveColumn(controlledBoard, source, destination);
     setBoard(updateColumn);
   }
-  const handleOpen = () => setOpenModal(true);
-  const handleClose = () => setOpenModal(false);
+  const handleOpenDetail = () => setOpenModalDetail(true);
+  const handleCloseDetail = () => setOpenModalDetail(false);
 
   return (
     <div className="Task">
-      <Fab
-        color="primary"
-        aria-label="add"
-        sx={{ position: "fixed", right: 0, bottom: 0, m: 5 }}
-      >
-        <AddIcon />
-      </Fab>
-
+      <CreateKategori />
       <Board
         allowAddColumn
         allowRenameColumn
@@ -113,26 +114,50 @@ export default function Task() {
         allowAddCard={{ on: "bottom" }}
         onCardDragEnd={handleCardMove}
         onColumnDragEnd={handleColumnMove}
+        // Column Header
         renderColumnHeader={({ title }) => (
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            {title}
-            <Button>Add Card</Button>
-          </Box>
+          <>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                pl: 2,
+              }}
+            >
+              <Typography>{title}</Typography>
+              <MenuKategori />
+            </Box>
+          </>
         )}
+        // Card
         renderCard={({ title, description }) => (
           <>
-            <Card sx={{ width: "15.63rem", borderRadius: "10px" }}>
-              <CardContent>
-                <Typography>{title}</Typography>
-                <Divider sx={{ my: 1 }} />
-                <Typography>{description}</Typography>
-              </CardContent>
-              <Button onClick={handleOpen}>Detail</Button>
-            </Card>
+            <a onClick={handleOpenDetail}>
+              <Card sx={{ width: "15.63rem", borderRadius: "10px" }}>
+                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Link to="/edit-task" style={{ textDecoration: "none" }}>
+                    <IconButton size="small">
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                  </Link>
+                  <IconButton color="error" size="small">
+                    <ClearIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+                <CardContent sx={{ py: 0 }}>
+                  <Typography variant="h6">{title}</Typography>
+                  <Divider sx={{ my: 1 }} />
+                  <Typography variant="body1">{description}</Typography>
+                </CardContent>
+              </Card>
+            </a>
+
+            {/* Modal Detail*/}
             <Modal
               className="modal"
-              open={openModal}
-              onClose={handleClose}
+              open={openModalDetail}
+              onClose={handleCloseDetail}
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
               BackdropProps={{
@@ -206,7 +231,7 @@ export default function Task() {
                       </Box>
                       <Box
                         sx={{
-                          backgroundColor: "#FEFAE0",
+                          backgroundColor: "#ffffff",
                           p: 1,
                           borderRadius: 3,
                         }}
@@ -220,14 +245,22 @@ export default function Task() {
 
                     {/* Sub Task */}
                     <Box>
-                      <Box sx={{ display: "flex" }}>
-                        <FormatListBulletedIcon sx={{ mt: 0.3 }} />
-                        <Typography variant="h5">Sub Task</Typography>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <div style={{ display: "flex" }}>
+                          <FormatListBulletedIcon sx={{ mt: 0.3 }} />
+                          <Typography variant="h5">Sub Task</Typography>
+                        </div>
+                        <CreateSubTask />
                       </Box>
 
                       <Box
                         sx={{
-                          backgroundColor: "#FEFAE0",
+                          backgroundColor: "#ffffff",
                           p: 1,
                           borderRadius: 3,
                         }}
@@ -241,8 +274,10 @@ export default function Task() {
                             <Box sx={{ px: 2 }}>
                               <Box
                                 sx={{
+                                  px: 1,
                                   display: "flex",
                                   justifyContent: "space-between",
+                                  alignItems: "center",
                                 }}
                               >
                                 <Chip label="member1" />
@@ -250,7 +285,7 @@ export default function Task() {
                                   sx={{
                                     display: "flex",
                                     p: 1,
-                                    borderRadius: 3,
+                                    borderRadius: 2,
                                     backgroundColor: "#eeeeee",
                                   }}
                                 >
@@ -258,16 +293,28 @@ export default function Task() {
                                   <Divider
                                     sx={{ mx: 1 }}
                                     orientation="vertical"
+                                    flexItem
                                   />
                                   <Typography>100</Typography>
+                                </Box>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    justifyContent: "flex-end",
+                                  }}
+                                >
+                                  <UpdateSubTask />
+                                  <IconButton color="error">
+                                    <DeleteIcon />
+                                  </IconButton>
                                 </Box>
                               </Box>
                               <Box sx={{ p: 1 }}>
                                 <Typography>Keterangan</Typography>
                                 <Box
                                   sx={{
-                                    backgroundColor: "white",
                                     p: 1,
+                                    border: "1px solid grey",
                                     borderRadius: 3,
                                   }}
                                 >
@@ -286,6 +333,7 @@ export default function Task() {
                 </Box>
               </Box>
             </Modal>
+            {/* Modal Detail */}
           </>
         )}
       >

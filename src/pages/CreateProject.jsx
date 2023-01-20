@@ -4,16 +4,63 @@ import {
   Button,
   Typography,
   FormControl,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
+  InputLabel,
+  Select,
+  MenuItem,
   Autocomplete,
 } from "@mui/material";
+
 import Appbar from "../components/Appbar";
+
 import AddIcon from "@mui/icons-material/Add";
-import { NavLink } from "react-router-dom";
+
+import { useNavigate, NavLink } from "react-router-dom";
+import { useState, useEffect } from "react";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import useRefreshToken from "../hooks/useRefreshToken";
 
 export default function CreateProject() {
+  const [client, setClient] = useState([]);
+  const [clientId, setClientId] = useState(client.id);
+  const [nama, setNama] = useState("");
+  const [jenis_layanan, setJenis_layanan] = useState("");
+  const [keterangan, setKeterangan] = useState("");
+  const [loading, setLoading] = useState(false);
+  const axiosPrivate = useAxiosPrivate();
+  const navigate = useNavigate();
+  const goBack = () => navigate(-1);
+  let options;
+  options = client?.map((cl) => ({ label: cl.nama, id: cl.id }));
+  console.log(options);
+
+  useEffect(() => {
+    getClient();
+  }, []);
+  const getClient = async () => {
+    try {
+      const res = await axiosPrivate.get("/client");
+      setClient(res.data);
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const createProject = async (event) => {
+    event.preventDefault();
+    try {
+      const res = await axiosPrivate.post("/project", {
+        nama,
+        client_id: clientId,
+        jenis_layanan,
+        keterangan,
+      });
+      goBack();
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <Appbar />
@@ -36,48 +83,57 @@ export default function CreateProject() {
         <Box
           className="input"
           component="form"
+          onSubmit={createProject}
           sx={{ width: "80%", alignSelf: "center", my: 3, gap: 3 }}
         >
           <FormControl fullWidth>
             <Typography variant="h5" sx={{ my: 1 }}>
               Nama Project
             </Typography>
-            <TextField required id="outlined-required" label="Nama" fullWidth />
-            <Box sx={{ display: "flex", my: 2 }}>
+            <TextField
+              required
+              id="outlined-required"
+              label="Nama"
+              fullWidth
+              value={nama}
+              onChange={(event) => setNama(event.target.value)}
+            />
+            <Box sx={{ display: "flex", alignItems: "center", my: 2 }}>
               <Typography variant="h5" sx={{ my: 1 }}>
                 Client
               </Typography>
               <Autocomplete
                 required
                 disablePortal
-                id="combo-box-demo"
-                options={top100Films}
+                id="Client"
                 sx={{ width: 300, mx: 3 }}
+                options={options}
+                value={clientId}
+                onChange={(event, values) => {
+                  console.log({ values });
+                  console.log(values.id);
+                  setClientId(values.id);
+                }}
                 renderInput={(params) => (
                   <TextField {...params} label="Client" />
                 )}
               />
               <Typography variant="h5" sx={{ my: 1, mx: 3 }}>
-                Jenis Langganan
+                Jenis Layanan
               </Typography>
-              <RadioGroup
-                required
-                row
-                aria-labelledby="demo-radio-buttons-group-label"
-                defaultValue="Langganan"
-                name="radio-buttons-group"
-              >
-                <FormControlLabel
-                  value="Langganan"
-                  control={<Radio />}
-                  label="Langganan"
-                />
-                <FormControlLabel
-                  value="Lepas"
-                  control={<Radio />}
-                  label="Lepas"
-                />
-              </RadioGroup>
+              <FormControl sx={{ width: 300, mt: 1 }}>
+                <InputLabel id="demo-simple-select-label">Layanan</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="Layanan"
+                  value={jenis_layanan}
+                  onChange={(event) => setJenis_layanan(event.target.value)}
+                >
+                  <MenuItem value="Langganan">Langganan</MenuItem>
+                  <MenuItem value="Lepas">Lepas</MenuItem>
+                </Select>
+              </FormControl>
             </Box>
 
             <Typography variant="h5" sx={{ mb: 1 }}>
@@ -89,6 +145,8 @@ export default function CreateProject() {
               label="Keterangan"
               multiline
               rows={5}
+              value={keterangan}
+              onChange={(event) => setKeterangan(event.target.value)}
             />
             {/* Button */}
             <Box className="button" sx={{ my: 3, textAlign: "right" }}>
@@ -97,7 +155,9 @@ export default function CreateProject() {
                   Back
                 </Button>
               </NavLink>
-              <Button variant="contained">Submit</Button>
+              <Button variant="contained" type="submit">
+                Submit
+              </Button>
             </Box>
           </FormControl>
         </Box>
@@ -105,10 +165,3 @@ export default function CreateProject() {
     </>
   );
 }
-
-const top100Films = [
-  { label: "The Shawshank Redemption", year: 1994 },
-  { label: "The Godfather", year: 1972 },
-  { label: "The Godfather: Part II", year: 1974 },
-  { label: "The Dark Knight", year: 2008 },
-];

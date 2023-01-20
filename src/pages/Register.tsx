@@ -5,23 +5,51 @@ import {
   Typography,
   FormControl,
   InputLabel,
-  Select,
-  MenuItem,
   Divider,
   OutlinedInput,
   InputAdornment,
   IconButton,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import PersonAddAlt1OutlinedIcon from "@mui/icons-material/PersonAddAlt1Outlined";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
-import { NavLink } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "../services/axios";
 
 export default function Register() {
   const [open, setOpen] = useState<boolean>(false);
   const handleShowPassword = () => setOpen((show) => !show);
+
+  const [formRegister, setFormRegister] = useState<any>({
+    nama_lengkap: "",
+    username: "",
+    password: "",
+    nomor_hp: "",
+    divisi: "",
+  });
+  const [passwordConfirm, setPasswordConfirm] = useState<any>();
+  const navigate = useNavigate();
+  console.log(formRegister);
+
+  const register = async (e: any) => {
+    e.preventDefault();
+    if (formRegister.password !== passwordConfirm) {
+      return;
+    }
+
+    try {
+      const response = await axios.post(`/auth/register`, formRegister);
+      console.log(response.data);
+      navigate("/");
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
 
   return (
     <Box
@@ -43,7 +71,6 @@ export default function Register() {
         sx={{
           width: "40%",
           display: "flex",
-          my: 5,
           borderRadius: "16px",
           background: "rgba(255, 255, 255, 0.10)",
           position: "fixed",
@@ -60,8 +87,9 @@ export default function Register() {
             m: 1,
           }}
         >
-          <PersonAddAlt1OutlinedIcon sx={{ mt: 1, fontSize: "40px" }} />
+          <PersonAddAlt1OutlinedIcon sx={{ fontSize: "40px" }} />
           <Typography variant="h5">Register</Typography>
+
           {/* Form */}
           <Box
             className="registerForm"
@@ -69,21 +97,49 @@ export default function Register() {
             sx={{
               width: "auto",
               mx: 4,
-              mt: 3,
               display: "flex",
               justifyContent: "center",
               alignContent: "center",
               flexWrap: "wrap",
               flexDirection: "column",
-              gap: 1,
             }}
           >
             <Typography sx={{ textAlign: "left" }}>Nama Lengkap</Typography>
-            <TextField required id="outlined-required" label="Nama Lengkap" />
+            <TextField
+              required
+              id="outlined-r-nama"
+              label="Nama Lengkap"
+              onChange={(event) =>
+                setFormRegister({
+                  ...formRegister,
+                  nama_lengkap: event.target.value,
+                })
+              }
+            />
             <Typography sx={{ textAlign: "left" }}>Nomor HP</Typography>
-            <TextField required id="outlined-required" label="Nomor" />
+            <TextField
+              required
+              id="outlined-r-nomor"
+              label="Nomor"
+              onChange={(event) =>
+                setFormRegister({
+                  ...formRegister,
+                  nomor_hp: event.target.value,
+                })
+              }
+            />
             <Typography sx={{ textAlign: "left" }}>Username</Typography>
-            <TextField required id="outlined-required" label="Username" />
+            <TextField
+              required
+              id="outlined-r-username"
+              label="Username"
+              onChange={(event) =>
+                setFormRegister({
+                  ...formRegister,
+                  username: event.target.value,
+                })
+              }
+            />
             <Typography sx={{ textAlign: "left" }}>Password</Typography>
             <FormControl variant="outlined">
               <InputLabel htmlFor="outlined-adornment-password">
@@ -104,24 +160,77 @@ export default function Register() {
                   </InputAdornment>
                 }
                 label="Password"
+                onChange={(event) =>
+                  setFormRegister({
+                    ...formRegister,
+                    password: event.target.value,
+                  })
+                }
               />
             </FormControl>
+
+            <Typography sx={{ textAlign: "left" }}>
+              Konfirmasi Password
+            </Typography>
+            <FormControl variant="outlined">
+              <InputLabel htmlFor="outlined-adornment-confirm-password">
+                Konfirmasi
+              </InputLabel>
+              <OutlinedInput
+                id="outlined-adornment-confirm-password"
+                type={open ? "text" : "password"}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleShowPassword}
+                      edge="end"
+                    >
+                      {open ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                label="Password"
+                onChange={(event) => setPasswordConfirm(event.target.value)}
+              />
+            </FormControl>
+
+            <Typography sx={{ textAlign: "left" }}>Divisi</Typography>
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">Divisi</InputLabel>
+              <Select
+                id="divisi"
+                label="divisi"
+                value={formRegister.divisi ? formRegister.divisi : ""}
+                onChange={(event) =>
+                  setFormRegister({
+                    ...formRegister,
+                    divisi: event.target.value,
+                  })
+                }
+              >
+                <MenuItem value="Frontend">Frontend</MenuItem>
+                <MenuItem value="Backend">Backend</MenuItem>
+                <MenuItem value="Wordpress">Wordpress</MenuItem>
+                <MenuItem value="Project Manager">Project Manager</MenuItem>
+              </Select>
+            </FormControl>
           </Box>
+
           <Button
             type="submit"
             sx={{ mt: 2, mb: 1 }}
             variant="contained"
             color="primary"
             size="medium"
+            onClick={register}
           >
             Register
           </Button>
-          {/* END Button Login */}
           <Divider sx={{ my: 1 }} />
-          {/* Register */}
           <Typography variant="body1">
             Already Have an Account
-            <NavLink to="/login" style={{ textDecoration: "none" }}>
+            <Link to="/login" style={{ textDecoration: "none" }}>
               <Button
                 sx={{ mb: 0.1, color: "rgba(254, 250,224)" }}
                 color="primary"
@@ -129,7 +238,7 @@ export default function Register() {
               >
                 Login
               </Button>
-            </NavLink>
+            </Link>
           </Typography>
         </Box>
       </Box>

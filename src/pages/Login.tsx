@@ -1,40 +1,48 @@
+import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
 import {
   TextField,
   Box,
   Button,
   Typography,
-  FormControlLabel,
-  Checkbox,
   Divider,
   OutlinedInput,
   InputAdornment,
   IconButton,
   FormControl,
   InputLabel,
+  FormLabel,
 } from "@mui/material";
-import { NavLink } from "react-router-dom";
+
 import LockIcon from "@mui/icons-material/Lock";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import axios from "axios";
-import { api } from "../constant/constant";
+import axios from "../services/axios";
 
 export default function Login() {
+  const { setAuth } = useAuth();
   const [formData, setFormData] = useState<any>({
     username: "",
     password: "",
   });
-  console.log(formData);
-
   const [open, setOpen] = useState<boolean>(false);
   const handleShowPassword = () => setOpen((show) => !show);
+  const navigate = useNavigate();
 
   const login = async (event: any) => {
     event.preventDefault();
     try {
-      const response = await axios.post(`${api}/auth/login`, formData);
+      const response = await axios.post(`/auth/login`, formData, {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      });
+      const accessToken = response.data.accessToken;
+      const username = response.data.username;
+      const role = response.data.role;
       console.log(response.data);
+      setAuth({ accessToken, username, role });
+      navigate("/");
     } catch (error) {
       console.log(error);
     }
@@ -85,6 +93,7 @@ export default function Login() {
           <Box
             className="loginForm"
             component="form"
+            onSubmit={login}
             sx={{
               width: "auto",
               mx: 4,
@@ -97,23 +106,35 @@ export default function Login() {
               gap: 1,
             }}
           >
-            <Typography sx={{ textAlign: "left" }}>Username</Typography>
+            <FormLabel htmlFor="username">
+              <Typography
+                sx={{ textAlign: "left", color: "rgba(254, 250,224)" }}
+              >
+                Username
+              </Typography>
+            </FormLabel>
             <TextField
               required
-              id="outlined-required"
+              id="username"
               label="Username"
               onChange={(event) =>
                 setFormData({ ...formData, username: event.target.value })
               }
               value={formData.username}
             />
-            <Typography sx={{ textAlign: "left", mt: 2 }}>Password</Typography>
+            <FormLabel htmlFor="password">
+              <Typography
+                sx={{ textAlign: "left", mt: 2, color: "rgba(254, 250,224)" }}
+              >
+                Password
+              </Typography>
+            </FormLabel>
             <FormControl variant="outlined">
               <InputLabel htmlFor="outlined-adornment-password">
                 Password
               </InputLabel>
               <OutlinedInput
-                id="outlined-adornment-password"
+                id="password"
                 type={open ? "text" : "password"}
                 endAdornment={
                   <InputAdornment position="end">
@@ -133,21 +154,19 @@ export default function Login() {
                 value={formData.password}
               />
             </FormControl>
+            {/* Button Login */}
+            <Button
+              type="submit"
+              sx={{ mt: 3, mb: 1 }}
+              variant="contained"
+              color="primary"
+              size="medium"
+            >
+              Login
+            </Button>
+            {/* END Button Login */}
           </Box>
           {/* END Box Textfield */}
-
-          {/* Button Login */}
-          <Button
-            type="submit"
-            sx={{ mt: 3, mb: 1 }}
-            variant="contained"
-            color="primary"
-            size="medium"
-            onClick={login}
-          >
-            Login
-          </Button>
-          {/* END Button Login */}
 
           <Divider sx={{ my: 1 }} />
           {/* Register */}

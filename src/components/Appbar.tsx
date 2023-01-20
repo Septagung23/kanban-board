@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 import {
   AppBar,
@@ -18,20 +18,21 @@ import {
 
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
-// import HomeIcon from "@mui/icons-material/Home";
-// import PersonIcon from "@mui/icons-material/Person";
 import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
 import PeopleIcon from "@mui/icons-material/People";
-import AddTaskIcon from "@mui/icons-material/AddTask";
 import ViewKanbanIcon from "@mui/icons-material/ViewKanban";
+import LogoutIcon from "@mui/icons-material/Logout";
+
+import axios from "../services/axios";
+import { useAuth } from "../hooks/useAuth";
+import useRefreshToken from "../hooks/useRefreshToken";
 
 export default function Appbar() {
   const [open, setOpen] = useState<boolean>(false);
-
-  // const [openProject, setOpenProject] = useState<boolean>(false);
-  // const handleOpenProject = () => {
-  //   setOpenProject(!openProject);
-  // };
+  const { setAuth } = useAuth();
+  const { auth } = useAuth();
+  const navigate = useNavigate();
+  const refresh = useRefreshToken();
 
   const toggleDrawerOpen = () => {
     setOpen(true);
@@ -40,9 +41,19 @@ export default function Appbar() {
     setOpen(false);
   };
 
+  const handleLogout = async () => {
+    try {
+      await axios.delete("/auth/logout");
+      // setAuth({ accessToken: "" });
+      // navigate("/login");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <AppBar position="fixed">
-      <Toolbar sx={{ display: "flex", justifyContent: "flex-start" }}>
+      <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
         <IconButton
           edge="start"
           aria-label="open drawer"
@@ -52,6 +63,26 @@ export default function Appbar() {
           <MenuIcon fontSize="large" />
         </IconButton>
         <Typography sx={{ ml: 2 }}>Task</Typography>
+        <div>
+          <Button
+            variant="contained"
+            size="small"
+            color="error"
+            sx={{ m: 2 }}
+            onClick={handleLogout}
+          >
+            <LogoutIcon />
+            Logout
+          </Button>
+          <Button
+            onClick={() => refresh()}
+            color="secondary"
+            variant="contained"
+            size="small"
+          >
+            Refresh
+          </Button>
+        </div>
         {/* Drawer */}
         <Drawer
           PaperProps={{
@@ -60,6 +91,7 @@ export default function Appbar() {
           anchor="left"
           variant="temporary"
           open={open}
+          onClose={toggleDrawerClose}
           // sx={{ width: "auto" }}
         >
           <Box>
@@ -82,20 +114,20 @@ export default function Appbar() {
             <Box>
               <List>
                 {/* Home */}
-                <ListItem>
-                  <NavLink to="/" style={{ textDecoration: "none" }}>
+                <NavLink to="/" style={{ textDecoration: "none" }}>
+                  <ListItem>
                     <ListItemButton>
                       <ListItemIcon>
                         <ViewKanbanIcon sx={{ mr: 2 }} />
                         <Typography>Dashboard</Typography>
                       </ListItemIcon>
                     </ListItemButton>
-                  </NavLink>
-                </ListItem>
+                  </ListItem>
+                </NavLink>
                 <Divider variant="middle" />
 
                 {/* Add Task   */}
-                <ListItem>
+                {/* <ListItem>
                   <NavLink to="/create-task" style={{ textDecoration: "none" }}>
                     <ListItemButton>
                       <ListItemIcon>
@@ -105,34 +137,20 @@ export default function Appbar() {
                     </ListItemButton>
                   </NavLink>
                 </ListItem>
-                <Divider variant="middle" />
+                <Divider variant="middle" /> */}
 
                 {/* Client */}
-                <ListItem>
-                  <NavLink
-                    to="/create-client"
-                    style={{ textDecoration: "none" }}
-                  >
+                <NavLink to="/client" style={{ textDecoration: "none" }}>
+                  <ListItem>
                     <ListItemButton>
                       <ListItemIcon>
                         <PeopleIcon sx={{ mr: 2 }} />
                         <Typography>Client</Typography>
                       </ListItemIcon>
                     </ListItemButton>
-                  </NavLink>
-                </ListItem>
+                  </ListItem>
+                </NavLink>
                 <Divider variant="middle" />
-
-                {/* Profile */}
-                {/* <ListItem>
-                  <ListItemButton>
-                    <ListItemIcon>
-                      <PersonIcon sx={{ mr: 2 }} />
-                      <Typography>Profile</Typography>
-                    </ListItemIcon>
-                  </ListItemButton>
-                </ListItem> 
-        <Divider variant="middle" /> */}
               </List>
             </Box>
 
@@ -146,13 +164,7 @@ export default function Appbar() {
                 left: "50%",
                 transform: "translate(-50%, 0)",
               }}
-            >
-              <NavLink to="/login" style={{ textDecoration: "none" }}>
-                <Button variant="outlined" color="error" sx={{ m: 2 }}>
-                  Logout
-                </Button>
-              </NavLink>
-            </Box>
+            ></Box>
           </Box>
         </Drawer>
       </Toolbar>

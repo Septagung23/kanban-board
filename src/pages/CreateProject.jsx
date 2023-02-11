@@ -11,31 +11,30 @@ import {
 } from "@mui/material";
 
 import Appbar from "../components/Appbar";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { main } from "../constant/styles";
 
 import AddIcon from "@mui/icons-material/Add";
 
 import { useNavigate, NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import useRefreshToken from "../hooks/useRefreshToken";
 
 export default function CreateProject() {
   const [client, setClient] = useState([]);
   const [clientId, setClientId] = useState(client.id);
+  const [clientNama, setClientNama] = useState(client.nama);
   const [nama, setNama] = useState("");
   const [jenis_layanan, setJenis_layanan] = useState("");
   const [keterangan, setKeterangan] = useState("");
-  const [loading, setLoading] = useState(false);
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
-  const goBack = () => navigate(-1);
-  let options;
-  options = client?.map((cl) => ({ label: cl.nama, id: cl.id }));
-  console.log(options);
+
+  const options = client?.map((cl) => ({ label: cl.nama, id: cl.id }));
 
   useEffect(() => {
     getClient();
   }, []);
+
   const getClient = async () => {
     try {
       const res = await axiosPrivate.get("/client");
@@ -45,6 +44,7 @@ export default function CreateProject() {
       console.log(error);
     }
   };
+
   const createProject = async (event) => {
     event.preventDefault();
     try {
@@ -54,8 +54,8 @@ export default function CreateProject() {
         jenis_layanan,
         keterangan,
       });
-      goBack();
       console.log(res);
+      navigate("/");
     } catch (error) {
       console.log(error);
     }
@@ -64,17 +64,7 @@ export default function CreateProject() {
   return (
     <>
       <Appbar />
-      <Box
-        className="container"
-        sx={{
-          width: "100%",
-          mt: 10,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignContent: "center",
-        }}
-      >
+      <Box className="container" sx={main}>
         <Box className="judul" sx={{ textAlign: "center" }}>
           <AddIcon sx={{ fontSize: "60px" }} />
           <Typography variant="h3">Tambah Project</Typography>
@@ -108,7 +98,7 @@ export default function CreateProject() {
                 id="Client"
                 sx={{ width: 300, mx: 3 }}
                 options={options}
-                value={clientId}
+                value={clientNama}
                 onChange={(event, values) => {
                   console.log({ values });
                   console.log(values.id);
@@ -148,7 +138,6 @@ export default function CreateProject() {
               value={keterangan}
               onChange={(event) => setKeterangan(event.target.value)}
             />
-            {/* Button */}
             <Box className="button" sx={{ my: 3, textAlign: "right" }}>
               <NavLink to="/" style={{ textDecoration: "none" }}>
                 <Button variant="contained" sx={{ mr: 1 }} color="error">

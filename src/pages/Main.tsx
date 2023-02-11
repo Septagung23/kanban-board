@@ -8,7 +8,7 @@ function Main() {
       <div
         className="body"
         style={{
-          marginTop: "60px",
+          marginTop: "70px",
           display: "flex",
           justifyContent: "flex-start",
           alignItems: "center",

@@ -16,10 +16,12 @@ import PersonAddAlt1OutlinedIcon from "@mui/icons-material/PersonAddAlt1Outlined
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
-import { Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "../services/axios";
+
+import Loading from "../components/Loading";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 export default function Register() {
   const [open, setOpen] = useState<boolean>(false);
@@ -34,22 +36,30 @@ export default function Register() {
   });
   const [passwordConfirm, setPasswordConfirm] = useState<any>();
   const navigate = useNavigate();
-  console.log(formRegister);
+  const axiosPrivate = useAxiosPrivate();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const register = async (e: any) => {
     e.preventDefault();
+    setIsLoading(true);
     if (formRegister.password !== passwordConfirm) {
       return;
     }
 
     try {
-      const response = await axios.post(`/auth/register`, formRegister);
+      const response = await axiosPrivate.post(`/auth/register`, formRegister);
       console.log(response.data);
-      navigate("/");
+      navigate("/login");
+      setIsLoading(false);
     } catch (error: any) {
       console.log(error);
+      setIsLoading(false);
     }
   };
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <Box
@@ -65,7 +75,6 @@ export default function Register() {
           "linear-gradient(51deg, rgba(0,255,3,1) 0%, rgba(3,184,5,1) 35%, rgba(1,168,3,1) 50%, rgba(3,184,5,1) 65%, rgba(0,255,3,1) 100%)",
       }}
     >
-      {/* Container */}
       <Box
         className="containerRegister"
         sx={{
@@ -77,7 +86,6 @@ export default function Register() {
           boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
         }}
       >
-        {/* Register */}
         <Box
           className="Register"
           sx={{
@@ -90,7 +98,6 @@ export default function Register() {
           <PersonAddAlt1OutlinedIcon sx={{ fontSize: "40px" }} />
           <Typography variant="h5">Register</Typography>
 
-          {/* Form */}
           <Box
             className="registerForm"
             component="form"
@@ -229,14 +236,18 @@ export default function Register() {
           </Button>
           <Divider sx={{ my: 1 }} />
           <Typography variant="body1">
-            Already Have an Account
+            Already Have an Account ?
             <Link to="/login" style={{ textDecoration: "none" }}>
               <Button
-                sx={{ mb: 0.1, color: "rgba(254, 250,224)" }}
+                sx={{
+                  mb: 0.1,
+                  color: "rgba(254, 250,224)",
+                  textTransform: "capitalize",
+                }}
                 color="primary"
                 size="small"
               >
-                Login
+                <Typography variant="body1">Login</Typography>
               </Button>
             </Link>
           </Typography>

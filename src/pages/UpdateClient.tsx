@@ -1,17 +1,22 @@
 import { Box, TextField, Button, Typography, FormControl } from "@mui/material";
+
 import GroupsIcon from "@mui/icons-material/Groups";
 
 import Appbar from "../components/Appbar";
+import Loading from "../components/Loading";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { main } from "../constant/styles";
 
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+
 export default function UpdateClient() {
   const { id } = useParams();
   const [nama, setNama] = useState<string>("");
   const [perusahaan, setPerusahaan] = useState<string>("");
   const [alamat, setAlamat] = useState<string>("");
   const [nomor, setNomor] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
 
@@ -20,12 +25,19 @@ export default function UpdateClient() {
   }, []);
 
   const getClientById = async () => {
-    const res = await axiosPrivate.get(`/client/${id}`);
-    console.log(res.data);
-    setNama(res.data.nama);
-    setPerusahaan(res.data.perusahaan);
-    setAlamat(res.data.alamat);
-    setNomor(res.data.nomor_hp);
+    setIsLoading(true);
+    try {
+      const res = await axiosPrivate.get(`/client/${id}`);
+      console.log(res.data);
+      setNama(res.data.nama);
+      setPerusahaan(res.data.perusahaan);
+      setAlamat(res.data.alamat);
+      setNomor(res.data.nomor_hp);
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
   };
 
   const updateClient = async (e: any) => {
@@ -44,26 +56,18 @@ export default function UpdateClient() {
     }
   };
 
+  if (isLoading) {
+    return <Loading />;
+  }
+
   return (
     <>
       <Appbar />
-      <Box
-        className="container"
-        sx={{
-          width: "100%",
-          mt: 10,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignContent: "center",
-        }}
-      >
-        {/* Judul + Logo */}
+      <Box className="container" sx={main}>
         <Box className="judul" sx={{ textAlign: "center" }}>
           <GroupsIcon sx={{ fontSize: "60px" }} />
           <Typography variant="h3">Edit Client</Typography>
         </Box>
-        {/* Input */}
         <Box
           className="input"
           component="form"
@@ -108,7 +112,6 @@ export default function UpdateClient() {
               value={alamat}
               onChange={(event) => setAlamat(event.target.value)}
             />
-            {/* Button */}
             <Box className="button" sx={{ my: 3, textAlign: "right" }}>
               <Link to="/client" style={{ textDecoration: "none" }}>
                 <Button variant="contained" sx={{ mr: 1 }} color="error">

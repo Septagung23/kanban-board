@@ -3,10 +3,11 @@ import { Box, TextField, Button, Typography } from "@mui/material";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 
 import Appbar from "../components/Appbar";
-
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { main } from "../constant/styles";
+
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 export default function CreateClient() {
   const [nama, setNama] = useState<string>("");
@@ -15,7 +16,6 @@ export default function CreateClient() {
   const [nomor, setNomor] = useState<string>("");
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
-  const goBack = () => navigate(-1);
 
   const createClient = async (e: any) => {
     e.preventDefault();
@@ -26,34 +26,21 @@ export default function CreateClient() {
         alamat,
         nomor_hp: nomor,
       });
-      goBack();
       console.log(res);
+      navigate("/client");
     } catch (error: any) {
       console.log(error);
-      console.log(error.response.data);
     }
   };
 
   return (
     <>
       <Appbar />
-      <Box
-        className="container"
-        sx={{
-          width: "100%",
-          mt: 10,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignContent: "center",
-        }}
-      >
-        {/* Judul + Logo */}
+      <Box className="container" sx={main}>
         <Box className="judul" sx={{ textAlign: "center" }}>
           <PersonAddAlt1Icon sx={{ fontSize: "60px" }} />
           <Typography variant="h3">Tambah Client</Typography>
         </Box>
-        {/* Input */}
         <Box
           className="input"
           component="form"
@@ -98,15 +85,11 @@ export default function CreateClient() {
             onChange={(event) => setAlamat(event.target.value)}
           />
           <div style={{ marginTop: 5, textAlign: "right" }}>
-            {/* Button */}
-            <Button
-              variant="contained"
-              sx={{ mr: 1 }}
-              color="error"
-              onClick={goBack}
-            >
-              Back
-            </Button>
+            <Link to="/client" style={{ textDecoration: "none" }}>
+              <Button variant="contained" sx={{ mr: 1 }} color="error">
+                Back
+              </Button>
+            </Link>
             <Button variant="contained" type="submit">
               Submit
             </Button>

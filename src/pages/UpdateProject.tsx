@@ -4,30 +4,89 @@ import {
   Button,
   Typography,
   FormControl,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
+  InputLabel,
+  MenuItem,
+  Select,
   Autocomplete,
 } from "@mui/material";
 import Appbar from "../components/Appbar";
 import AddIcon from "@mui/icons-material/Add";
-import { NavLink } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import Loading from "../components/Loading";
+import { main } from "../constant/styles";
 
 export default function UpdateProject() {
+  const { id } = useParams();
+  const [client, setClient] = useState<any>([]);
+  const [clientId, setClientId] = useState(client.id);
+  const [clientNama, setClientNama] = useState(client.nama);
+  const [nama, setNama] = useState("");
+  const [jenis_layanan, setJenis_layanan] = useState("");
+  const [keterangan, setKeterangan] = useState("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const axiosPrivate = useAxiosPrivate();
+  const navigate = useNavigate();
+  const options = client?.map((cl: any) => ({ label: cl.nama, id: cl.id }));
+
+  const getClient = async () => {
+    try {
+      const res = await axiosPrivate.get("/client");
+      console.log(res.data);
+      setClient(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getProjectById = async () => {
+    setIsLoading(true);
+    try {
+      const res = await axiosPrivate.get(`/project/${id}`);
+      console.log(res.data);
+      setNama(res.data.nama);
+      setClientId(res.data.client.id);
+      setClientNama(res.data.client.nama);
+      setJenis_layanan(res.data.jenis_layanan);
+      setKeterangan(res.data.keterangan);
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getProjectById();
+    getClient();
+  }, []);
+
+  const updateProject = async (e: any) => {
+    e.preventDefault();
+    try {
+      const res = await axiosPrivate.patch(`project/${id}`, {
+        nama,
+        client_id: clientId,
+        jenis_layanan,
+        keterangan,
+      });
+      console.log(res);
+      navigate("/");
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
   return (
     <>
       <Appbar />
-      <Box
-        className="container"
-        sx={{
-          width: "100%",
-          mt: 10,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignContent: "center",
-        }}
-      >
+      <Box className="container" sx={main}>
         <Box className="judul" sx={{ textAlign: "center" }}>
           <AddIcon sx={{ fontSize: "60px" }} />
           <Typography variant="h3">Edit Project</Typography>
@@ -37,45 +96,55 @@ export default function UpdateProject() {
           className="input"
           component="form"
           sx={{ width: "80%", alignSelf: "center", my: 3, gap: 3 }}
+          onSubmit={updateProject}
         >
           <FormControl fullWidth>
             <Typography variant="h5" sx={{ my: 1 }}>
               Nama Project
             </Typography>
-            <TextField required id="outlined-required" label="Nama" fullWidth />
-            <Box sx={{ display: "flex", my: 2 }}>
+            <TextField
+              required
+              fullWidth
+              id="namaProject"
+              label="Nama"
+              value={nama}
+              onChange={(event) => setNama(event.target.value)}
+            />
+            <Box sx={{ display: "flex", alignItems: "center", my: 2 }}>
               <Typography variant="h5" sx={{ my: 1 }}>
                 Client
               </Typography>
               <Autocomplete
                 disablePortal
-                id="combo-box-demo"
-                options={top100Films}
+                id="Client"
                 sx={{ width: 300, mx: 3 }}
+                options={options}
+                value={clientNama}
+                onChange={(event, values) => {
+                  console.log({ values });
+                  console.log(values.id);
+                  setClientId(values.id);
+                }}
                 renderInput={(params) => (
-                  <TextField {...params} label="Client" />
+                  <TextField {...params} label={clientNama} />
                 )}
               />
               <Typography variant="h5" sx={{ my: 1, mx: 3 }}>
-                Jenis Langganan
+                Jenis Layanan
               </Typography>
-              <RadioGroup
-                row
-                aria-labelledby="demo-radio-buttons-group-label"
-                defaultValue="Langganan"
-                name="radio-buttons-group"
-              >
-                <FormControlLabel
-                  value="Langganan"
-                  control={<Radio />}
-                  label="Langganan"
-                />
-                <FormControlLabel
-                  value="Lepas"
-                  control={<Radio />}
-                  label="Lepas"
-                />
-              </RadioGroup>
+              <FormControl sx={{ width: 300, mt: 1 }}>
+                <InputLabel id="demo-simple-select-label">Layanan</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="Layanan"
+                  value={jenis_layanan}
+                  onChange={(event) => setJenis_layanan(event.target.value)}
+                >
+                  <MenuItem value="Langganan">Langganan</MenuItem>
+                  <MenuItem value="Lepas">Lepas</MenuItem>
+                </Select>
+              </FormControl>
             </Box>
 
             <Typography variant="h5" sx={{ mb: 1 }}>
@@ -87,15 +156,19 @@ export default function UpdateProject() {
               label="Keterangan"
               multiline
               rows={5}
+              value={keterangan}
+              onChange={(event) => setKeterangan(event.target.value)}
             />
             {/* Button */}
             <Box className="button" sx={{ my: 3, textAlign: "right" }}>
-              <NavLink to="/" style={{ textDecoration: "none" }}>
+              <Link to="/" style={{ textDecoration: "none" }}>
                 <Button variant="contained" sx={{ mr: 1 }} color="error">
                   Back
                 </Button>
-              </NavLink>
-              <Button variant="contained">Submit</Button>
+              </Link>
+              <Button variant="contained" type="submit">
+                Submit
+              </Button>
             </Box>
           </FormControl>
         </Box>
@@ -103,10 +176,3 @@ export default function UpdateProject() {
     </>
   );
 }
-
-const top100Films = [
-  { label: "The Shawshank Redemption", year: 1994 },
-  { label: "The Godfather", year: 1972 },
-  { label: "The Godfather: Part II", year: 1974 },
-  { label: "The Dark Knight", year: 2008 },
-];

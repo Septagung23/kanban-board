@@ -28,11 +28,10 @@ export default function UpdateClient() {
     setIsLoading(true);
     try {
       const res = await axiosPrivate.get(`/client/${id}`);
-      console.log(res.data);
       setNama(res.data.nama);
       setPerusahaan(res.data.perusahaan);
       setAlamat(res.data.alamat);
-      setNomor(res.data.nomor_hp);
+      setNomor(res.data.nomorHp);
       setIsLoading(false);
     } catch (error) {
       console.log(error);
@@ -47,9 +46,8 @@ export default function UpdateClient() {
         nama,
         perusahaan,
         alamat,
-        nomor_hp: nomor,
+        nomorHp: nomor,
       });
-      console.log(res);
       navigate("/client");
     } catch (error: any) {
       console.log(error);
@@ -90,6 +88,7 @@ export default function UpdateClient() {
               required
               id="outlined-required"
               label="Nomor"
+              inputMode="numeric"
               value={nomor}
               onChange={(event) => setNomor(event.target.value)}
             />

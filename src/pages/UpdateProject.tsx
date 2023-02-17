@@ -24,7 +24,7 @@ export default function UpdateProject() {
   const [clientId, setClientId] = useState(client.id);
   const [clientNama, setClientNama] = useState(client.nama);
   const [nama, setNama] = useState("");
-  const [jenis_layanan, setJenis_layanan] = useState("");
+  const [jenisLayanan, setJenisLayanan] = useState("");
   const [keterangan, setKeterangan] = useState("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const axiosPrivate = useAxiosPrivate();
@@ -34,7 +34,6 @@ export default function UpdateProject() {
   const getClient = async () => {
     try {
       const res = await axiosPrivate.get("/client");
-      console.log(res.data);
       setClient(res.data);
     } catch (error) {
       console.log(error);
@@ -45,11 +44,10 @@ export default function UpdateProject() {
     setIsLoading(true);
     try {
       const res = await axiosPrivate.get(`/project/${id}`);
-      console.log(res.data);
       setNama(res.data.nama);
       setClientId(res.data.client.id);
       setClientNama(res.data.client.nama);
-      setJenis_layanan(res.data.jenis_layanan);
+      setJenisLayanan(res.data.jenisLayanan);
       setKeterangan(res.data.keterangan);
       setIsLoading(false);
     } catch (error) {
@@ -68,11 +66,10 @@ export default function UpdateProject() {
     try {
       const res = await axiosPrivate.patch(`project/${id}`, {
         nama,
-        client_id: clientId,
-        jenis_layanan,
+        clientId,
+        jenisLayanan,
         keterangan,
       });
-      console.log(res);
       navigate("/");
     } catch (error: any) {
       console.log(error);
@@ -121,8 +118,6 @@ export default function UpdateProject() {
                 options={options}
                 value={clientNama}
                 onChange={(event, values) => {
-                  console.log({ values });
-                  console.log(values.id);
                   setClientId(values.id);
                 }}
                 renderInput={(params) => (
@@ -138,8 +133,8 @@ export default function UpdateProject() {
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   label="Layanan"
-                  value={jenis_layanan}
-                  onChange={(event) => setJenis_layanan(event.target.value)}
+                  value={jenisLayanan}
+                  onChange={(event) => setJenisLayanan(event.target.value)}
                 >
                   <MenuItem value="Langganan">Langganan</MenuItem>
                   <MenuItem value="Lepas">Lepas</MenuItem>

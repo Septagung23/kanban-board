@@ -41,9 +41,9 @@ export default function User() {
   const axiosPrivate = useAxiosPrivate();
   const [user, setUser] = useState<any>([]);
   const [id, setId] = useState(user.id);
-  const [nama_lengkap, setNama_lengkap] = useState<string>("");
+  const [namaLengkap, setNamaLengkap] = useState<string>("");
   const [username, setUsername] = useState<string>("");
-  const [nomor_hp, setNomor_hp] = useState<string>("");
+  const [nomorHp, setNomorHp] = useState<string>("");
   const [divisi, setDivisi] = useState<string>("");
   const [pass, setPass] = useState<string>("");
   const [passwordConfirm, setPasswordConfirm] = useState<string>("");
@@ -104,11 +104,10 @@ export default function User() {
   const getUserById = async (id: string) => {
     try {
       const res = await axiosPrivate(`/user/${id}`);
-      console.log(res.data);
-      setNama_lengkap(res.data.nama_lengkap);
+      setNamaLengkap(res.data.namaLengkap);
       setUsername(res.data.username);
       setDivisi(res.data.divisi);
-      setNomor_hp(res.data.nomor_hp);
+      setNomorHp(res.data.nomorHp);
       setRoleid(res.data.role.id);
       setRolename(res.data.role.nama);
       setPass("");
@@ -134,19 +133,21 @@ export default function User() {
     }
     try {
       const res = await axiosPrivate.patch(`/user/${id}`, {
-        nama_lengkap,
+        namaLengkap,
         username,
-        nomor_hp,
+        nomorHp,
         divisi,
-        role_id: roleId,
+        roleId,
         password: pass ? pass : null,
       });
-      console.log(res);
       setOpenEdit(undefined);
-      console.log();
+      setOpenBoxPass(false);
+      setOpenPassword(false);
       getUser();
     } catch (error: any) {
       console.log(error);
+      setOpenPassword(false);
+      setOpenBoxPass(false);
     }
   };
 
@@ -183,9 +184,9 @@ export default function User() {
               <TableBody>
                 {user.map((u: any) => (
                   <TableRow key={u.id}>
-                    <TableCell>{u.nama_lengkap}</TableCell>
+                    <TableCell>{u.namaLengkap}</TableCell>
                     <TableCell align="center">{u.username}</TableCell>
-                    <TableCell align="center">{u.nomor_hp}</TableCell>
+                    <TableCell align="center">{u.nomorHp}</TableCell>
                     <TableCell align="center">{u.divisi}</TableCell>
                     <TableCell align="center">
                       {u.role ? u.role.nama : "???"}
@@ -197,7 +198,7 @@ export default function User() {
 
                       <ModalDelete
                         id={u.id}
-                        nama={u.nama_lengkap}
+                        nama={u.namaLengkap}
                         deleteFunction={deleteUser}
                       />
                     </TableCell>
@@ -223,9 +224,9 @@ export default function User() {
                             required
                             id="outlined-r-nama"
                             label="Nama"
-                            value={nama_lengkap}
+                            value={namaLengkap}
                             onChange={(event) =>
-                              setNama_lengkap(event.target.value)
+                              setNamaLengkap(event.target.value)
                             }
                           />
                           <Typography sx={{ textAlign: "left", my: 1 }}>
@@ -247,10 +248,8 @@ export default function User() {
                             required
                             id="outlined-r-nomor"
                             label="nomor"
-                            value={nomor_hp}
-                            onChange={(event) =>
-                              setNomor_hp(event.target.value)
-                            }
+                            value={nomorHp}
+                            onChange={(event) => setNomorHp(event.target.value)}
                           />
 
                           <Box sx={{ display: "flex" }}>
@@ -299,9 +298,9 @@ export default function User() {
                                   id="role"
                                   label="role"
                                   value={roleId}
-                                  onChange={(event) =>
-                                    setRoleid(event.target.value)
-                                  }
+                                  onChange={(event) => {
+                                    setRoleid(event.target.value);
+                                  }}
                                 >
                                   {role?.map((r: any) => (
                                     <MenuItem value={r.id}>{r.nama}</MenuItem>
@@ -347,6 +346,7 @@ export default function User() {
                                     Password
                                   </InputLabel>
                                   <OutlinedInput
+                                    autoComplete="off"
                                     id="pass"
                                     type={openPassword ? "text" : "password"}
                                     endAdornment={
@@ -379,6 +379,7 @@ export default function User() {
                                     Konfirmasi
                                   </InputLabel>
                                   <OutlinedInput
+                                    autoComplete="off"
                                     id="confirm-password"
                                     type={openPassword ? "text" : "password"}
                                     endAdornment={
@@ -427,21 +428,4 @@ export default function User() {
       </Box>
     </>
   );
-}
-
-{
-  /* <Autocomplete
-                                disablePortal
-                                id="Client"
-                                options={options}
-                                value={roleName}
-                                onChange={(event, values) => {
-                                  console.log({ values });
-                                  console.log(values.id);
-                                  setRoleid(values.id);
-                                }}
-                                renderInput={(params: any) => (
-                                  <TextField {...params} label="Role" />
-                                )}
-                              /> */
 }

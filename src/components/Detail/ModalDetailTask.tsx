@@ -18,14 +18,16 @@ import SubjectIcon from "@mui/icons-material/Subject";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 
 import CreateSubTask from "../Create/CreateSubTask";
 import UpdateSubTask from "../Update/UpdateSubTask";
 import UpdateTask from "../Update/UpdateTask";
-import DeleteTask from "../Delete/DeleteTask";
+import ModalDelete from "../Delete/ModalDelete";
 
 import parse from "html-react-parser";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function ModalDetail(props: any) {
   //Handle Open Function
@@ -86,8 +88,8 @@ export default function ModalDetail(props: any) {
       <a onClick={() => handleOpenDetail(id)}>
         <CardContent sx={{ py: 0 }}>
           <Typography variant="h6">{nama}</Typography>
-          <Divider sx={{ my: 1 }} />
         </CardContent>
+        <Divider />
       </a>
 
       <Modal
@@ -97,7 +99,7 @@ export default function ModalDetail(props: any) {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
         BackdropProps={{
-          style: { backgroundColor: "rgba(0, 0, 0, 0.2)" },
+          style: { backgroundColor: "rgba(0, 0, 0, 0.2)", overflow: "hidden" },
         }}
       >
         {/* Modal Box */}
@@ -109,13 +111,11 @@ export default function ModalDetail(props: any) {
             width: "60%",
             height: "60%",
             transform: "translate(-50%, -50%)",
-            backgroundColor: "#eeeeee",
-            borderRadius: "20px",
+            backgroundColor: "#ffffff",
             boxShadow: 4,
             p: 4,
             display: "flex",
             overflowY: "scroll",
-            overFlowX: "hidden",
           }}
         >
           {/* Container */}
@@ -149,7 +149,8 @@ export default function ModalDetail(props: any) {
                   onClose={handleCloseMenu}
                 >
                   <MenuItem onClick={handleOpenTask}>Edit Task</MenuItem>
-                  <DeleteTask
+                  <ModalDelete
+                    categoryId={categoryId}
                     id={id}
                     nama={nama}
                     deleteFunction={deleteFunction}
@@ -188,7 +189,7 @@ export default function ModalDetail(props: any) {
                   sx={{
                     backgroundColor: "#ffffff",
                     px: 1,
-                    borderRadius: 3,
+                    borderRadius: 2,
                     border: "1px solid black",
                   }}
                 >
@@ -204,10 +205,10 @@ export default function ModalDetail(props: any) {
                     justifyContent: "space-between",
                   }}
                 >
-                  <div style={{ display: "flex" }}>
+                  <Box style={{ display: "flex" }}>
                     <FormatListBulletedIcon sx={{ mt: 0.3 }} />
                     <Typography variant="h5">Sub Task</Typography>
-                  </div>
+                  </Box>
                   <CreateSubTask id={id} get={getSubtask} />
                 </Box>
 
@@ -215,7 +216,7 @@ export default function ModalDetail(props: any) {
                   sx={{
                     backgroundColor: "#ffffff",
                     p: 0,
-                    borderRadius: 3,
+                    borderRadius: 2,
                     border: "1px solid black",
                   }}
                 >
@@ -264,10 +265,27 @@ export default function ModalDetail(props: any) {
                             </Box>
                           </Box>
                         </ListItem>
-                        <Divider />
                       </>
                     ))}
                   </List>
+                </Box>
+              </Box>
+
+              {/* Comment */}
+              <Box sx={{ my: 2, p: 1, border: "5px solid red" }}>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <ChatBubbleOutlineIcon sx={{ mt: 0.3 }} />
+                  <Typography variant="h5">Comment</Typography>
+                </Box>
+                <Box
+                  sx={{
+                    backgroundColor: "#ffffff",
+                    p: 1,
+                    borderRadius: 2,
+                    border: "1px solid black",
+                  }}
+                >
+                  /*Comment*/
                 </Box>
               </Box>
             </Box>

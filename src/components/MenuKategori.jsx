@@ -26,11 +26,14 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import Loading from "./Loading";
 import { modal } from "../constant/styles";
+import { useAuth } from "../hooks/useAuth";
 
 export default function MenuKategori(props) {
   const axiosPrivate = useAxiosPrivate();
   const getCategory = props.getCategory;
+  const deleteCategory = props.deleteCategory;
   const [isLoading, setIsLoading] = useState(false);
+  const { auth } = useAuth();
 
   // State
   const [categoryId, setCategoryId] = useState(props.id);
@@ -65,17 +68,15 @@ export default function MenuKategori(props) {
   const createTask = async (event) => {
     event.preventDefault();
     const content = draftToHtml(convertToRaw(kebutuhan.getCurrentContent()));
-    console.log(content);
     setIsLoading(true);
     try {
       const resTask = await axiosPrivate.post(`/task`, {
         nama: judul,
-        kategori_task_id: categoryId,
+        kategoriTaskId: categoryId,
         kebutuhan: content,
         prioritas,
         attachment,
       });
-      console.log(resTask.data);
       setOpenModalTask(false);
       setIsLoading(false);
       getCategory();
@@ -93,7 +94,6 @@ export default function MenuKategori(props) {
       const res = await axiosPrivate.patch(`/kategori-task/${categoryId}`, {
         nama: title,
       });
-      console.log(res);
       setOpenModalCategory(false);
       setAnchorEl(null);
       setIsLoading(false);
@@ -101,15 +101,6 @@ export default function MenuKategori(props) {
     } catch (error) {
       console.log(error.response);
       setIsLoading(false);
-    }
-  };
-
-  const deleteCategory = async (id) => {
-    try {
-      await axiosPrivate.delete(`/kategori-task/${props.id}`);
-      props.getCategory();
-    } catch (error) {
-      console.log(error);
     }
   };
 
@@ -199,8 +190,7 @@ export default function MenuKategori(props) {
             transform: "translate(-50%, -50%)",
             width: "60%",
             height: "80%",
-            backgroundColor: "#eeeeee",
-            borderRadius: "20px",
+            backgroundColor: "#ffffff",
             boxShadow: 4,
             p: 4,
             display: "flex",

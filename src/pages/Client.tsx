@@ -2,10 +2,6 @@ import {
   Box,
   Typography,
   Paper,
-  List,
-  ListItem,
-  Button,
-  Divider,
   IconButton,
   TableContainer,
   Table,
@@ -17,7 +13,6 @@ import {
 
 import Appbar from "../components/Appbar";
 import ModalDelete from "../components/Delete/ModalDelete";
-import ModalDetail from "../components/Detail/ModalDetailClient";
 import Loading from "../components/Loading";
 import { main } from "../constant/styles";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
@@ -41,7 +36,6 @@ export default function Client() {
     try {
       const res = await axiosPrivate.get("/client");
       setClient(res.data);
-      console.log(res.data);
       setIsLoading(false);
     } catch (error: any) {
       console.log(error);
@@ -94,7 +88,7 @@ export default function Client() {
                     <TableCell align="center">
                       {cl.perusahaan ? cl.perusahaan : "Perseorangan"}
                     </TableCell>
-                    <TableCell align="center">{cl.nomor_hp}</TableCell>
+                    <TableCell align="center">{cl.nomorHp}</TableCell>
                     <TableCell align="center">
                       {cl.alamat ? cl.alamat : "-"}
                     </TableCell>

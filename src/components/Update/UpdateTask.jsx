@@ -54,13 +54,12 @@ export default function UpdateTask(props) {
     setIsLoading(true);
     try {
       const res = await axiosPrivate.patch(`/task/${id}`, {
-        kategori_task_id: props.categoryId,
+        kategoriTaskId: props.categoryId,
         nama,
         kebutuhan: content,
         prioritas,
         attachment,
       });
-      console.log(res.data);
       setIsLoading(false);
       getCategory();
       props.close();
@@ -97,8 +96,7 @@ export default function UpdateTask(props) {
             transform: "translate(-50%, -50%)",
             width: "60%",
             height: "60%",
-            backgroundColor: "#eeeeee",
-            borderRadius: "20px",
+            backgroundColor: "#ffffff",
             boxShadow: 4,
             p: 4,
             display: "flex",

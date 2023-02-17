@@ -24,11 +24,10 @@ export default function CreateProject() {
   const [clientId, setClientId] = useState(client.id);
   const [clientNama, setClientNama] = useState(client.nama);
   const [nama, setNama] = useState("");
-  const [jenis_layanan, setJenis_layanan] = useState("");
+  const [jenisLayanan, setJenisLayanan] = useState("");
   const [keterangan, setKeterangan] = useState("");
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
-
   const options = client?.map((cl) => ({ label: cl.nama, id: cl.id }));
 
   useEffect(() => {
@@ -39,7 +38,6 @@ export default function CreateProject() {
     try {
       const res = await axiosPrivate.get("/client");
       setClient(res.data);
-      console.log(res.data);
     } catch (error) {
       console.log(error);
     }
@@ -50,11 +48,10 @@ export default function CreateProject() {
     try {
       const res = await axiosPrivate.post("/project", {
         nama,
-        client_id: clientId,
-        jenis_layanan,
+        clientId,
+        jenisLayanan,
         keterangan,
       });
-      console.log(res);
       navigate("/");
     } catch (error) {
       console.log(error);
@@ -88,6 +85,7 @@ export default function CreateProject() {
               value={nama}
               onChange={(event) => setNama(event.target.value)}
             />
+
             <Box sx={{ display: "flex", alignItems: "center", my: 2 }}>
               <Typography variant="h5" sx={{ my: 1 }}>
                 Client
@@ -100,8 +98,6 @@ export default function CreateProject() {
                 options={options}
                 value={clientNama}
                 onChange={(event, values) => {
-                  console.log({ values });
-                  console.log(values.id);
                   setClientId(values.id);
                 }}
                 renderInput={(params) => (
@@ -117,8 +113,8 @@ export default function CreateProject() {
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   label="Layanan"
-                  value={jenis_layanan}
-                  onChange={(event) => setJenis_layanan(event.target.value)}
+                  value={jenisLayanan}
+                  onChange={(event) => setJenisLayanan(event.target.value)}
                 >
                   <MenuItem value="Langganan">Langganan</MenuItem>
                   <MenuItem value="Lepas">Lepas</MenuItem>

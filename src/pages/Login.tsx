@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import {
+  Alert,
   TextField,
   Box,
   Button,
@@ -21,6 +22,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import axios from "../services/axios";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import Loading from "../components/Loading";
+import nore from "../assets/nore_w.png";
 
 export default function Login() {
   const { setAuth, auth } = useAuth();
@@ -28,6 +30,7 @@ export default function Login() {
     username: "",
     password: "",
   });
+  const [errMsg, setErrMsg] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
   const handleShowPassword = () => setOpen((show) => !show);
@@ -43,16 +46,17 @@ export default function Login() {
         withCredentials: true,
       });
       const id = response.data.id;
-      const username = response.data.nama_lengkap;
+      const nama = response.data.namaLengkap;
       const token = response.data.accessToken;
       const role = response.data.role;
-      console.log(response.data);
-      setAuth({ token, id, username, role });
+      setAuth({ token, id, nama, role });
       setIsLoading(false);
       navigate("/");
-    } catch (error) {
+    } catch (error: any) {
+      if (error?.response?.status === 401) {
+        setErrMsg("Unauthorized - Password/Username Salah");
+      }
       console.log(error);
-      console.log(formData);
       setIsLoading(false);
     }
   };
@@ -93,12 +97,13 @@ export default function Login() {
           sx={{
             width: "100%",
             borderRadius: "16px",
-            color: "rgba(254, 250,224)",
+            color: "rgba(255, 255,255)",
             // background: "rgba(254, 250,224)",
             m: 1,
           }}
         >
-          <LockIcon sx={{ mt: 3, fontSize: "40px" }} />
+          {/* <LockIcon sx={{ mt: 3, fontSize: "40px" }} /> */}
+          <img src={nore} style={{ height: "60px", width: "100px" }} />
           <Typography variant="h3">Login</Typography>
           <Box
             className="loginForm"
@@ -116,10 +121,9 @@ export default function Login() {
               gap: 1,
             }}
           >
+            {errMsg && <Alert severity="error">{errMsg}</Alert>}
             <FormLabel htmlFor="username">
-              <Typography
-                sx={{ textAlign: "left", color: "rgba(254, 250,224)" }}
-              >
+              <Typography sx={{ textAlign: "left", color: "white" }}>
                 Username
               </Typography>
             </FormLabel>
@@ -133,17 +137,14 @@ export default function Login() {
               value={formData.username}
             />
             <FormLabel htmlFor="password">
-              <Typography
-                sx={{ textAlign: "left", mt: 2, color: "rgba(254, 250,224)" }}
-              >
+              <Typography sx={{ textAlign: "left", mt: 2, color: "white" }}>
                 Password
               </Typography>
             </FormLabel>
             <FormControl variant="outlined">
-              <InputLabel htmlFor="outlined-adornment-password">
-                Password
-              </InputLabel>
+              <InputLabel htmlFor="password">Password</InputLabel>
               <OutlinedInput
+                autoComplete="off"
                 id="password"
                 type={open ? "text" : "password"}
                 endAdornment={
@@ -184,7 +185,7 @@ export default function Login() {
               <Button
                 sx={{
                   mb: 0.1,
-                  color: "rgba(254, 250,224)",
+                  color: "white",
                   textTransform: "capitalize",
                 }}
               >

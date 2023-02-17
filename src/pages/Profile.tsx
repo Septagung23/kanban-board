@@ -81,7 +81,7 @@ export default function Profile() {
           textAlign: "center",
         }}
       >
-        <Card sx={{ width: "90%", alignSelf: "center", borderRadius: 5 }}>
+        <Card sx={{ width: "90%", alignSelf: "center", borderRadius: 3 }}>
           <Box sx={{ textAlign: "right", mx: 2 }}>
             <IconButton onClick={handleClick} size="small">
               <MoreHorizIcon fontSize="large" />
@@ -105,22 +105,31 @@ export default function Profile() {
           </Menu>
           <CardContent>
             <Typography variant="h1">Profile</Typography>
-            <Typography variant="h4" color="primary">
-              {profile?.username}
-            </Typography>
-            <Divider />
+            <Divider>
+              <Typography
+                variant="h4"
+                color="primary"
+                sx={{
+                  borderRadius: "80px",
+                  border: "1px solid #1976d2",
+                  p: "5px",
+                }}
+              >
+                {profile?.username}
+              </Typography>
+            </Divider>
             <Box sx={{ textAlign: "left" }}>
               <Box sx={{ display: "flex", alignItems: "center", my: 2 }}>
                 <PersonIcon fontSize="large" sx={{ mx: 2 }} />
                 <Typography variant="h5" sx={{ mt: "5px" }}>
-                  {profile?.nama_lengkap}
+                  {profile?.namaLengkap}
                 </Typography>
               </Box>
 
               <Box sx={{ display: "flex", alignItems: "center", my: 2 }}>
                 <LocalPhoneIcon fontSize="large" sx={{ mx: 2 }} />
                 <Typography variant="h5" sx={{ mt: "5px" }}>
-                  {profile?.nomor_hp}
+                  {profile?.nomorHp}
                 </Typography>
               </Box>
 

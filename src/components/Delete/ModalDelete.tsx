@@ -4,6 +4,7 @@ import {
   Dialog,
   DialogContent,
   DialogActions,
+  MenuItem,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useState } from "react";
@@ -18,9 +19,13 @@ export default function ModalDelete(props: any) {
 
   return (
     <>
-      <IconButton color="error" onClick={() => handleOpen(id)} size="small">
-        <DeleteIcon />
-      </IconButton>
+      {props.categoryId ? (
+        <MenuItem onClick={() => handleOpen(id)}>Delete Task</MenuItem>
+      ) : (
+        <IconButton color="error" onClick={() => handleOpen(id)} size="small">
+          <DeleteIcon />
+        </IconButton>
+      )}
       <Dialog open={open} onClose={handleClose}>
         <DialogContent>
           Apakah anda yakin ingin menghapus <strong>{username}</strong> ?

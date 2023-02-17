@@ -28,10 +28,10 @@ export default function Register() {
   const handleShowPassword = () => setOpen((show) => !show);
 
   const [formRegister, setFormRegister] = useState<any>({
-    nama_lengkap: "",
+    namaLengkap: "",
     username: "",
     password: "",
-    nomor_hp: "",
+    nomorHp: "",
     divisi: "",
   });
   const [passwordConfirm, setPasswordConfirm] = useState<any>();
@@ -48,7 +48,6 @@ export default function Register() {
 
     try {
       const response = await axiosPrivate.post(`/auth/register`, formRegister);
-      console.log(response.data);
       navigate("/login");
       setIsLoading(false);
     } catch (error: any) {
@@ -119,7 +118,7 @@ export default function Register() {
               onChange={(event) =>
                 setFormRegister({
                   ...formRegister,
-                  nama_lengkap: event.target.value,
+                  namaLengkap: event.target.value,
                 })
               }
             />
@@ -131,14 +130,14 @@ export default function Register() {
               onChange={(event) =>
                 setFormRegister({
                   ...formRegister,
-                  nomor_hp: event.target.value,
+                  nomorHp: event.target.value,
                 })
               }
             />
             <Typography sx={{ textAlign: "left" }}>Username</Typography>
             <TextField
               required
-              id="outlined-r-username"
+              id="registerUsername"
               label="Username"
               onChange={(event) =>
                 setFormRegister({
@@ -149,11 +148,10 @@ export default function Register() {
             />
             <Typography sx={{ textAlign: "left" }}>Password</Typography>
             <FormControl variant="outlined">
-              <InputLabel htmlFor="outlined-adornment-password">
-                Password
-              </InputLabel>
+              <InputLabel htmlFor="registerPassword">Password</InputLabel>
               <OutlinedInput
-                id="outlined-adornment-password"
+                autoComplete="off"
+                id="registerPassword"
                 type={open ? "text" : "password"}
                 endAdornment={
                   <InputAdornment position="end">
@@ -180,11 +178,12 @@ export default function Register() {
               Konfirmasi Password
             </Typography>
             <FormControl variant="outlined">
-              <InputLabel htmlFor="outlined-adornment-confirm-password">
+              <InputLabel htmlFor="registerConfirm-password">
                 Konfirmasi
               </InputLabel>
               <OutlinedInput
-                id="outlined-adornment-confirm-password"
+                autoComplete="off"
+                id="registerConfirm-password"
                 type={open ? "text" : "password"}
                 endAdornment={
                   <InputAdornment position="end">
@@ -222,18 +221,18 @@ export default function Register() {
                 <MenuItem value="Project Manager">Project Manager</MenuItem>
               </Select>
             </FormControl>
+            <Button
+              type="submit"
+              sx={{ mt: 2, mb: 1 }}
+              variant="contained"
+              color="primary"
+              size="medium"
+              onClick={register}
+            >
+              Register
+            </Button>
           </Box>
 
-          <Button
-            type="submit"
-            sx={{ mt: 2, mb: 1 }}
-            variant="contained"
-            color="primary"
-            size="medium"
-            onClick={register}
-          >
-            Register
-          </Button>
           <Divider sx={{ my: 1 }} />
           <Typography variant="body1">
             Already Have an Account ?

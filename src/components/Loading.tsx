@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 export default function Loading() {
   return (
     <Box
@@ -10,6 +10,7 @@ export default function Loading() {
       }}
     >
       <h1>Wait a Few Sec ...</h1>
+      {/* <CircularProgress /> */}
     </Box>
   );
 }

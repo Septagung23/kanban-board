@@ -38,7 +38,6 @@ export default function ChangePass(props: any) {
         confirmNewPassword: passwordConfirm,
         currentPassword,
       });
-      console.log(res.data);
       props.close();
     } catch (error: any) {
       console.log(error);
@@ -86,6 +85,7 @@ export default function ChangePass(props: any) {
             <FormControl variant="outlined">
               <InputLabel htmlFor="pass">Password</InputLabel>
               <OutlinedInput
+                autoComplete="off"
                 id="pass"
                 type={openPassword ? "text" : "password"}
                 label="Password"
@@ -99,6 +99,7 @@ export default function ChangePass(props: any) {
             <FormControl variant="outlined">
               <InputLabel htmlFor="pass">Password</InputLabel>
               <OutlinedInput
+                autoComplete="off"
                 id="pass"
                 type={openPassword ? "text" : "password"}
                 label="Password"
@@ -114,6 +115,7 @@ export default function ChangePass(props: any) {
                 Konfirmasi
               </InputLabel>
               <OutlinedInput
+                autoComplete="off"
                 id="outlined-adornment-confirm-password"
                 type={openPassword ? "text" : "password"}
                 label="Password"

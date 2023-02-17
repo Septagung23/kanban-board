@@ -32,9 +32,9 @@ export default function UpdateProfile(props: any) {
     try {
       const res = await axiosPrivate.get(`/user/me`);
       const data = res.data;
-      setNama(data.nama_lengkap);
+      setNama(data.namaLengkap);
       setUsername(data.username);
-      setNomor(data.nomor_hp);
+      setNomor(data.nomorHp);
       setDivisi(data.divisi);
     } catch (error: any) {
       console.log(error);
@@ -45,12 +45,11 @@ export default function UpdateProfile(props: any) {
     event.preventDefault();
     try {
       const res = await axiosPrivate.patch(`/user/${props.profile?.id}`, {
-        nama_lengkap: nama,
+        namaLengkap: nama,
         username,
-        nomor_hp: nomor,
+        nomorHp: nomor,
         divisi,
       });
-      console.log(res);
       getProfile();
       props.close();
     } catch (error: any) {

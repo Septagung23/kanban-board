@@ -4,33 +4,22 @@ import { NavLink, useNavigate } from "react-router-dom";
 import {
   AppBar,
   Avatar,
-  Drawer,
   IconButton,
   Box,
   Button,
   Toolbar,
   Typography,
   Divider,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
   MenuItem,
   Menu,
 } from "@mui/material";
 
-import MenuIcon from "@mui/icons-material/Menu";
-import CloseIcon from "@mui/icons-material/Close";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
-import PeopleIcon from "@mui/icons-material/People";
-import ViewKanbanIcon from "@mui/icons-material/ViewKanban";
-import LogoutIcon from "@mui/icons-material/Logout";
-import GroupsIcon from "@mui/icons-material/Groups";
 
 import { useAuth } from "../hooks/useAuth";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import nore from "../assets/nore.png";
 
 export default function Appbar() {
   /* Handle Function */
@@ -55,7 +44,7 @@ export default function Appbar() {
   const handleCloseProject = () => setAnchorPr(null);
 
   const { auth, setAuth } = useAuth();
-  const nama = auth?.username;
+  const nama = auth?.nama;
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
   const handleLogout = async () => {
@@ -71,30 +60,46 @@ export default function Appbar() {
   return (
     <>
       <AppBar position="fixed">
-        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Toolbar
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <IconButton
-              edge="start"
-              aria-label="open drawer"
-              sx={{ color: "#ffffff" }}
-              onClick={toggleDrawerOpen}
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+              }}
             >
-              <MenuIcon fontSize="large" />
-            </IconButton>
+              <img src={nore} style={{ height: "60px", width: "100px" }} />
+              <Typography sx={{ mt: 1 }} variant="h4">
+                Task
+              </Typography>
+            </Box>
 
-            <Typography sx={{ ml: 1 }} variant="h5">
-              Nore Task
-            </Typography>
-
-            <Box sx={{ display: "flex", ml: 2, mt: "5px" }}>
-              <Button onClick={handleOpenProject} sx={{ color: "white" }}>
-                Project
-                {openProject ? (
-                  <ExpandLessIcon sx={{ ml: 1 }} />
-                ) : (
-                  <ExpandMoreIcon sx={{ ml: 1 }} />
-                )}
-              </Button>
+            <Box sx={{ display: "flex", ml: 3, mt: 1 }}>
+              {auth?.role?.id === 1 || auth?.role?.id === 2 ? (
+                <Button onClick={handleOpenProject} sx={{ color: "white" }}>
+                  Project
+                  {openProject ? (
+                    <ExpandLessIcon sx={{ ml: 1 }} />
+                  ) : (
+                    <ExpandMoreIcon sx={{ ml: 1 }} />
+                  )}
+                </Button>
+              ) : (
+                <Button onClick={handleOpenProject}>
+                  <NavLink
+                    to="/"
+                    style={{ textDecoration: "none", color: "white" }}
+                  >
+                    Project
+                  </NavLink>
+                </Button>
+              )}
 
               {auth?.role?.id === 1 && (
                 <>
@@ -120,9 +125,9 @@ export default function Appbar() {
           </Box>
           <IconButton onClick={handleOpenProfile}>
             <Avatar>
-              {nama.split(" ").length > 1
-                ? `${nama.split(" ")[0][0]}${nama.split(" ")[1][0]}`
-                : `${nama.split(" ")[0][0]}`}
+              {nama?.split(" ").length > 1
+                ? `${nama?.split(" ")[0][0]}${nama?.split(" ")[1][0]}`
+                : `${nama?.split(" ")[0][0]}`}
             </Avatar>
           </IconButton>
         </Toolbar>
@@ -144,11 +149,11 @@ export default function Appbar() {
       >
         <Box sx={{ display: "flex", alignItems: "center", mx: 1 }}>
           <Avatar sx={{ mr: 2 }}>
-            {nama.split(" ").length > 1
-              ? `${nama.split(" ")[0][0]}${nama.split(" ")[1][0]}`
-              : `${nama.split(" ")[0][0]}`}
+            {nama?.split(" ").length > 1
+              ? `${nama?.split(" ")[0][0]}${nama?.split(" ")[1][0]}`
+              : `${nama?.split(" ")[0][0]}`}
           </Avatar>
-          <Typography>{auth?.username}</Typography>
+          <Typography>{nama}</Typography>
         </Box>
         <Divider sx={{ my: 1 }} />
         <MenuItem>
@@ -226,26 +231,6 @@ export default function Appbar() {
           </MenuItem>
         )}
       </Menu>
-
-      {/* Drawer */}
-      <Drawer
-        PaperProps={{
-          sx: { width: "20%" },
-        }}
-        anchor="left"
-        variant="temporary"
-        open={open}
-        onClose={toggleDrawerClose}
-      >
-        <Box>
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mr: 2 }}>
-            <IconButton onClick={toggleDrawerClose}>
-              <CloseIcon />
-            </IconButton>
-          </Box>
-          <Divider />
-        </Box>
-      </Drawer>
     </>
   );
 }
@@ -318,4 +303,38 @@ export default function Appbar() {
             <LogoutIcon />
             Logout
           </Button> */
+}
+
+{
+  /* Drawer 
+      <Drawer
+        PaperProps={{
+          sx: { width: "20%" },
+        }}
+        anchor="left"
+        variant="temporary"
+        open={open}
+        onClose={toggleDrawerClose}
+      >
+        <Box>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mr: 2 }}>
+            <IconButton onClick={toggleDrawerClose}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          <Divider />
+        </Box>
+      </Drawer>
+      */
+}
+
+{
+  /* <IconButton
+              edge="start"
+              aria-label="open drawer"
+              sx={{ color: "#ffffff" }}
+              onClick={toggleDrawerOpen}
+            >
+              <MenuIcon fontSize="large" />
+            </IconButton> */
 }

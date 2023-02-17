@@ -30,7 +30,7 @@ export default function UpdateSubTask(props: any) {
   const [taskId, setTaskId] = useState<string>(props.taskId);
   const [allUser, setAllUser] = useState<any>([]);
   const options = allUser?.map((u: any) => ({
-    label: u.nama_lengkap,
+    label: u.namaLengkap,
     id: u.id,
   }));
   const getSubtask = props.getSubtask;
@@ -39,12 +39,11 @@ export default function UpdateSubTask(props: any) {
     event.preventDefault();
     try {
       const res = await axiosPrivate.patch(`/subtask/${id}`, {
-        task_id: taskId,
-        user_id: userId,
+        taskId,
+        userId,
         keterangan,
         poin: parseInt(poin),
       });
-      console.log(res.data);
       setOpenModalSubTask(false);
       getSubtask();
     } catch (error: any) {
@@ -102,7 +101,6 @@ export default function UpdateSubTask(props: any) {
               options={options}
               value={nama}
               onChange={(event, values) => {
-                console.log(values?.id);
                 setUserId(values.id);
               }}
               renderInput={(params: any) => (

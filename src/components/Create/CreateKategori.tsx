@@ -37,9 +37,8 @@ export default function CreateKategori(props: any) {
     try {
       const res = await axiosPrivate.post(`/kategori-task`, {
         nama,
-        project_id: props.id,
+        projectId: props.id,
       });
-      console.log(res);
       setOpenModalCategory(false);
       setIsLoading(false);
       getCategory();

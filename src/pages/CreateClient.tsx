@@ -24,9 +24,8 @@ export default function CreateClient() {
         nama,
         perusahaan,
         alamat,
-        nomor_hp: nomor,
+        nomorHp: nomor,
       });
-      console.log(res);
       navigate("/client");
     } catch (error: any) {
       console.log(error);
@@ -61,6 +60,7 @@ export default function CreateClient() {
             required
             id="outlined-required"
             label="Nomor"
+            inputMode="numeric"
             fullWidth
             value={nomor}
             onChange={(event) => setNomor(event.target.value)}

@@ -10,12 +10,12 @@ const useRefreshToken = () => {
     });
     const token = response.data.accessToken;
     const id = response.data.id;
-    const username = response.data.nama_lengkap;
+    const nama = response.data.namaLengkap;
     const role = response.data.role;
     setAuth({
       token,
       id,
-      username,
+      nama,
       role,
     });
     return token;

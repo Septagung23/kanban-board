@@ -28,7 +28,8 @@ export default function CreateSubTask(props: any) {
   const [user, setUser] = useState<any>([]);
   const [userId, setUserId] = useState<any>(user.id);
   const [nama, setNama] = useState<any>(user.nama);
-  const options = user.map((u: any) => ({ label: u.nama_lengkap, id: u.id }));
+  const options = user.map((u: any) => ({ label: u.namaLengkap, id: u.id }));
+
   const getSubtask = props.get;
 
   const createSubTask = async (e: any) => {
@@ -36,12 +37,11 @@ export default function CreateSubTask(props: any) {
     setIsLoading(true);
     try {
       const res = await axiosPrivate.post(`/subtask`, {
-        task_id: id,
-        user_id: userId,
+        taskId: id,
+        userId,
         keterangan,
         poin: parseInt(poin),
       });
-      console.log(res.data);
       setIsLoading(false);
       setOpenModalSubTask(false);
       setKeterangan("");
@@ -50,7 +50,6 @@ export default function CreateSubTask(props: any) {
       getSubtask();
     } catch (error: any) {
       console.log(error);
-      console.log(userId, keterangan, poin, id);
       setIsLoading(false);
     }
   };
@@ -108,7 +107,6 @@ export default function CreateSubTask(props: any) {
               options={options}
               value={nama}
               onChange={(event, values) => {
-                console.log(values?.id);
                 setUserId(values.id);
               }}
               renderInput={(params: any) => (

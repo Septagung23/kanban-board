@@ -22,10 +22,5 @@ export default function PersistLogin() {
     !auth?.token ? verifyRefreshToken() : setIsLoading(false);
   }, []);
 
-  // useEffect(() => {
-  //   console.log(`isItLoading: ${isLoading}`);
-  //   console.log(`Token: ${JSON.stringify(auth)}`);
-  // }, [isLoading]);
-
   return <>{isLoading ? <Loading /> : <Outlet />}</>;
 }

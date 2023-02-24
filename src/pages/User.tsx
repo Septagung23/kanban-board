@@ -40,6 +40,7 @@ export default function User() {
   //State
   const axiosPrivate = useAxiosPrivate();
   const [user, setUser] = useState<any>([]);
+  const [query, setQuery] = useState<string>("");
   const [id, setId] = useState(user.id);
   const [namaLengkap, setNamaLengkap] = useState<string>("");
   const [username, setUsername] = useState<string>("");
@@ -156,12 +157,247 @@ export default function User() {
     return <Loading />;
   }
 
+  let users;
+  if (user) {
+    users = user
+      ?.filter((us: any) => {
+        return us.namaLengkap.toLowerCase().indexOf(query.toLowerCase()) === 0;
+      })
+      ?.map((u: any) => (
+        <TableRow key={u.id}>
+          <TableCell>{u.namaLengkap}</TableCell>
+          <TableCell align="center">{u.username}</TableCell>
+          <TableCell align="center">{u.nomorHp}</TableCell>
+          <TableCell align="center">{u.divisi}</TableCell>
+          <TableCell align="center">{u.role ? u.role.nama : "???"}</TableCell>
+          <TableCell align="center">
+            <IconButton onClick={() => handleOpenEdit(u.id)}>
+              <EditIcon color="primary" />
+            </IconButton>
+
+            <ModalDelete
+              id={u.id}
+              nama={u.namaLengkap}
+              deleteFunction={deleteUser}
+            />
+          </TableCell>
+
+          <Modal open={openEdit === u.id} onClose={handleCloseEdit}>
+            <Box sx={modal} width="30%">
+              <Typography variant="h5">Edit User</Typography>
+              <Divider />
+              <Box
+                component="form"
+                onSubmit={updateUser}
+                sx={{
+                  m: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  textAlign: "center",
+                }}
+              >
+                <Typography sx={{ textAlign: "left", my: 1 }}>
+                  Nama Lengkap
+                </Typography>
+                <TextField
+                  required
+                  id="outlined-r-nama"
+                  label="Nama"
+                  value={namaLengkap}
+                  onChange={(event) => setNamaLengkap(event.target.value)}
+                />
+                <Typography sx={{ textAlign: "left", my: 1 }}>
+                  Username
+                </Typography>
+                <TextField
+                  required
+                  id="outlined-r-username"
+                  label="username"
+                  value={username}
+                  onChange={(event) => setUsername(event.target.value)}
+                />
+                <Typography sx={{ textAlign: "left", my: 1 }}>
+                  Nomor HP
+                </Typography>
+                <TextField
+                  required
+                  id="outlined-r-nomor"
+                  label="nomor"
+                  value={nomorHp}
+                  onChange={(event) => setNomorHp(event.target.value)}
+                />
+
+                <Box sx={{ display: "flex" }}>
+                  <Box
+                    sx={{
+                      width: "50%",
+                      mt: 1,
+                      mr: 1,
+                    }}
+                  >
+                    <Typography sx={{ textAlign: "left", my: 1 }}>
+                      Divisi
+                    </Typography>
+                    <FormControl fullWidth>
+                      <InputLabel id="demo-simple-select-label">
+                        Divisi
+                      </InputLabel>
+                      <Select
+                        id="divisi"
+                        label="divisi"
+                        value={divisi}
+                        onChange={(event) => setDivisi(event.target.value)}
+                      >
+                        <MenuItem value="Frontend">Frontend</MenuItem>
+                        <MenuItem value="Backend">Backend</MenuItem>
+                        <MenuItem value="Wordpress">Wordpress</MenuItem>
+                        <MenuItem value="Project Manager">
+                          Project Manager
+                        </MenuItem>
+                        <MenuItem value="Admin">Admin</MenuItem>
+                      </Select>
+                    </FormControl>
+
+                    <Typography sx={{ textAlign: "left", my: 1 }}>
+                      Role
+                    </Typography>
+                    <FormControl fullWidth>
+                      <InputLabel id="demo-simple-select-label">
+                        Role
+                      </InputLabel>
+                      <Select
+                        id="role"
+                        label="role"
+                        value={roleId}
+                        onChange={(event) => {
+                          setRoleid(event.target.value);
+                        }}
+                      >
+                        {role?.map((r: any) => (
+                          <MenuItem value={r.id}>{r.nama}</MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Box>
+
+                  {!openBoxPass ? (
+                    <Box
+                      sx={{
+                        display: "grid",
+                        placeItems: "center",
+                        width: "50%",
+                        border: "1px solid grey",
+                        borderRadius: 2,
+                        mt: 1,
+                        p: 1,
+                      }}
+                    >
+                      <Button size="small" onClick={handleOpenBoxPass}>
+                        Change Password ?
+                      </Button>
+                    </Box>
+                  ) : (
+                    <Box
+                      sx={{
+                        width: "50%",
+                        mt: 1,
+                        borderRadius: 2,
+                        border: "1px solid grey",
+                        p: 1,
+                      }}
+                    >
+                      <Typography sx={{ textAlign: "left", my: 1 }}>
+                        Password Baru
+                      </Typography>
+                      <FormControl variant="outlined">
+                        <InputLabel htmlFor="pass">Password</InputLabel>
+                        <OutlinedInput
+                          autoComplete="off"
+                          id="pass"
+                          type={openPassword ? "text" : "password"}
+                          endAdornment={
+                            <InputAdornment position="end">
+                              <IconButton
+                                aria-label="toggle password visibility"
+                                edge="end"
+                                onClick={handleShowPassword}
+                              >
+                                {openPassword ? (
+                                  <VisibilityOffIcon />
+                                ) : (
+                                  <VisibilityIcon />
+                                )}
+                              </IconButton>
+                            </InputAdornment>
+                          }
+                          label="Password"
+                          onChange={(event) => setPass(event.target.value)}
+                        />
+                      </FormControl>
+
+                      <Typography sx={{ textAlign: "left" }}>
+                        Konfirmasi Password
+                      </Typography>
+                      <FormControl variant="outlined">
+                        <InputLabel htmlFor="confirm-password">
+                          Konfirmasi
+                        </InputLabel>
+                        <OutlinedInput
+                          autoComplete="off"
+                          id="confirm-password"
+                          type={openPassword ? "text" : "password"}
+                          endAdornment={
+                            <InputAdornment position="end">
+                              <IconButton
+                                aria-label="toggle password visibility"
+                                edge="end"
+                                onClick={handleShowPassword}
+                              >
+                                {openPassword ? (
+                                  <VisibilityOffIcon />
+                                ) : (
+                                  <VisibilityIcon />
+                                )}
+                              </IconButton>
+                            </InputAdornment>
+                          }
+                          label="Password"
+                          onChange={(event) =>
+                            setPasswordConfirm(event.target.value)
+                          }
+                        />
+                      </FormControl>
+                    </Box>
+                  )}
+                </Box>
+                <Button sx={{ mt: 2 }} variant="contained" type="submit">
+                  Submit
+                </Button>
+                <Button onClick={handleCloseEdit} color="error">
+                  Cancel
+                </Button>
+              </Box>
+            </Box>
+          </Modal>
+        </TableRow>
+      ));
+  }
+
   return (
     <>
       <Appbar />
       <Box className="container" sx={main}>
         <Box className="judul" sx={{ textAlign: "center" }}>
           <Typography variant="h3">User List</Typography>
+        </Box>
+
+        <Box sx={{ mx: 5, mb: 1 }}>
+          <TextField
+            variant="standard"
+            label="Search User"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+          />
         </Box>
 
         <Box
@@ -182,7 +418,7 @@ export default function User() {
               </TableHead>
 
               <TableBody>
-                {user.map((u: any) => (
+                {/* {user.map((u: any) => (
                   <TableRow key={u.id}>
                     <TableCell>{u.namaLengkap}</TableCell>
                     <TableCell align="center">{u.username}</TableCell>
@@ -420,7 +656,8 @@ export default function User() {
                       </Box>
                     </Modal>
                   </TableRow>
-                ))}
+                ))} */}
+                {users}
               </TableBody>
             </Table>
           </TableContainer>

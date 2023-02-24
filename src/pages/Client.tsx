@@ -9,6 +9,7 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  TextField,
 } from "@mui/material";
 
 import Appbar from "../components/Appbar";
@@ -24,6 +25,7 @@ import EditIcon from "@mui/icons-material/Edit";
 
 export default function Client() {
   const [client, setClient] = useState<any[]>([]);
+  const [query, setQuery] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const axiosPrivate = useAxiosPrivate();
 
@@ -56,6 +58,35 @@ export default function Client() {
     return <Loading />;
   }
 
+  let clients;
+  if (client) {
+    clients = client
+      ?.filter((c: any) => {
+        return c.nama.toLowerCase().indexOf(query.toLowerCase()) === 0;
+      })
+      ?.map((cl) => (
+        <TableRow>
+          <TableCell>{cl.nama}</TableCell>
+          <TableCell align="center">
+            {cl.perusahaan ? cl.perusahaan : "Perseorangan"}
+          </TableCell>
+          <TableCell align="center">{cl.nomorHp}</TableCell>
+          <TableCell align="center">{cl.alamat ? cl.alamat : "-"}</TableCell>
+          <TableCell align="center">
+            <Link to={`/client/${cl.id}`}>
+              <IconButton color="primary">
+                <EditIcon />
+              </IconButton>
+            </Link>
+            <ModalDelete
+              id={cl.id}
+              nama={cl.nama}
+              deleteFunction={deleteClient}
+            />
+          </TableCell>
+        </TableRow>
+      ));
+  }
   return (
     <>
       <Appbar />
@@ -65,6 +96,14 @@ export default function Client() {
           <Typography variant="h3">Client List</Typography>
         </Box>
 
+        <Box sx={{ mx: 5, mb: 1 }}>
+          <TextField
+            variant="standard"
+            label="Search Client"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+          />
+        </Box>
         <Box
           className="tabel"
           sx={{ textAlign: "center", width: "95%", alignSelf: "center" }}
@@ -82,7 +121,7 @@ export default function Client() {
               </TableHead>
 
               <TableBody>
-                {client?.map((cl) => (
+                {/* {client?.map((cl) => (
                   <TableRow>
                     <TableCell>{cl.nama}</TableCell>
                     <TableCell align="center">
@@ -105,7 +144,8 @@ export default function Client() {
                       />
                     </TableCell>
                   </TableRow>
-                ))}
+                ))} */}
+                {clients}
               </TableBody>
             </Table>
           </TableContainer>

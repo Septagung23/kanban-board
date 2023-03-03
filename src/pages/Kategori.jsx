@@ -1,14 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { useParams } from "react-router-dom";
-import {
-  Box,
-  Card,
-  Typography,
-  Menu,
-  MenuItem,
-  IconButton,
-  Divider,
-} from "@mui/material";
+import { Box, Card, Typography } from "@mui/material";
 
 import "@asseinfo/react-kanban/dist/styles.css";
 import Board, { moveCard, moveColumn } from "@asseinfo/react-kanban";
@@ -17,33 +9,20 @@ import MenuKategori from "../components/MenuKategori";
 import CreateKategori from "../components/Create/CreateKategori";
 import ModalDetail from "../components/Detail/ModalDetailTask";
 
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import { useAuth } from "../hooks/useAuth";
 import Loading from "../components/Loading";
-
-const empty = {
-  columns: [],
-};
 
 export default function Task() {
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const axiosPrivate = useAxiosPrivate();
-  const { auth } = useAuth();
+  const empty = {
+    columns: [],
+  };
 
   // Board
   const [category, setCategory] = useState([]);
-  const [controlledBoard, setBoard] = useState({});
-
-  // Function Open
-  const [openModalDetail, setOpenModalDetail] = useState(undefined);
-
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event) => setAnchorEl(event.currentTarget);
-  const handleClose = () => setAnchorEl(null);
+  const [controlledBoard, setBoard] = useState(empty);
 
   // Function Move
   async function handleCardMove(_card, src, dest) {
@@ -83,15 +62,10 @@ export default function Task() {
     }
   };
 
-  useEffect(() => {
-    getCategory();
-  }, []);
-
   const deleteTask = async (taskId) => {
     try {
       await axiosPrivate.delete(`/task/${taskId}`);
       getCategory();
-      setOpenModalDetail(false);
     } catch (error) {
       console.log(error.response);
     }
@@ -100,7 +74,7 @@ export default function Task() {
   const deleteCategory = async (id) => {
     setIsLoading(true);
     try {
-      const res = await axiosPrivate.delete(`/kategori-task/${id}`);
+      await axiosPrivate.delete(`/kategori-task/${id}`);
       getCategory();
       setIsLoading(false);
     } catch (error) {
@@ -108,6 +82,10 @@ export default function Task() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    getCategory();
+  }, []);
 
   if (isLoading) {
     return <Loading />;
@@ -122,7 +100,7 @@ export default function Task() {
           onColumnDragEnd={handleColumnMove}
           // Column Header
           renderColumnHeader={({ title, id }) => (
-            <>
+            <Fragment key={id}>
               <Box
                 sx={{
                   display: "flex",
@@ -139,24 +117,7 @@ export default function Task() {
                   categoryData={title}
                 />
               </Box>
-
-              <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-              >
-                {/* <MenuItem onClick={handleOpenTask}>
-          <Typography>Add Task</Typography>
-        </MenuItem>
-        <MenuItem onClick={handleOpenCategory}>
-          <Typography>Edit Category</Typography>
-        </MenuItem> */}
-                <MenuItem onClick={() => deleteCategory(id)}>
-                  <Typography>Delete Category</Typography>
-                </MenuItem>
-              </Menu>
-            </>
+            </Fragment>
           )}
           // Card
           renderCard={({
@@ -167,26 +128,35 @@ export default function Task() {
             attachment,
             kategoriTaskId,
           }) => (
-            <>
-              <Card sx={{ width: "15.63rem", borderRadius: 1 }} key={id}>
-                <ModalDetail
-                  id={id}
-                  nama={nama}
-                  kebutuhan={kebutuhan}
-                  prioritas={prioritas}
-                  categoryId={kategoriTaskId}
-                  attachment={attachment}
-                  getCategory={getCategory}
-                  deleteFunction={deleteTask}
-                />
-              </Card>
-            </>
+            <Card sx={{ width: "15.63rem", borderRadius: 1 }} key={id}>
+              <ModalDetail
+                id={id}
+                nama={nama}
+                kebutuhan={kebutuhan}
+                prioritas={prioritas}
+                categoryId={kategoriTaskId}
+                attachment={attachment}
+                getCategory={getCategory}
+                deleteFunction={deleteTask}
+              />
+            </Card>
           )}
         >
-          {controlledBoard?.columns ? controlledBoard : empty}
+          {controlledBoard}
         </Board>
       ) : (
-        <img src="https://i.imgflip.com/7b3l1z.jpg" />
+        // <img src="https://i.imgflip.com/7b3l1z.jpg" />
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            textAlign: "center",
+          }}
+        >
+          <Typography variant="h1">Tidak ada Data</Typography>
+        </Box>
       )}
     </div>
   );

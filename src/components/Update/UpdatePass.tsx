@@ -32,7 +32,7 @@ export default function ChangePass(props: any) {
   const updatePassword = async (event: any) => {
     event.preventDefault();
     try {
-      const res = await axiosPrivate.patch("user/change-password", {
+      await axiosPrivate.patch("user/change-password", {
         id: auth?.id,
         newPassword: password,
         confirmNewPassword: passwordConfirm,
@@ -83,10 +83,10 @@ export default function ChangePass(props: any) {
             </Box>
 
             <FormControl variant="outlined">
-              <InputLabel htmlFor="pass">Password</InputLabel>
+              <InputLabel htmlFor="passL">Password</InputLabel>
               <OutlinedInput
                 autoComplete="off"
-                id="pass"
+                id="passL"
                 type={openPassword ? "text" : "password"}
                 label="Password"
                 onChange={(event) => setCurrentPassword(event.target.value)}
@@ -97,10 +97,10 @@ export default function ChangePass(props: any) {
               Password Baru
             </Typography>
             <FormControl variant="outlined">
-              <InputLabel htmlFor="pass">Password</InputLabel>
+              <InputLabel htmlFor="passN">Password</InputLabel>
               <OutlinedInput
                 autoComplete="off"
-                id="pass"
+                id="passN"
                 type={openPassword ? "text" : "password"}
                 label="Password"
                 onChange={(event) => setPassword(event.target.value)}

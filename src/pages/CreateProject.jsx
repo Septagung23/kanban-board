@@ -46,7 +46,7 @@ export default function CreateProject() {
   const createProject = async (event) => {
     event.preventDefault();
     try {
-      const res = await axiosPrivate.post("/project", {
+      await axiosPrivate.post("/project", {
         nama,
         clientId,
         jenisLayanan,
@@ -78,6 +78,7 @@ export default function CreateProject() {
               Nama Project
             </Typography>
             <TextField
+              autoComplete="off"
               required
               id="outlined-required"
               label="Nama"
@@ -126,6 +127,7 @@ export default function CreateProject() {
               Keterangan
             </Typography>
             <TextField
+              autoComplete="off"
               fullWidth
               id="outlined-multiline-flexible"
               label="Keterangan"

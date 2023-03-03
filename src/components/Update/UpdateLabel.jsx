@@ -17,10 +17,11 @@ import { useEffect, useState } from "react";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 export default function UpdateLabel(props) {
+  const axiosPrivate = useAxiosPrivate();
+
   const [label, setLabel] = useState("");
   const [bgColor, setBgColor] = useState("");
   const [color, setColor] = useState("");
-  const axiosPrivate = useAxiosPrivate();
 
   const updateLabel = async (event) => {
     event.preventDefault();
@@ -50,15 +51,49 @@ export default function UpdateLabel(props) {
     }
   };
 
+  const updateLabelSt = async (event) => {
+    event.preventDefault();
+    try {
+      await axiosPrivate.patch(`/label-subtask/${props?.labelId}`, {
+        nama: label,
+        bgColor,
+        color,
+      });
+      props.get();
+      props.close();
+      props.closeModal();
+      setLabel("");
+      setColor("");
+      setBgColor("");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deleteLabelSt = async () => {
+    try {
+      await axiosPrivate.delete(`/label-subtask/${props?.labelId}`);
+      props.get();
+      props.close();
+      props.closeModal();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     setLabel(props.nama);
     setBgColor(props.bgColor);
     setColor(props.color);
-  }, [props.labelId]);
+  }, [props.open]);
 
   return (
     <Modal open={props.open} onClose={props.close}>
-      <Box sx={modal} component="form" onSubmit={updateLabel}>
+      <Box
+        sx={modal}
+        component="form"
+        onSubmit={props.isSubtask ? updateLabelSt : updateLabel}
+      >
         <Typography>Edit Label</Typography>
         <Divider sx={{ mb: 1 }} />
 
@@ -80,6 +115,7 @@ export default function UpdateLabel(props) {
 
         <Box>
           <TextField
+            autoComplete="off"
             fullWidth
             size="small"
             label="Label"
@@ -155,16 +191,19 @@ export default function UpdateLabel(props) {
         <Button variant="contained" sx={{ my: 1 }} type="submit">
           Save
         </Button>
-        {props.add ? null : (
-          <Button
-            variant="outlined"
-            size="small"
-            color="error"
-            onClick={() => deleteLabel(props.labelId)}
-          >
-            Delete
-          </Button>
-        )}
+
+        <Button
+          variant="outlined"
+          size="small"
+          color="error"
+          onClick={() =>
+            props.isSubtask
+              ? deleteLabelSt(props.labelId)
+              : deleteLabel(props.labelId)
+          }
+        >
+          Delete
+        </Button>
       </Box>
     </Modal>
   );

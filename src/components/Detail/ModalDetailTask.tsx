@@ -13,10 +13,9 @@ import {
   Button,
   Avatar,
   TextField,
-  Collapse,
 } from "@mui/material";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 import SubjectIcon from "@mui/icons-material/Subject";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
@@ -27,8 +26,6 @@ import SaveIcon from "@mui/icons-material/Save";
 import Add from "@mui/icons-material/Add";
 import Edit from "@mui/icons-material/Edit";
 import LabelIcon from "@mui/icons-material/Label";
-import ExpandLess from "@mui/icons-material/ExpandLess";
-import ExpandMore from "@mui/icons-material/ExpandMore";
 
 import CreateSubTask from "../Create/CreateSubTask";
 import UpdateSubTask from "../Update/UpdateSubTask";
@@ -40,7 +37,7 @@ import parse from "html-react-parser";
 import dayjs from "dayjs";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { useAuth } from "../../hooks/useAuth";
-import Label from "../Label";
+import Label from "../Create/Label";
 import UpdateLabel from "../Update/UpdateLabel";
 import LabelSubTask from "../LabelSubTask";
 
@@ -56,16 +53,11 @@ export default function ModalDetail(props: any) {
   const handleClickMenuLabel = (event: any) => setAncElLab(event.currentTarget);
   const handleCloseMenuLabel = () => setAncElLab(null);
 
-  const [anchorElLabelS, setAncElLabS] = useState(null);
-  const openMenuLabelS = Boolean(anchorElLabelS);
-  const handleClickMenuLabelS = (event: any) => {
-    setAncElLabS(event.currentTarget);
+  const [openModalDetail, setOpenModalDetail] = useState<any>(false);
+  const handleOpenDetail = () => {
+    setOpenModalDetail(true);
   };
-  const handleCloseMenuLabelS = () => setAncElLabS(null);
-
-  const [openModalDetail, setOpenModalDetail] = useState<any>(undefined);
-  const handleOpenDetail = (id: any) => setOpenModalDetail(id);
-  const handleCloseDetail = () => setOpenModalDetail(undefined);
+  const handleCloseDetail = () => setOpenModalDetail(false);
 
   const [openModalTask, setOpenModalTask] = useState(false);
   const handleOpenTask = () => {
@@ -74,16 +66,16 @@ export default function ModalDetail(props: any) {
   };
   const handleCloseTask = () => setOpenModalTask(false);
 
+  const [openModalLabel, setOpenModalLabel] = useState<any>(false);
+  const handleOpenlabel = (id: string) => {
+    setOpenModalLabel(id);
+    setSubTaskId(id);
+  };
+  const handleCloselabel = () => setOpenModalLabel(false);
+
   const [openLabel, setOpenLabel] = useState<boolean>(false);
   const addLabel = () => setOpenLabel(true);
   const closeAddLabel = () => setOpenLabel(false);
-
-  const [openLabelSt, setOpenLabelSt] = useState<boolean>(false);
-  const addLabelSt = (id: string) => {
-    setOpenLabelSt(true);
-    setSubTaskId(id);
-  };
-  const closeAddLabelSt = () => setOpenLabelSt(false);
 
   const [editLabel, setEditLabel] = useState<boolean>(false);
   const openEditLabel = (id: string) => {
@@ -115,21 +107,18 @@ export default function ModalDetail(props: any) {
   const [bgColor, setBgColor] = useState<string>("");
   const [color, setColor] = useState<string>("");
 
-  const [labelST, setLabelST] = useState<any>([]);
-  // const [labelSTId, setLabelSTId] = useState<string>("");
-  // const [labelSTName, setLabelSTName] = useState<string>("");
-  // const [bgColorST, setBgColorST] = useState<string>("");
-  // const [colorST, setColorST] = useState<string>("");
+  const [labelSt, setLabelSt] = useState<any>([]);
 
   //Axios Fetch
   const axiosPrivate = useAxiosPrivate();
 
   const getSubtask = async () => {
     try {
-      const res = await axiosPrivate.get(`/task/${id}`);
-      setSubTask(res.data.subtask);
+      const res = await axiosPrivate.get(`/subtask/${id}`);
+      setSubTask(res.data);
     } catch (error) {
       console.log(error);
+      setSubTask(null);
     }
   };
 
@@ -145,7 +134,7 @@ export default function ModalDetail(props: any) {
   const createComment = async (event: any) => {
     event.preventDefault();
     try {
-      const res = await axiosPrivate.post(`/komentar`, {
+      await axiosPrivate.post(`/komentar`, {
         taskId: id,
         konten: commentLine,
       });
@@ -170,8 +159,8 @@ export default function ModalDetail(props: any) {
     try {
       await axiosPrivate.delete(`/komentar/${id}`);
       getComment();
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.log(error.response.data);
     }
   };
 
@@ -181,15 +170,7 @@ export default function ModalDetail(props: any) {
       setLabel(res.data);
     } catch (error: any) {
       console.log(error);
-    }
-  };
-
-  const getLabelStask = async () => {
-    try {
-      const res = await axiosPrivate.get(`/label-subtask/${subTaskId}`);
-      setLabelST(res.data);
-    } catch (error: any) {
-      console.log(error);
+      setLabel(null);
     }
   };
 
@@ -197,13 +178,12 @@ export default function ModalDetail(props: any) {
     getSubtask();
     getComment();
     getLabel();
-    getLabelStask();
   }, []);
 
   return (
     <>
       {/* Card */}
-      <a onClick={() => handleOpenDetail(id)} style={{ padding: "1rem" }}>
+      <a onClick={() => handleOpenDetail()}>
         <CardContent sx={{ px: 1, py: 0 }}>
           <Typography variant="h6">{nama}</Typography>
         </CardContent>
@@ -212,13 +192,15 @@ export default function ModalDetail(props: any) {
           {label?.map((l: any) => (
             <Box
               sx={{
-                width: "1rem",
+                width: "0.8rem",
                 height: "0.5rem",
                 backgroundColor: `${l?.bgColor}`,
                 color: `${l?.color}`,
                 borderRadius: 5,
                 px: 1,
+                textAlign: "left",
               }}
+              key={l.id}
             ></Box>
           ))}
         </Box>
@@ -242,7 +224,7 @@ export default function ModalDetail(props: any) {
             top: "50%",
             left: "50%",
             width: "60%",
-            height: "60%",
+            height: "80%",
             transform: "translate(-50%, -50%)",
             backgroundColor: "#ffffff",
             boxShadow: 4,
@@ -293,6 +275,7 @@ export default function ModalDetail(props: any) {
                     display: "flex",
                     alignItems: "center",
                   }}
+                  key={l.id}
                 >
                   <Typography variant="body2">{l?.nama}</Typography>
                 </Box>
@@ -349,22 +332,9 @@ export default function ModalDetail(props: any) {
                   }}
                 >
                   <List>
-                    {subTask.map((st: any) => (
-                      <>
-                        <ListItem sx={{ p: 0, display: "block" }} key={st?.id}>
-                          <Box sx={{ display: "flex", gap: 0.5, mx: 1 }}>
-                            {labelST?.map((lSt: any) => (
-                              <Box
-                                sx={{
-                                  width: "0.8rem",
-                                  height: "0.5rem",
-                                  bgcolor: `${lSt.bgColor}`,
-                                  color: `${lSt.color}`,
-                                  borderRadius: 8,
-                                }}
-                              ></Box>
-                            ))}
-                          </Box>
+                    {subTask?.map((st: any) => (
+                      <Fragment key={st?.id}>
+                        <ListItem sx={{ p: 0, display: "block" }}>
                           <Box
                             sx={{
                               width: 1,
@@ -396,9 +366,25 @@ export default function ModalDetail(props: any) {
                                 label={`Poin : ${st.poin}`}
                                 sx={{ mr: 3 }}
                               />
-                              <IconButton onClick={handleClickMenuLabelS}>
+
+                              {/* */}
+                              <IconButton
+                                onClick={() => {
+                                  handleOpenlabel(st.id);
+                                  setLabelSt(st.labelSubtask);
+                                }}
+                              >
                                 <LabelIcon color="success" />
                               </IconButton>
+
+                              <LabelSubTask
+                                open={openModalLabel}
+                                close={handleCloselabel}
+                                label={labelSt}
+                                subtaskId={subTaskId}
+                                get={getSubtask}
+                              />
+
                               <UpdateSubTask
                                 id={st.id}
                                 keterangan={st.keterangan}
@@ -407,75 +393,35 @@ export default function ModalDetail(props: any) {
                                 taskId={id}
                                 getSubtask={getSubtask}
                               />
+
                               <IconButton
                                 color="error"
                                 onClick={() => deleteSubTask(st.id)}
                               >
                                 <DeleteIcon />
                               </IconButton>
+                              {/* */}
                             </Box>
+                          </Box>
+
+                          <Box sx={{ display: "flex", gap: 0.5, mx: 1 }}>
+                            {st?.labelSubtask?.map((lSt: any) => (
+                              <Box
+                                sx={{
+                                  width: "0.8rem",
+                                  height: "0.5rem",
+                                  bgcolor: `${lSt.bgColor}`,
+                                  color: `${lSt.color}`,
+                                  borderRadius: 8,
+                                }}
+                                key={lSt.id}
+                              ></Box>
+                            ))}
                           </Box>
                         </ListItem>
 
-                        {/* Label Sub Task */}
-                        <Menu
-                          open={openMenuLabelS}
-                          onClose={handleCloseMenuLabelS}
-                          anchorEl={anchorElLabelS}
-                          anchorOrigin={{
-                            vertical: "center",
-                            horizontal: "left",
-                          }}
-                          transformOrigin={{
-                            vertical: "top",
-                            horizontal: "left",
-                          }}
-                        >
-                          <Box
-                            sx={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                              px: 2,
-                              minWidth: "11rem",
-                            }}
-                          >
-                            <Typography>Label</Typography>
-                            <IconButton>
-                              <Add
-                                fontSize="small"
-                                onClick={() => addLabelSt(st.id)}
-                              />
-                            </IconButton>
-                          </Box>
-                          {labelST?.map((lSt: any) => (
-                            <div>
-                              <Divider />
-                              <Box sx={{ p: 1 }}>
-                                <Box
-                                  sx={{ display: "flex", alignItems: "center" }}
-                                >
-                                  <Box
-                                    sx={{
-                                      width: "10rem",
-                                      height: "1.5rem",
-                                      backgroundColor: `${lSt.bgColor}`,
-                                      color: `${lSt.color}`,
-                                      borderRadius: 1,
-                                      px: 1,
-                                    }}
-                                  >
-                                    <Typography>{lSt.nama}</Typography>
-                                  </Box>
-                                  <IconButton sx={{ py: 0 }}>
-                                    <Edit fontSize="small" />
-                                  </IconButton>
-                                </Box>
-                              </Box>
-                            </div>
-                          ))}
-                        </Menu>
-                      </>
+                        {/*  */}
+                      </Fragment>
                     ))}
                   </List>
                 </Box>
@@ -487,6 +433,7 @@ export default function ModalDetail(props: any) {
                   <ChatBubbleOutlineIcon sx={{ mt: 0.3 }} />
                   <Typography variant="h5">Comment</Typography>
                 </Box>
+
                 <Box
                   sx={{ my: 1, display: "flex", alignItems: "center" }}
                   component="form"
@@ -501,9 +448,10 @@ export default function ModalDetail(props: any) {
                   </Avatar>
                   <TextField
                     multiline
+                    hiddenLabel
                     autoComplete="off"
                     fullWidth
-                    label="Comment ..."
+                    label="Write a Comment"
                     size="small"
                     sx={{ mx: 1 }}
                     value={commentLine}
@@ -525,9 +473,9 @@ export default function ModalDetail(props: any) {
                   {comment?.map((m: any) => (
                     <Box
                       sx={{
-                        p: 1,
                         height: "5rem",
                       }}
+                      key={m.id}
                     >
                       <Box
                         sx={{
@@ -536,7 +484,7 @@ export default function ModalDetail(props: any) {
                           gap: "0.6rem",
                         }}
                       >
-                        <Avatar sx={{ width: 48, height: 48, mr: 1 }}>
+                        <Avatar sx={{ width: 42, height: 42 }}>
                           <Typography variant="h5">
                             {m?.user?.namaLengkap.split(" ").length > 1
                               ? `${m?.user?.namaLengkap?.split(" ")[0][0]}${
@@ -546,8 +494,14 @@ export default function ModalDetail(props: any) {
                           </Typography>
                         </Avatar>
                         <Box sx={{ width: 1 }}>
-                          <Box sx={{ display: "flex", alignItems: "flex-end" }}>
-                            <Typography sx={{ mr: 1 }}>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "flex-end",
+                              gap: 0.5,
+                            }}
+                          >
+                            <Typography sx={{ fontWeight: "bold" }}>
                               {m?.user?.namaLengkap}
                             </Typography>
                             {m?.updatedAt ? (
@@ -562,7 +516,9 @@ export default function ModalDetail(props: any) {
                             )}
                           </Box>
 
-                          <Box>{m.konten}</Box>
+                          <Box>
+                            <Typography variant="body1">{m.konten}</Typography>
+                          </Box>
 
                           <Box sx={{ display: "flex", alignItems: "center" }}>
                             {auth.id !== m.user.id ? null : (
@@ -572,19 +528,21 @@ export default function ModalDetail(props: any) {
                                 get={getComment}
                               />
                             )}
-                            <Button
-                              variant="text"
-                              size="small"
-                              sx={{
-                                textTransform: "capitalize",
-                                color: "black",
-                                minWidth: "2rem",
-                                minHeight: "2rem",
-                              }}
-                              onClick={() => deleteComment(m?.id)}
-                            >
-                              Delete
-                            </Button>
+                            {auth.id === m.user.id || auth.role.id === 1 ? (
+                              <Button
+                                variant="text"
+                                size="small"
+                                sx={{
+                                  textTransform: "capitalize",
+                                  color: "black",
+                                  minWidth: "2rem",
+                                  minHeight: "2rem",
+                                }}
+                                onClick={() => deleteComment(m?.id)}
+                              >
+                                Delete
+                              </Button>
+                            ) : null}
                           </Box>
                         </Box>
                       </Box>
@@ -600,12 +558,14 @@ export default function ModalDetail(props: any) {
       {/* Menu */}
       <Menu open={openMenu} anchorEl={anchorEl} onClose={handleCloseMenu}>
         <MenuItem onClick={handleOpenTask}>Edit Task</MenuItem>
+
         <ModalDelete
           categoryId={categoryId}
           id={id}
           nama={nama}
           deleteFunction={deleteFunction}
         />
+
         <MenuItem onClick={handleClickMenuLabel}>Label</MenuItem>
       </Menu>
 
@@ -647,12 +607,12 @@ export default function ModalDetail(props: any) {
           }}
         >
           <Typography>Label</Typography>
-          <IconButton>
-            <Add fontSize="small" onClick={addLabel} />
+          <IconButton onClick={addLabel}>
+            <Add fontSize="small" />
           </IconButton>
         </Box>
         {label?.map((l: any) => (
-          <div>
+          <div key={l.id}>
             <Divider />
             <Box sx={{ p: 1 }}>
               <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -689,18 +649,10 @@ export default function ModalDetail(props: any) {
         open={editLabel}
         close={closeEditLabel}
         get={getLabel}
-        id={id}
         labelId={labelId}
         nama={labelName}
         bgColor={bgColor}
         color={color}
-      />
-
-      <Label
-        open={openLabelSt}
-        close={closeAddLabelSt}
-        isSubtask={true}
-        stId={subTaskId}
       />
     </>
   );
@@ -805,7 +757,83 @@ export default function ModalDetail(props: any) {
         open={labelSubTask}
         close={closeLabelSubTask}
         id={subTaskId}
-        label={labelST}
+        label={labelSt}
       /> 
+
+      Label Sub Task 
+      <LabelSubTask open={openModalLabel} close={handleCloselabel} /> 
+      <Label
+        open={openLabelSt}
+        close={closeAddLabelSt}
+        isSubtask={true}
+        stId={subTaskId}
+        get={getSubtask}
+      /> 
+      <UpdateLabel
+        open={editLabelSt}
+        close={closeEditLabelSt}
+        get={getSubtask}
+        id={id}
+        labelId={labelIdSt}
+        nama={labelNameSt}
+        bgColor={bgColorSt}
+        color={colorSt}
+      />
+
+      <Menu
+                          open={openMenuLabelS}
+                          onClose={handleCloseMenuLabelS}
+                          anchorEl={anchorElLabelS}
+                          anchorOrigin={{
+                            vertical: "center",
+                            horizontal: "left",
+                          }}
+                          transformOrigin={{
+                            vertical: "top",
+                            horizontal: "left",
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              px: 2,
+                              minWidth: "11rem",
+                            }}
+                          >
+                            <Typography>Label</Typography>
+                            <IconButton onClick={() => addLabelSt(st.id)}>
+                              <Add fontSize="small" />
+                            </IconButton>
+                          </Box>
+                        {/* {subTask?.labelSubtask?.map((lSt: any) => (
+                            <div>
+                              <Divider />
+                              <Box sx={{ p: 1 }}>
+                                <Box
+                                  sx={{ display: "flex", alignItems: "center" }}
+                                >
+                                  <Box
+                                    sx={{
+                                      width: "10rem",
+                                      height: "1.5rem",
+                                      backgroundColor: `${lSt.bgColor}`,
+                                      color: `${lSt.color}`,
+                                      borderRadius: 1,
+                                      px: 1,
+                                    }}
+                                  >
+                                    <Typography>{lSt.nama}</Typography>
+                                  </Box>
+                                  <IconButton sx={{ py: 0 }}>
+                                    <Edit fontSize="small" />
+                                  </IconButton>
+                                </Box>
+                              </Box>
+                            </div>
+                          ))} 
+                          {st.keterangan}
+                        </Menu>
                       */
 }

@@ -64,7 +64,7 @@ export default function UpdateProject() {
   const updateProject = async (e: any) => {
     e.preventDefault();
     try {
-      const res = await axiosPrivate.patch(`project/${id}`, {
+      await axiosPrivate.patch(`project/${id}`, {
         nama,
         clientId,
         jenisLayanan,
@@ -100,6 +100,7 @@ export default function UpdateProject() {
               Nama Project
             </Typography>
             <TextField
+              autoComplete="off"
               required
               fullWidth
               id="namaProject"
@@ -146,6 +147,7 @@ export default function UpdateProject() {
               Keterangan
             </Typography>
             <TextField
+              autoComplete="off"
               fullWidth
               id="outlined-multiline-flexible"
               label="Keterangan"

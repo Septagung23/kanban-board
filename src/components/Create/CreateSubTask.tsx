@@ -36,7 +36,7 @@ export default function CreateSubTask(props: any) {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await axiosPrivate.post(`/subtask`, {
+      await axiosPrivate.post(`/subtask`, {
         taskId: id,
         userId,
         keterangan,
@@ -94,6 +94,7 @@ export default function CreateSubTask(props: any) {
               Keterangan
             </Typography>
             <TextField
+              autoComplete="off"
               required
               id="outlined-r-ket"
               label="Keterangan"

@@ -35,9 +35,10 @@ export default function Register() {
     divisi: "",
   });
   const [passwordConfirm, setPasswordConfirm] = useState<any>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [readOnly, setReadOnly] = useState<boolean>(true);
   const navigate = useNavigate();
   const axiosPrivate = useAxiosPrivate();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const register = async (e: any) => {
     e.preventDefault();
@@ -47,7 +48,7 @@ export default function Register() {
     }
 
     try {
-      const response = await axiosPrivate.post(`/auth/register`, formRegister);
+      await axiosPrivate.post(`/auth/register`, formRegister);
       navigate("/login");
       setIsLoading(false);
     } catch (error: any) {
@@ -77,7 +78,7 @@ export default function Register() {
       <Box
         className="containerRegister"
         sx={{
-          width: "40%",
+          minWidth: "40%",
           display: "flex",
           borderRadius: "16px",
           background: "rgba(255, 255, 255, 0.10)",
@@ -112,6 +113,8 @@ export default function Register() {
           >
             <Typography sx={{ textAlign: "left" }}>Nama Lengkap</Typography>
             <TextField
+              size="small"
+              autoComplete="off"
               required
               id="outlined-r-nama"
               label="Nama Lengkap"
@@ -124,6 +127,8 @@ export default function Register() {
             />
             <Typography sx={{ textAlign: "left" }}>Nomor HP</Typography>
             <TextField
+              size="small"
+              autoComplete="off"
               required
               id="outlined-r-nomor"
               label="Nomor"
@@ -136,9 +141,15 @@ export default function Register() {
             />
             <Typography sx={{ textAlign: "left" }}>Username</Typography>
             <TextField
+              size="small"
+              autoComplete="off"
               required
               id="registerUsername"
               label="Username"
+              inputProps={{
+                readOnly: readOnly,
+              }}
+              onFocus={() => setReadOnly(false)}
               onChange={(event) =>
                 setFormRegister({
                   ...formRegister,
@@ -147,7 +158,7 @@ export default function Register() {
               }
             />
             <Typography sx={{ textAlign: "left" }}>Password</Typography>
-            <FormControl variant="outlined">
+            <FormControl variant="outlined" size="small">
               <InputLabel htmlFor="registerPassword">Password</InputLabel>
               <OutlinedInput
                 autoComplete="off"
@@ -177,7 +188,7 @@ export default function Register() {
             <Typography sx={{ textAlign: "left" }}>
               Konfirmasi Password
             </Typography>
-            <FormControl variant="outlined">
+            <FormControl variant="outlined" size="small">
               <InputLabel htmlFor="registerConfirm-password">
                 Konfirmasi
               </InputLabel>
@@ -202,7 +213,7 @@ export default function Register() {
             </FormControl>
 
             <Typography sx={{ textAlign: "left" }}>Divisi</Typography>
-            <FormControl fullWidth>
+            <FormControl fullWidth size="small">
               <InputLabel id="demo-simple-select-label">Divisi</InputLabel>
               <Select
                 id="divisi"

@@ -18,16 +18,16 @@ export default function UpdateComment(props: any) {
   const get = props.get;
   const axiosPrivate = useAxiosPrivate();
 
-  const [editComment, setEditComment] = useState<any>(undefined);
-  const openComment = (id: string) => setEditComment(id);
-  const closeComment = () => setEditComment(undefined);
+  const [editComment, setEditComment] = useState<any>(false);
+  const openComment = () => setEditComment(true);
+  const closeComment = () => setEditComment(false);
 
   const [comment, setComment] = useState<string>(content?.konten);
 
   const updateComment = async (event: any) => {
     event.preventDefault();
     try {
-      const res = await axiosPrivate.patch(`/komentar/${props?.id}`, {
+      await axiosPrivate.patch(`/komentar/${props?.id}`, {
         konten: comment,
       });
       closeComment();
@@ -49,7 +49,7 @@ export default function UpdateComment(props: any) {
           minWidth: "2rem",
           minHeight: "2rem",
         }}
-        onClick={() => openComment(id)}
+        onClick={openComment}
       >
         Edit
       </Button>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 
 import {
   AppBar,
@@ -19,14 +19,10 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import { useAuth } from "../hooks/useAuth";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import nore from "../assets/nore.png";
+import nore from "../assets/nore3.png";
 
 export default function Appbar() {
   /* Handle Function */
-  //Drawer
-  const [open, setOpen] = useState<boolean>(false);
-  const toggleDrawerOpen = () => setOpen(true);
-  const toggleDrawerClose = () => setOpen(false);
   //Profile
   const [anchorEl, setAnchorEl] = useState(null);
   const openMenu = Boolean(anchorEl);
@@ -68,30 +64,23 @@ export default function Appbar() {
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <img src={nore} style={{ height: "60px", width: "100px" }} />
-              <Typography sx={{ mt: 1 }} variant="h4">
-                Task
-              </Typography>
-            </Box>
-
-            <Box sx={{ display: "flex", ml: 3, mt: 1 }}>
+            <Link to="/">
+              <img src={nore} style={{ height: "40px", width: "160px" }} />
+            </Link>
+            <Box sx={{ display: "flex", ml: 2 }}>
               {auth?.role?.id === 1 || auth?.role?.id === 2 ? (
-                <Button onClick={handleOpenProject} sx={{ color: "white" }}>
+                <Button
+                  onClick={handleOpenProject}
+                  sx={{ color: "white" }}
+                  size="large"
+                  endIcon={
+                    openProject ? <ExpandLessIcon /> : <ExpandMoreIcon />
+                  }
+                >
                   Project
-                  {openProject ? (
-                    <ExpandLessIcon sx={{ ml: 1 }} />
-                  ) : (
-                    <ExpandMoreIcon sx={{ ml: 1 }} />
-                  )}
                 </Button>
               ) : (
-                <Button onClick={handleOpenProject}>
+                <Button size="large">
                   <NavLink
                     to="/"
                     style={{ textDecoration: "none", color: "white" }}
@@ -103,15 +92,17 @@ export default function Appbar() {
 
               {auth?.role?.id === 1 && (
                 <>
-                  <Button onClick={handleOpenClient} sx={{ color: "white" }}>
+                  <Button
+                    onClick={handleOpenClient}
+                    sx={{ color: "white" }}
+                    size="large"
+                    endIcon={
+                      openClient ? <ExpandLessIcon /> : <ExpandMoreIcon />
+                    }
+                  >
                     Client
-                    {openClient ? (
-                      <ExpandLessIcon sx={{ ml: 1 }} />
-                    ) : (
-                      <ExpandMoreIcon sx={{ ml: 1 }} />
-                    )}
                   </Button>
-                  <Button>
+                  <Button size="large">
                     <NavLink
                       to="/user"
                       style={{ textDecoration: "none", color: "white" }}
@@ -156,14 +147,12 @@ export default function Appbar() {
           <Typography>{nama}</Typography>
         </Box>
         <Divider sx={{ my: 1 }} />
-        <MenuItem>
-          <NavLink
-            to={`/profile`}
-            style={{ textDecoration: "none", color: "black" }}
-          >
-            Profile
-          </NavLink>
-        </MenuItem>
+        <NavLink
+          to={`/profile`}
+          style={{ textDecoration: "none", color: "black" }}
+        >
+          <MenuItem>Profile</MenuItem>
+        </NavLink>
         <MenuItem onClick={handleLogout} color="#000000">
           Logout
         </MenuItem>
@@ -183,14 +172,12 @@ export default function Appbar() {
           horizontal: "left",
         }}
       >
-        <MenuItem>
-          <NavLink
-            to="/client"
-            style={{ textDecoration: "none", color: "black" }}
-          >
-            Client List
-          </NavLink>
-        </MenuItem>
+        <NavLink
+          to="/client"
+          style={{ textDecoration: "none", color: "black" }}
+        >
+          <MenuItem>Client List</MenuItem>
+        </NavLink>
         <MenuItem>
           <NavLink
             to="/create-client"
@@ -215,126 +202,18 @@ export default function Appbar() {
           horizontal: "left",
         }}
       >
-        <MenuItem>
-          <NavLink to="/" style={{ textDecoration: "none", color: "black" }}>
-            Project List
-          </NavLink>
-        </MenuItem>
+        <NavLink to="/" style={{ textDecoration: "none", color: "black" }}>
+          <MenuItem>Project List</MenuItem>
+        </NavLink>
         {(auth?.role?.id === 1 || auth?.role?.id === 2) && (
-          <MenuItem>
-            <NavLink
-              to="/create-project"
-              style={{ textDecoration: "none", color: "black" }}
-            >
-              Add Project
-            </NavLink>
-          </MenuItem>
+          <NavLink
+            to="/create-project"
+            style={{ textDecoration: "none", color: "black" }}
+          >
+            <MenuItem>Add Project</MenuItem>
+          </NavLink>
         )}
       </Menu>
     </>
   );
-}
-
-{
-  /* 
-          <NavLink
-            to={`/profile`}
-            style={{ textDecoration: "none", color: "grey" }}
-          >
-            <Box sx={{ display: "block", textAlign: "center" }}>
-              <AccountCircleRoundedIcon sx={{ fontSize: 80 }} />
-              <Typography>Welcome Back, {auth?.username} !</Typography>
-            </Box>
-          </NavLink>
-          <Divider />
-
-          <Box>
-            <List>
-              <NavLink to="/" style={{ textDecoration: "none" }}>
-                <ListItem>
-                  <ListItemButton>
-                    <ListItemIcon>
-                      <ViewKanbanIcon sx={{ mr: 2 }} />
-                      <Typography>Dashboard</Typography>
-                    </ListItemIcon>
-                  </ListItemButton>
-                </ListItem>
-              </NavLink>
-              <Divider variant="middle" />
-              {auth?.role?.id === 1 ? (
-                <>
-                  <NavLink to="/client" style={{ textDecoration: "none" }}>
-                    <ListItem>
-                      <ListItemButton>
-                        <ListItemIcon>
-                          <PeopleIcon sx={{ mr: 2 }} />
-                          <Typography>Client</Typography>
-                        </ListItemIcon>
-                      </ListItemButton>
-                    </ListItem>
-                  </NavLink>
-                  <Divider variant="middle" />
-
-                  <NavLink to="/user" style={{ textDecoration: "none" }}>
-                    <ListItem>
-                      <ListItemButton>
-                        <ListItemIcon>
-                          <GroupsIcon sx={{ mr: 2 }} />
-                          <Typography>User</Typography>
-                        </ListItemIcon>
-                      </ListItemButton>
-                    </ListItem>
-                  </NavLink>
-                  <Divider variant="middle" />
-                </>
-              ) : null}
-            </List>
-          </Box>
-           */
-}
-
-{
-  /* <Button
-            variant="contained"
-            size="small"
-            color="error"
-            onClick={handleLogout}
-            >
-            <LogoutIcon />
-            Logout
-          </Button> */
-}
-
-{
-  /* Drawer 
-      <Drawer
-        PaperProps={{
-          sx: { width: "20%" },
-        }}
-        anchor="left"
-        variant="temporary"
-        open={open}
-        onClose={toggleDrawerClose}
-      >
-        <Box>
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mr: 2 }}>
-            <IconButton onClick={toggleDrawerClose}>
-              <CloseIcon />
-            </IconButton>
-          </Box>
-          <Divider />
-        </Box>
-      </Drawer>
-      */
-}
-
-{
-  /* <IconButton
-              edge="start"
-              aria-label="open drawer"
-              sx={{ color: "#ffffff" }}
-              onClick={toggleDrawerOpen}
-            >
-              <MenuIcon fontSize="large" />
-            </IconButton> */
 }

@@ -2,7 +2,6 @@ import {
   Box,
   TextField,
   Button,
-  IconButton,
   Typography,
   Modal,
   MenuItem,
@@ -28,23 +27,10 @@ export default function UpdateProfile(props: any) {
   const getProfile = props.getProfile;
 
   //Axios Fetch
-  const getOwnProfile = async () => {
-    try {
-      const res = await axiosPrivate.get(`/user/me`);
-      const data = res.data;
-      setNama(data.namaLengkap);
-      setUsername(data.username);
-      setNomor(data.nomorHp);
-      setDivisi(data.divisi);
-    } catch (error: any) {
-      console.log(error);
-    }
-  };
-
   const UpdateProfile = async (event: any) => {
     event.preventDefault();
     try {
-      const res = await axiosPrivate.patch(`/user/${props.profile?.id}`, {
+      await axiosPrivate.patch(`/user/${props.profile?.id}`, {
         namaLengkap: nama,
         username,
         nomorHp: nomor,
@@ -58,9 +44,11 @@ export default function UpdateProfile(props: any) {
   };
 
   useEffect(() => {
-    getOwnProfile();
-    getProfile();
-  }, []);
+    setNama(props.profile.namaLengkap);
+    setUsername(props.profile.username);
+    setNomor(props.profile.nomorHp);
+    setDivisi(props.profile.divisi);
+  }, [props.open]);
 
   return (
     <>
@@ -72,6 +60,7 @@ export default function UpdateProfile(props: any) {
             Nama Lengkap
           </Typography>
           <TextField
+            autoComplete="off"
             required
             id="outlined-r-nama"
             label="Nama"
@@ -81,6 +70,7 @@ export default function UpdateProfile(props: any) {
           />
           <Typography sx={{ textAlign: "left", my: 1 }}>Username</Typography>
           <TextField
+            autoComplete="off"
             required
             id="outlined-r-username"
             label="Username"
@@ -90,6 +80,7 @@ export default function UpdateProfile(props: any) {
           />
           <Typography sx={{ textAlign: "left", my: 1 }}>Nomor HP</Typography>
           <TextField
+            autoComplete="off"
             required
             id="outlined-r-nomor"
             label="Nomor"

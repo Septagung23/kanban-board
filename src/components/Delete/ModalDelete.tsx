@@ -12,17 +12,17 @@ import { useState } from "react";
 export default function ModalDelete(props: any) {
   const id = props.id;
   const username = props.nama;
-  const [open, setOpen] = useState<any>(undefined);
-  const handleOpen = (id: string) => setOpen(id);
 
-  const handleClose = () => setOpen(undefined);
+  const [open, setOpen] = useState<boolean>(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   return (
     <>
       {props.categoryId ? (
-        <MenuItem onClick={() => handleOpen(id)}>Delete Task</MenuItem>
+        <MenuItem onClick={() => handleOpen()}>Delete Task</MenuItem>
       ) : (
-        <IconButton color="error" onClick={() => handleOpen(id)} size="small">
+        <IconButton color="error" onClick={() => handleOpen()} size="small">
           <DeleteIcon />
         </IconButton>
       )}

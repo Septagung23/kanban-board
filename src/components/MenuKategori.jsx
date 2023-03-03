@@ -26,14 +26,12 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import Loading from "./Loading";
 import { modal } from "../constant/styles";
-import { useAuth } from "../hooks/useAuth";
 
 export default function MenuKategori(props) {
   const axiosPrivate = useAxiosPrivate();
   const getCategory = props.getCategory;
   const deleteCategory = props.deleteCategory;
   const [isLoading, setIsLoading] = useState(false);
-  const { auth } = useAuth();
 
   // State
   const [categoryId, setCategoryId] = useState(props.id);
@@ -81,6 +79,10 @@ export default function MenuKategori(props) {
       setIsLoading(false);
       getCategory();
       handleClose();
+      setJudul("");
+      setKebutuhan("");
+      setPrioritas("");
+      setAttachment("");
     } catch (error) {
       console.log(error);
       setIsLoading(false);
@@ -91,7 +93,7 @@ export default function MenuKategori(props) {
     event.preventDefault();
     setIsLoading(true);
     try {
-      const res = await axiosPrivate.patch(`/kategori-task/${categoryId}`, {
+      await axiosPrivate.patch(`/kategori-task/${categoryId}`, {
         nama: title,
       });
       setOpenModalCategory(false);
@@ -158,6 +160,7 @@ export default function MenuKategori(props) {
           >
             <Typography sx={{ textAlign: "left", my: 1 }}>Nama</Typography>
             <TextField
+              autoComplete="off"
               required
               id="outlined-r-nama"
               value={title}
@@ -215,6 +218,7 @@ export default function MenuKategori(props) {
                   Judul :
                 </Typography>
                 <TextField
+                  autoComplete="off"
                   id="outlined-multiline-flexible"
                   required
                   fullWidth
@@ -280,6 +284,7 @@ export default function MenuKategori(props) {
                   Attachment :{" "}
                 </Typography>
                 <TextField
+                  autoComplete="off"
                   id="outlined-multiline-flexible"
                   label="Attachment"
                   fullWidth

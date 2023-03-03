@@ -17,7 +17,6 @@ import {
   Select,
   FormControl,
   MenuItem,
-  Autocomplete,
   OutlinedInput,
   InputAdornment,
 } from "@mui/material";
@@ -30,7 +29,6 @@ import { main, modal } from "../constant/styles";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import KeyIcon from "@mui/icons-material/Key";
 
 import { useState, useEffect } from "react";
 
@@ -50,7 +48,7 @@ export default function User() {
   const [passwordConfirm, setPasswordConfirm] = useState<string>("");
   const [role, setRole] = useState<any>([]);
   const [roleName, setRolename] = useState(role.nama);
-  const [roleId, setRoleid] = useState(role.id);
+  const [roleId, setRoleid] = useState("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const options = role?.map((r: any) => ({ label: r.nama, id: r.id }));
 
@@ -58,7 +56,7 @@ export default function User() {
   const [openPassword, setOpenPassword] = useState<boolean>(false);
   const handleShowPassword = () => setOpenPassword((show) => !show);
 
-  const [openEdit, setOpenEdit] = useState<any>(undefined);
+  const [openEdit, setOpenEdit] = useState<any>(false);
   const handleOpenEdit = (id: string) => {
     setOpenEdit(id);
     getRole();
@@ -66,7 +64,7 @@ export default function User() {
     getUserById(id);
   };
   const handleCloseEdit = () => {
-    setOpenEdit(undefined);
+    setOpenEdit(false);
     setOpenBoxPass(false);
     setId("");
   };
@@ -133,7 +131,7 @@ export default function User() {
       return;
     }
     try {
-      const res = await axiosPrivate.patch(`/user/${id}`, {
+      await axiosPrivate.patch(`/user/${id}`, {
         namaLengkap,
         username,
         nomorHp,
@@ -141,7 +139,7 @@ export default function User() {
         roleId,
         password: pass ? pass : null,
       });
-      setOpenEdit(undefined);
+      setOpenEdit(false);
       setOpenBoxPass(false);
       setOpenPassword(false);
       getUser();
@@ -201,6 +199,7 @@ export default function User() {
                 </Typography>
                 <TextField
                   required
+                  autoComplete="off"
                   id="outlined-r-nama"
                   label="Nama"
                   value={namaLengkap}
@@ -211,6 +210,7 @@ export default function User() {
                 </Typography>
                 <TextField
                   required
+                  autoComplete="off"
                   id="outlined-r-username"
                   label="username"
                   value={username}
@@ -221,6 +221,7 @@ export default function User() {
                 </Typography>
                 <TextField
                   required
+                  autoComplete="off"
                   id="outlined-r-nomor"
                   label="nomor"
                   value={nomorHp}
@@ -274,7 +275,9 @@ export default function User() {
                         }}
                       >
                         {role?.map((r: any) => (
-                          <MenuItem value={r.id}>{r.nama}</MenuItem>
+                          <MenuItem value={r.id} key={r.id}>
+                            {r.nama}
+                          </MenuItem>
                         ))}
                       </Select>
                     </FormControl>
@@ -306,30 +309,28 @@ export default function User() {
                         p: 1,
                       }}
                     >
-                      <Typography sx={{ textAlign: "left", my: 1 }}>
-                        Password Baru
-                      </Typography>
+                      <Box display="flex" justifyContent="space-between" mr={1}>
+                        <Typography sx={{ textAlign: "left", my: 1 }}>
+                          Password Baru
+                        </Typography>
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          edge="end"
+                          onClick={handleShowPassword}
+                        >
+                          {openPassword ? (
+                            <VisibilityOffIcon />
+                          ) : (
+                            <VisibilityIcon />
+                          )}
+                        </IconButton>
+                      </Box>
                       <FormControl variant="outlined">
                         <InputLabel htmlFor="pass">Password</InputLabel>
                         <OutlinedInput
                           autoComplete="off"
                           id="pass"
                           type={openPassword ? "text" : "password"}
-                          endAdornment={
-                            <InputAdornment position="end">
-                              <IconButton
-                                aria-label="toggle password visibility"
-                                edge="end"
-                                onClick={handleShowPassword}
-                              >
-                                {openPassword ? (
-                                  <VisibilityOffIcon />
-                                ) : (
-                                  <VisibilityIcon />
-                                )}
-                              </IconButton>
-                            </InputAdornment>
-                          }
                           label="Password"
                           onChange={(event) => setPass(event.target.value)}
                         />
@@ -346,21 +347,6 @@ export default function User() {
                           autoComplete="off"
                           id="confirm-password"
                           type={openPassword ? "text" : "password"}
-                          endAdornment={
-                            <InputAdornment position="end">
-                              <IconButton
-                                aria-label="toggle password visibility"
-                                edge="end"
-                                onClick={handleShowPassword}
-                              >
-                                {openPassword ? (
-                                  <VisibilityOffIcon />
-                                ) : (
-                                  <VisibilityIcon />
-                                )}
-                              </IconButton>
-                            </InputAdornment>
-                          }
                           label="Password"
                           onChange={(event) =>
                             setPasswordConfirm(event.target.value)
@@ -393,6 +379,7 @@ export default function User() {
 
         <Box sx={{ mx: 5, mb: 1 }}>
           <TextField
+            autoComplete="off"
             variant="standard"
             label="Search User"
             value={query}
@@ -408,257 +395,28 @@ export default function User() {
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
-                  <TableCell>Nama Lengkap</TableCell>
-                  <TableCell align="center">Username</TableCell>
-                  <TableCell align="center">Nomor HP</TableCell>
-                  <TableCell align="center">Divisi</TableCell>
-                  <TableCell align="center">Role</TableCell>
-                  <TableCell align="center">Action</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>
+                    Nama Lengkap
+                  </TableCell>
+                  <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                    Username
+                  </TableCell>
+                  <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                    Nomor HP
+                  </TableCell>
+                  <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                    Divisi
+                  </TableCell>
+                  <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                    Role
+                  </TableCell>
+                  <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                    Action
+                  </TableCell>
                 </TableRow>
               </TableHead>
 
-              <TableBody>
-                {/* {user.map((u: any) => (
-                  <TableRow key={u.id}>
-                    <TableCell>{u.namaLengkap}</TableCell>
-                    <TableCell align="center">{u.username}</TableCell>
-                    <TableCell align="center">{u.nomorHp}</TableCell>
-                    <TableCell align="center">{u.divisi}</TableCell>
-                    <TableCell align="center">
-                      {u.role ? u.role.nama : "???"}
-                    </TableCell>
-                    <TableCell align="center">
-                      <IconButton onClick={() => handleOpenEdit(u.id)}>
-                        <EditIcon color="primary" />
-                      </IconButton>
-
-                      <ModalDelete
-                        id={u.id}
-                        nama={u.namaLengkap}
-                        deleteFunction={deleteUser}
-                      />
-                    </TableCell>
-
-                    <Modal open={openEdit === u.id} onClose={handleCloseEdit}>
-                      <Box sx={modal} width="30%">
-                        <Typography variant="h5">Edit User</Typography>
-                        <Divider />
-                        <Box
-                          component="form"
-                          onSubmit={updateUser}
-                          sx={{
-                            m: 1,
-                            display: "flex",
-                            flexDirection: "column",
-                            textAlign: "center",
-                          }}
-                        >
-                          <Typography sx={{ textAlign: "left", my: 1 }}>
-                            Nama Lengkap
-                          </Typography>
-                          <TextField
-                            required
-                            id="outlined-r-nama"
-                            label="Nama"
-                            value={namaLengkap}
-                            onChange={(event) =>
-                              setNamaLengkap(event.target.value)
-                            }
-                          />
-                          <Typography sx={{ textAlign: "left", my: 1 }}>
-                            Username
-                          </Typography>
-                          <TextField
-                            required
-                            id="outlined-r-username"
-                            label="username"
-                            value={username}
-                            onChange={(event) =>
-                              setUsername(event.target.value)
-                            }
-                          />
-                          <Typography sx={{ textAlign: "left", my: 1 }}>
-                            Nomor HP
-                          </Typography>
-                          <TextField
-                            required
-                            id="outlined-r-nomor"
-                            label="nomor"
-                            value={nomorHp}
-                            onChange={(event) => setNomorHp(event.target.value)}
-                          />
-
-                          <Box sx={{ display: "flex" }}>
-                            <Box
-                              sx={{
-                                width: "50%",
-                                mt: 1,
-                                mr: 1,
-                              }}
-                            >
-                              <Typography sx={{ textAlign: "left", my: 1 }}>
-                                Divisi
-                              </Typography>
-                              <FormControl fullWidth>
-                                <InputLabel id="demo-simple-select-label">
-                                  Divisi
-                                </InputLabel>
-                                <Select
-                                  id="divisi"
-                                  label="divisi"
-                                  value={divisi}
-                                  onChange={(event) =>
-                                    setDivisi(event.target.value)
-                                  }
-                                >
-                                  <MenuItem value="Frontend">Frontend</MenuItem>
-                                  <MenuItem value="Backend">Backend</MenuItem>
-                                  <MenuItem value="Wordpress">
-                                    Wordpress
-                                  </MenuItem>
-                                  <MenuItem value="Project Manager">
-                                    Project Manager
-                                  </MenuItem>
-                                  <MenuItem value="Admin">Admin</MenuItem>
-                                </Select>
-                              </FormControl>
-
-                              <Typography sx={{ textAlign: "left", my: 1 }}>
-                                Role
-                              </Typography>
-                              <FormControl fullWidth>
-                                <InputLabel id="demo-simple-select-label">
-                                  Role
-                                </InputLabel>
-                                <Select
-                                  id="role"
-                                  label="role"
-                                  value={roleId}
-                                  onChange={(event) => {
-                                    setRoleid(event.target.value);
-                                  }}
-                                >
-                                  {role?.map((r: any) => (
-                                    <MenuItem value={r.id}>{r.nama}</MenuItem>
-                                  ))}
-                                </Select>
-                              </FormControl>
-                            </Box>
-
-                            {!openBoxPass ? (
-                              <Box
-                                sx={{
-                                  display: "grid",
-                                  placeItems: "center",
-                                  width: "50%",
-                                  border: "1px solid grey",
-                                  borderRadius: 2,
-                                  mt: 1,
-                                  p: 1,
-                                }}
-                              >
-                                <Button
-                                  size="small"
-                                  onClick={handleOpenBoxPass}
-                                >
-                                  Change Password ?
-                                </Button>
-                              </Box>
-                            ) : (
-                              <Box
-                                sx={{
-                                  width: "50%",
-                                  mt: 1,
-                                  borderRadius: 2,
-                                  border: "1px solid grey",
-                                  p: 1,
-                                }}
-                              >
-                                <Typography sx={{ textAlign: "left", my: 1 }}>
-                                  Password Baru
-                                </Typography>
-                                <FormControl variant="outlined">
-                                  <InputLabel htmlFor="pass">
-                                    Password
-                                  </InputLabel>
-                                  <OutlinedInput
-                                    autoComplete="off"
-                                    id="pass"
-                                    type={openPassword ? "text" : "password"}
-                                    endAdornment={
-                                      <InputAdornment position="end">
-                                        <IconButton
-                                          aria-label="toggle password visibility"
-                                          edge="end"
-                                          onClick={handleShowPassword}
-                                        >
-                                          {openPassword ? (
-                                            <VisibilityOffIcon />
-                                          ) : (
-                                            <VisibilityIcon />
-                                          )}
-                                        </IconButton>
-                                      </InputAdornment>
-                                    }
-                                    label="Password"
-                                    onChange={(event) =>
-                                      setPass(event.target.value)
-                                    }
-                                  />
-                                </FormControl>
-
-                                <Typography sx={{ textAlign: "left" }}>
-                                  Konfirmasi Password
-                                </Typography>
-                                <FormControl variant="outlined">
-                                  <InputLabel htmlFor="confirm-password">
-                                    Konfirmasi
-                                  </InputLabel>
-                                  <OutlinedInput
-                                    autoComplete="off"
-                                    id="confirm-password"
-                                    type={openPassword ? "text" : "password"}
-                                    endAdornment={
-                                      <InputAdornment position="end">
-                                        <IconButton
-                                          aria-label="toggle password visibility"
-                                          edge="end"
-                                          onClick={handleShowPassword}
-                                        >
-                                          {openPassword ? (
-                                            <VisibilityOffIcon />
-                                          ) : (
-                                            <VisibilityIcon />
-                                          )}
-                                        </IconButton>
-                                      </InputAdornment>
-                                    }
-                                    label="Password"
-                                    onChange={(event) =>
-                                      setPasswordConfirm(event.target.value)
-                                    }
-                                  />
-                                </FormControl>
-                              </Box>
-                            )}
-                          </Box>
-                          <Button
-                            sx={{ mt: 2 }}
-                            variant="contained"
-                            type="submit"
-                          >
-                            Submit
-                          </Button>
-                          <Button onClick={handleCloseEdit} color="error">
-                            Cancel
-                          </Button>
-                        </Box>
-                      </Box>
-                    </Modal>
-                  </TableRow>
-                ))} */}
-                {users}
-              </TableBody>
+              <TableBody>{users}</TableBody>
             </Table>
           </TableContainer>
         </Box>

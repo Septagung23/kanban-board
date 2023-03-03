@@ -42,7 +42,7 @@ export default function UpdateClient() {
   const updateClient = async (e: any) => {
     e.preventDefault();
     try {
-      const res = await axiosPrivate.patch(`/client/${id}`, {
+      await axiosPrivate.patch(`/client/${id}`, {
         nama,
         perusahaan,
         alamat,
@@ -77,6 +77,7 @@ export default function UpdateClient() {
             <TextField
               fullWidth
               required
+              autoComplete="off"
               id="outlined-required"
               label="Nama"
               value={nama}
@@ -97,6 +98,7 @@ export default function UpdateClient() {
             <TextField
               id="outlined-required"
               label="Perusahaan"
+              autoComplete="off"
               fullWidth
               value={perusahaan}
               onChange={(event) => setPerusahaan(event.target.value)}
@@ -106,6 +108,7 @@ export default function UpdateClient() {
               fullWidth
               multiline
               id="outlined-required"
+              autoComplete="off"
               label="Alamat"
               minRows={2}
               value={alamat}

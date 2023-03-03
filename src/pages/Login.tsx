@@ -16,16 +16,14 @@ import {
   FormLabel,
 } from "@mui/material";
 
-import LockIcon from "@mui/icons-material/Lock";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import axios from "../services/axios";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import Loading from "../components/Loading";
 import nore from "../assets/nore_w.png";
 
 export default function Login() {
-  const { setAuth, auth } = useAuth();
+  const { setAuth } = useAuth();
   const [formData, setFormData] = useState<any>({
     username: "",
     password: "",
@@ -35,6 +33,7 @@ export default function Login() {
   const [open, setOpen] = useState<boolean>(false);
   const handleShowPassword = () => setOpen((show) => !show);
   const navigate = useNavigate();
+  const [readOnly, setReadOnly] = useState<boolean>(true);
   const axiosPrivate = useAxiosPrivate();
 
   const login = async (event: any) => {
@@ -88,7 +87,6 @@ export default function Login() {
           borderRadius: "16px",
           background: "rgba(255, 255, 255, 0.05)",
           position: "fixed",
-          // backdropFilter: "blur(10px)",
           boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
         }}
       >
@@ -98,11 +96,9 @@ export default function Login() {
             width: "100%",
             borderRadius: "16px",
             color: "rgba(255, 255,255)",
-            // background: "rgba(254, 250,224)",
             m: 1,
           }}
         >
-          {/* <LockIcon sx={{ mt: 3, fontSize: "40px" }} /> */}
           <img src={nore} style={{ height: "60px", width: "100px" }} />
           <Typography variant="h3">Login</Typography>
           <Box
@@ -121,21 +117,32 @@ export default function Login() {
               gap: 1,
             }}
           >
-            {errMsg && <Alert severity="error">{errMsg}</Alert>}
+            {errMsg && (
+              <Alert severity="error" variant="filled">
+                {errMsg}
+              </Alert>
+            )}
+
             <FormLabel htmlFor="username">
               <Typography sx={{ textAlign: "left", color: "white" }}>
                 Username
               </Typography>
             </FormLabel>
             <TextField
+              autoComplete="off"
               required
               id="username"
               label="Username"
+              inputProps={{
+                readOnly: readOnly,
+              }}
+              onFocus={() => setReadOnly(false)}
               onChange={(event) =>
                 setFormData({ ...formData, username: event.target.value })
               }
               value={formData.username}
             />
+
             <FormLabel htmlFor="password">
               <Typography sx={{ textAlign: "left", mt: 2, color: "white" }}>
                 Password
@@ -158,6 +165,10 @@ export default function Login() {
                     </IconButton>
                   </InputAdornment>
                 }
+                inputProps={{
+                  readOnly: readOnly,
+                }}
+                onFocus={() => setReadOnly(false)}
                 label="Password"
                 onChange={(event) =>
                   setFormData({ ...formData, password: event.target.value })
@@ -165,6 +176,7 @@ export default function Login() {
                 value={formData.password}
               />
             </FormControl>
+
             {/* Button Login */}
             <Button
               type="submit"
@@ -175,7 +187,6 @@ export default function Login() {
             >
               Login
             </Button>
-            {/* END Button Login */}
           </Box>
 
           <Divider sx={{ my: 1 }} />

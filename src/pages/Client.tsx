@@ -65,7 +65,7 @@ export default function Client() {
         return c.nama.toLowerCase().indexOf(query.toLowerCase()) === 0;
       })
       ?.map((cl) => (
-        <TableRow>
+        <TableRow key={cl.id}>
           <TableCell>{cl.nama}</TableCell>
           <TableCell align="center">
             {cl.perusahaan ? cl.perusahaan : "Perseorangan"}
@@ -98,6 +98,7 @@ export default function Client() {
 
         <Box sx={{ mx: 5, mb: 1 }}>
           <TextField
+            autoComplete="off"
             variant="standard"
             label="Search Client"
             value={query}
@@ -112,100 +113,27 @@ export default function Client() {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Nama</TableCell>
-                  <TableCell align="center">Perusahaan</TableCell>
-                  <TableCell align="center">Nomor</TableCell>
-                  <TableCell align="center">Alamat</TableCell>
-                  <TableCell align="center">Action</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>Nama</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                    Perusahaan
+                  </TableCell>
+                  <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                    Nomor
+                  </TableCell>
+                  <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                    Alamat
+                  </TableCell>
+                  <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                    Action
+                  </TableCell>
                 </TableRow>
               </TableHead>
 
-              <TableBody>
-                {/* {client?.map((cl) => (
-                  <TableRow>
-                    <TableCell>{cl.nama}</TableCell>
-                    <TableCell align="center">
-                      {cl.perusahaan ? cl.perusahaan : "Perseorangan"}
-                    </TableCell>
-                    <TableCell align="center">{cl.nomorHp}</TableCell>
-                    <TableCell align="center">
-                      {cl.alamat ? cl.alamat : "-"}
-                    </TableCell>
-                    <TableCell align="center">
-                      <Link to={`/client/${cl.id}`}>
-                        <IconButton color="primary">
-                          <EditIcon />
-                        </IconButton>
-                      </Link>
-                      <ModalDelete
-                        id={cl.id}
-                        nama={cl.nama}
-                        deleteFunction={deleteClient}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))} */}
-                {clients}
-              </TableBody>
+              <TableBody>{clients}</TableBody>
             </Table>
           </TableContainer>
         </Box>
       </Box>
     </>
   );
-}
-
-{
-  /* <Box
-  sx={{
-    alignSelf: "center",
-    width: "80%",
-    border: "1px solid grey",
-    borderRadius: 3,
-    m: 4,
-  }}
->
-  <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-    <Link to="/create-client" style={{ textDecoration: "none" }}>
-      <Button variant="contained" sx={{ m: 1 }}>
-        Add Client
-      </Button>
-    </Link>
-  </Box>
-  <Divider />
-  <List sx={{ p: 2 }}>
-    {client.map((c) => (
-      <>
-        <ListItem
-          sx={{
-            border: "1px solid grey",
-            borderRadius: 3,
-            mt: 1,
-            p: 0,
-          }}
-          key={c.id}
-        >
-          <ModalDetail
-            id={c.id}
-            nama={c.nama}
-            perusahaan={c.perusahaan}
-            alamat={c.alamat}
-            nomor={c.nomor_hp}
-          />
-          <Divider orientation="vertical" flexItem />
-          <Link to={`/client/${c.id}`}>
-            <IconButton>
-              <EditIcon color="primary" />
-            </IconButton>
-          </Link>
-          <ModalDelete
-            id={c.id}
-            nama={c.nama}
-            deleteFunction={deleteClient}
-          />
-        </ListItem>
-      </>
-    ))}
-  </List>
-</Box> */
 }

@@ -1,46 +1,35 @@
-import {
-  Box,
-  TextField,
-  Button,
-  Divider,
-  IconButton,
-  Typography,
-  Modal,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
-} from "@mui/material";
+import { Box, Divider, IconButton, Typography, Modal } from "@mui/material";
 
 import { modal } from "../constant/styles";
-import { CirclePicker } from "react-color";
-import { useState, useEffect } from "react";
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { useState, useEffect, Fragment } from "react";
 import Add from "@mui/icons-material/Add";
 import Edit from "@mui/icons-material/Edit";
-import Label from "./Label";
+import Label from "./Create/Label";
+import UpdateLabel from "./Update/UpdateLabel";
 
 export default function LabelSubTask(props) {
   const [label, setLabel] = useState([]);
+
   const [openLabel, setOpenLabel] = useState(false);
   const addLabel = () => setOpenLabel(true);
   const closeAddLabel = () => setOpenLabel(false);
-  const axiosPrivate = useAxiosPrivate();
 
-  const getLabelSubtask = async () => {
-    try {
-      const res = await axiosPrivate.get(`/label-subtask/${props?.id}`);
-      setLabel(res.data);
-      console.log(res.data);
-    } catch (error) {
-      console.log(error);
-    }
+  const [editLabelSt, setEditLabelSt] = useState(false);
+  const openEditLabelSt = (id) => {
+    setEditLabelSt(true);
+    setLabelIdSt(id);
   };
+  const closeEditLabelSt = () => setEditLabelSt(false);
+
+  const [labelSt, setLabelSt] = useState([]);
+  const [labelIdSt, setLabelIdSt] = useState("");
+  const [labelNameSt, setLabelNameSt] = useState("");
+  const [bgColorSt, setBgColorSt] = useState("");
+  const [colorSt, setColorSt] = useState("");
 
   useEffect(() => {
-    getLabelSubtask();
-  }, []);
+    setLabel(props.label);
+  }, [props.open]);
 
   return (
     <>
@@ -51,7 +40,7 @@ export default function LabelSubTask(props) {
           style: { backgroundColor: "rgba(0, 0, 0, 0.1)" },
         }}
       >
-        <Box sx={modal} component="form">
+        <Box sx={modal} minWidth="11rem" component="form">
           <Box
             sx={{
               display: "flex",
@@ -64,30 +53,40 @@ export default function LabelSubTask(props) {
               <Add fontSize="small" />
             </IconButton>
           </Box>
+          <Divider />
           <Box sx={{ py: 1 }}>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              {label?.map((l) => (
-                <>
-                  <Divider />
-                  <Box
-                    sx={{
-                      width: "10rem",
-                      height: "1.5rem",
-                      backgroundColor: `${l.bgColor}`,
-                      color: `${l.color}`,
-                      borderRadius: 1,
-                      px: 1,
-                      textAlign: "left",
-                    }}
-                  >
-                    <Typography>{l.nama}</Typography>
+            {label?.map((l) => (
+              <Fragment key={l.id}>
+                <Box sx={{ p: 1 }}>
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <Box
+                      sx={{
+                        width: "10rem",
+                        height: "1.5rem",
+                        backgroundColor: `${l.bgColor}`,
+                        color: `${l.color}`,
+                        borderRadius: 1,
+                        px: 1,
+                        textAlign: "left",
+                      }}
+                    >
+                      <Typography>{l.nama}</Typography>
+                    </Box>
+                    <IconButton
+                      sx={{ py: 0 }}
+                      onClick={() => {
+                        openEditLabelSt(l.id);
+                        setLabelNameSt(l.nama);
+                        setBgColorSt(l.bgColor);
+                        setColorSt(l.color);
+                      }}
+                    >
+                      <Edit fontSize="small" />
+                    </IconButton>
                   </Box>
-                  <IconButton sx={{ py: 0 }}>
-                    <Edit fontSize="small" />
-                  </IconButton>
-                </>
-              ))}
-            </Box>
+                </Box>
+              </Fragment>
+            ))}
           </Box>
         </Box>
       </Modal>
@@ -95,7 +94,21 @@ export default function LabelSubTask(props) {
       <Label
         open={openLabel}
         close={closeAddLabel}
-        subtaskId={props.id}
+        closeModal={props.close}
+        subtaskId={props.subtaskId}
+        isSubtask={true}
+        get={props.get}
+      />
+
+      <UpdateLabel
+        open={editLabelSt}
+        close={closeEditLabelSt}
+        closeModal={props.close}
+        get={props.get}
+        labelId={labelIdSt}
+        nama={labelNameSt}
+        bgColor={bgColorSt}
+        color={colorSt}
         isSubtask={true}
       />
     </>

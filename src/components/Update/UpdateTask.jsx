@@ -53,7 +53,7 @@ export default function UpdateTask(props) {
     const content = draftToHtml(convertToRaw(kebutuhan.getCurrentContent()));
     setIsLoading(true);
     try {
-      const res = await axiosPrivate.patch(`/task/${id}`, {
+      await axiosPrivate.patch(`/task/${id}`, {
         kategoriTaskId: props.categoryId,
         nama,
         kebutuhan: content,
@@ -95,7 +95,7 @@ export default function UpdateTask(props) {
             left: "50%",
             transform: "translate(-50%, -50%)",
             width: "60%",
-            height: "60%",
+            height: "80%",
             backgroundColor: "#ffffff",
             boxShadow: 4,
             p: 4,
@@ -120,6 +120,7 @@ export default function UpdateTask(props) {
                   Judul :
                 </Typography>
                 <TextField
+                  autoComplete="off"
                   id="outlined-multiline-flexible"
                   required
                   fullWidth
@@ -185,6 +186,7 @@ export default function UpdateTask(props) {
                   Attachment :{" "}
                 </Typography>
                 <TextField
+                  autoComplete="off"
                   id="outlined-multiline-flexible"
                   label="Attachment"
                   fullWidth

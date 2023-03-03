@@ -35,7 +35,7 @@ export default function CreateKategori(props: any) {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await axiosPrivate.post(`/kategori-task`, {
+      await axiosPrivate.post(`/kategori-task`, {
         nama,
         projectId: props.id,
       });
@@ -89,6 +89,7 @@ export default function CreateKategori(props: any) {
               Nama Kategori
             </Typography>
             <TextField
+              autoComplete="off"
               required
               id="outlined-r-nama"
               label="Nama"

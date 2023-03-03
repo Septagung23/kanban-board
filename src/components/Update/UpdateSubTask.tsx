@@ -38,7 +38,7 @@ export default function UpdateSubTask(props: any) {
   const updateSubTask = async (event: any) => {
     event.preventDefault();
     try {
-      const res = await axiosPrivate.patch(`/subtask/${id}`, {
+      await axiosPrivate.patch(`/subtask/${id}`, {
         taskId,
         userId,
         keterangan,
@@ -88,6 +88,7 @@ export default function UpdateSubTask(props: any) {
               Keterangan
             </Typography>
             <TextField
+              autoComplete="off"
               required
               id="outlined-r-ket"
               label="Keterangan"

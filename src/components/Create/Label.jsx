@@ -11,22 +11,21 @@ import {
   Radio,
   RadioGroup,
 } from "@mui/material";
-import { modal } from "../constant/styles";
+import { modal } from "../../constant/styles";
 import { CirclePicker } from "react-color";
 import { useState, useEffect } from "react";
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 export default function Label(props) {
   const [label, setLabel] = useState("");
   const [bgColor, setBgColor] = useState();
   const [color, setColor] = useState();
-  const [stId, setStId] = useState(props.stId);
   const axiosPrivate = useAxiosPrivate();
 
   const createLabel = async (event) => {
     event.preventDefault();
     try {
-      const res = await axiosPrivate.post(`/label-task`, {
+      await axiosPrivate.post(`/label-task`, {
         nama: label,
         taskId: props.id,
         bgColor,
@@ -45,14 +44,15 @@ export default function Label(props) {
   const createLabelSubTask = async (event) => {
     event.preventDefault();
     try {
-      const res = await axiosPrivate.post(`/label-subtask`, {
+      await axiosPrivate.post(`/label-subtask`, {
         nama: label,
-        subtaskId: props.stId,
+        subtaskId: props.subtaskId,
         bgColor,
         color,
       });
-      console.log(res.data);
+      props.get();
       props.close();
+      props.closeModal();
       setLabel("");
       setColor("");
       setBgColor("");
@@ -60,6 +60,12 @@ export default function Label(props) {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    setLabel("");
+    setBgColor("");
+    setColor("");
+  }, [props.close]);
 
   return (
     <Modal open={props.open} onClose={props.close}>
@@ -112,24 +118,25 @@ export default function Label(props) {
               justifyContent: "space-between",
               alignItems: "center",
               textAlign: "left",
+              mt: 1,
             }}
           >
             <FormControl>
-              <FormLabel>Font Color</FormLabel>
+              <FormLabel sx={{ color: "#000000" }}>Font Color</FormLabel>
               <RadioGroup
                 row
                 value={color}
                 onChange={(event) => setColor(event.target.value)}
               >
                 <FormControlLabel
-                  value="#ffffff"
-                  control={<Radio size="small" />}
-                  label="Light"
-                />
-                <FormControlLabel
                   value="#000000"
                   control={<Radio size="small" />}
                   label="Dark"
+                />
+                <FormControlLabel
+                  value="#ffffff"
+                  control={<Radio size="small" />}
+                  label="Light"
                 />
               </RadioGroup>
             </FormControl>

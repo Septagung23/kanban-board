@@ -8,6 +8,7 @@ import { main } from "../constant/styles";
 
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import "../App.css";
 
 export default function CreateClient() {
   const [nama, setNama] = useState<string>("");
@@ -20,7 +21,7 @@ export default function CreateClient() {
   const createClient = async (e: any) => {
     e.preventDefault();
     try {
-      const res = await axiosPrivate.post("/client", {
+      await axiosPrivate.post("/client", {
         nama,
         perusahaan,
         alamat,
@@ -40,14 +41,15 @@ export default function CreateClient() {
           <PersonAddAlt1Icon sx={{ fontSize: "60px" }} />
           <Typography variant="h3">Tambah Client</Typography>
         </Box>
+
         <Box
           className="input"
           component="form"
           onSubmit={createClient}
           sx={{ width: "80%", alignSelf: "center", my: 2, gap: 3 }}
         >
-          <Typography sx={{ my: 1 }}>Nama</Typography>
           <TextField
+            autoComplete="off"
             required
             fullWidth
             id="outlined-required"
@@ -55,8 +57,8 @@ export default function CreateClient() {
             value={nama}
             onChange={(event) => setNama(event.target.value)}
           />
-          <Typography sx={{ my: 1 }}>Nomor Handphone</Typography>
           <TextField
+            autoComplete="off"
             required
             id="outlined-required"
             label="Nomor"
@@ -66,19 +68,19 @@ export default function CreateClient() {
             onChange={(event) => setNomor(event.target.value)}
           />
 
-          <Typography sx={{ mt: 1 }}>Perusahaan</Typography>
           <TextField
+            autoComplete="off"
             id="outlined-required"
-            label="Perusahaan"
+            label="Perusahaan (opsional)"
             fullWidth
             value={perusahaan}
             onChange={(event) => setPerusahaan(event.target.value)}
           />
-          <Typography sx={{ my: 1 }}>Alamat</Typography>
           <TextField
+            autoComplete="off"
             multiline
             id="outlined-required"
-            label="Alamat"
+            label="Alamat (opsional)"
             fullWidth
             minRows={2}
             value={alamat}

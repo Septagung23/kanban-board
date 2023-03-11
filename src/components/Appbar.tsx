@@ -16,10 +16,11 @@ import {
 
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import MenuIcon from "@mui/icons-material/Menu";
 
 import { useAuth } from "../hooks/useAuth";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import nore from "../assets/nore3.png";
+import nore from "../assets/nore_w.png";
 
 export default function Appbar() {
   /* Handle Function */
@@ -38,6 +39,11 @@ export default function Appbar() {
   const openProject = Boolean(anchorPr);
   const handleOpenProject = (event: any) => setAnchorPr(event.currentTarget);
   const handleCloseProject = () => setAnchorPr(null);
+  //BOX SX
+  const [anchorElNav, setAnchorElNav] = useState(null);
+  const openMenuNav = Boolean(anchorElNav);
+  const handleOpenMenu = (event: any) => setAnchorElNav(event.currentTarget);
+  const handleCloseMenuNav = () => setAnchorElNav(null);
 
   const { auth, setAuth } = useAuth();
   const nama = auth?.nama;
@@ -48,14 +54,12 @@ export default function Appbar() {
       await axiosPrivate.delete("/auth/logout");
       setAuth("");
       navigate("/login");
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
   return (
     <>
-      <AppBar position="fixed">
+      <AppBar position="fixed" sx={{ bgcolor: "#3eb772" }}>
         <Toolbar
           sx={{
             display: "flex",
@@ -63,11 +67,31 @@ export default function Appbar() {
             alignItems: "center",
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Link to="/">
-              <img src={nore} style={{ height: "40px", width: "160px" }} />
+          {/* BOX MD */}
+          <Box
+            sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}
+          >
+            <Link
+              to="/"
+              style={{
+                textDecoration: "none",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <img src={nore} style={{ width: "100px" }} />
+              <span
+                style={{
+                  color: "#f5f5f5",
+                  fontSize: "30px",
+                  fontWeight: "bold",
+                  textTransform: "uppercase",
+                }}
+              >
+                Task
+              </span>
             </Link>
-            <Box sx={{ display: "flex", ml: 2 }}>
+            <Box sx={{ display: "flex", ml: 2, mt: 1 }}>
               {auth?.role?.id === 1 || auth?.role?.id === 2 ? (
                 <Button
                   onClick={handleOpenProject}
@@ -114,6 +138,96 @@ export default function Appbar() {
               )}
             </Box>
           </Box>
+
+          {/* BOX SX */}
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: { xs: "flex", md: "none" },
+              alignItems: "center",
+              justifyContent: "flex-start",
+            }}
+          >
+            <IconButton
+              size="large"
+              color="inherit"
+              sx={{ mt: 0.5 }}
+              onClick={handleOpenMenu}
+            >
+              <MenuIcon />
+            </IconButton>
+
+            <Link
+              to="/"
+              style={{
+                textDecoration: "none",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <img src={nore} style={{ width: "100px" }} />
+              <span
+                style={{
+                  color: "#f5f5f5",
+                  fontSize: "30px",
+                  fontWeight: "bold",
+                  textTransform: "uppercase",
+                }}
+              >
+                Task
+              </span>
+            </Link>
+
+            <Menu
+              open={openMenuNav}
+              onClose={handleCloseMenuNav}
+              anchorEl={anchorElNav}
+              sx={{
+                display: { xs: "block", md: "none", minWidth: "14rem" },
+              }}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "left",
+              }}
+            >
+              <NavLink
+                to="/"
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <MenuItem>Project List</MenuItem>
+              </NavLink>
+              <NavLink
+                to="/create-project"
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <MenuItem>Add Project</MenuItem>
+              </NavLink>
+              <NavLink
+                to="/client"
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <MenuItem>Client List</MenuItem>
+              </NavLink>
+              <NavLink
+                to="/create-client"
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <MenuItem>Add Client</MenuItem>
+              </NavLink>
+              <NavLink
+                to="/user"
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <MenuItem>User</MenuItem>
+              </NavLink>
+            </Menu>
+          </Box>
+
           <IconButton onClick={handleOpenProfile}>
             <Avatar>
               {nama?.split(" ").length > 1
@@ -138,8 +252,15 @@ export default function Appbar() {
           horizontal: "center",
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", mx: 1 }}>
-          <Avatar sx={{ mr: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            mx: 1,
+            minWidth: "11rem",
+          }}
+        >
+          <Avatar sx={{ mr: 1.5 }}>
             {nama?.split(" ").length > 1
               ? `${nama?.split(" ")[0][0]}${nama?.split(" ")[1][0]}`
               : `${nama?.split(" ")[0][0]}`}
@@ -178,14 +299,12 @@ export default function Appbar() {
         >
           <MenuItem>Client List</MenuItem>
         </NavLink>
-        <MenuItem>
-          <NavLink
-            to="/create-client"
-            style={{ textDecoration: "none", color: "black" }}
-          >
-            Add Client
-          </NavLink>
-        </MenuItem>
+        <NavLink
+          to="/create-client"
+          style={{ textDecoration: "none", color: "black" }}
+        >
+          <MenuItem>Add Client</MenuItem>
+        </NavLink>
       </Menu>
 
       {/* Project Menu */}

@@ -1,4 +1,11 @@
-import { Box, TextField, Button, Typography } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 
@@ -15,6 +22,9 @@ export default function CreateClient() {
   const [perusahaan, setPerusahaan] = useState<string>("");
   const [alamat, setAlamat] = useState<string>("");
   const [nomor, setNomor] = useState<string>("");
+  const [mess, setMess] = useState<string>("");
+  const [openMess, setOpenMess] = useState<boolean>(false);
+  const closeMess = () => setOpenMess(false);
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
 
@@ -29,13 +39,19 @@ export default function CreateClient() {
       });
       navigate("/client");
     } catch (error: any) {
-      console.log(error);
+      setMess(error.response.data.message);
+      setOpenMess(true);
     }
   };
 
   return (
     <>
       <Appbar />
+      <Snackbar open={openMess} autoHideDuration={5000} onClose={closeMess}>
+        <Alert variant="filled" color="error" severity="error">
+          {mess}
+        </Alert>
+      </Snackbar>
       <Box className="container" sx={main}>
         <Box className="judul" sx={{ textAlign: "center" }}>
           <PersonAddAlt1Icon sx={{ fontSize: "60px" }} />

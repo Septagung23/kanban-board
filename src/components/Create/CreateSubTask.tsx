@@ -7,6 +7,8 @@ import {
   Divider,
   Modal,
   TextField,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
@@ -32,11 +34,16 @@ export default function CreateSubTask(props: any) {
 
   const getSubtask = props.get;
 
+  const [mess, setMess] = useState<string>("");
+  const [isErr, setIsErr] = useState<boolean>(false);
+  const [openMess, setOpenMess] = useState<boolean>(false);
+  const closeMess = () => setOpenMess(false);
+
   const createSubTask = async (e: any) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await axiosPrivate.post(`/subtask`, {
+      const res = await axiosPrivate.post(`/subtask`, {
         taskId: id,
         userId,
         keterangan,
@@ -47,9 +54,14 @@ export default function CreateSubTask(props: any) {
       setKeterangan("");
       setPoin("1");
       setUserId("");
+      setMess(res.data.message);
+      setOpenMess(true);
+      setIsErr(false);
       getSubtask();
     } catch (error: any) {
-      console.log(error);
+      setMess(error.response.data.message);
+      setOpenMess(true);
+      setIsErr(true);
       setIsLoading(false);
     }
   };
@@ -57,10 +69,8 @@ export default function CreateSubTask(props: any) {
   const getUser = async () => {
     try {
       const res = await axiosPrivate.get(`/user`);
-      setUser(res.data);
-    } catch (error: any) {
-      console.log(error);
-    }
+      setUser(res.data.data);
+    } catch (error: any) {}
   };
 
   useEffect(() => {
@@ -70,6 +80,16 @@ export default function CreateSubTask(props: any) {
 
   return (
     <>
+      <Snackbar open={openMess} autoHideDuration={5000} onClose={closeMess}>
+        <Alert
+          variant="filled"
+          color={isErr ? "error" : "success"}
+          severity={isErr ? "error" : "success"}
+        >
+          {mess}
+        </Alert>
+      </Snackbar>
+
       <Button onClick={handleOpenSubTask} sx={{ color: "#000000" }}>
         Add Subtask
       </Button>
@@ -79,7 +99,9 @@ export default function CreateSubTask(props: any) {
           <Typography variant="h5" paddingTop={2}>
             Create New Sub Task
           </Typography>
+
           <Divider sx={{ my: 1 }} />
+
           <Box
             component="form"
             onSubmit={createSubTask}
@@ -90,20 +112,18 @@ export default function CreateSubTask(props: any) {
               textAlign: "center",
             }}
           >
-            <Typography sx={{ textAlign: "left", my: 1 }}>
-              Keterangan
-            </Typography>
             <TextField
               autoComplete="off"
               required
+              fullWidth
               id="outlined-r-ket"
               label="Keterangan"
               value={keterangan}
               onChange={(event) => setKeterangan(event.target.value)}
             />
-            <Typography sx={{ textAlign: "left", my: 1 }}>Member</Typography>
             <Autocomplete
               disablePortal
+              fullWidth
               id="Member"
               options={options}
               value={nama}
@@ -111,24 +131,23 @@ export default function CreateSubTask(props: any) {
                 setUserId(values.id);
               }}
               renderInput={(params: any) => (
-                <TextField {...params} label="Member" />
+                <TextField {...params} label="Member" required />
               )}
             />
-            <Typography sx={{ textAlign: "left", my: 1 }}>Poin</Typography>
             <TextField
               required
               id="outlined-r-member"
+              fullWidth
               label="Poin"
               type="number"
               InputProps={{
                 inputProps: { min: 1, max: 100 },
               }}
-              sx={{ width: "25ch" }}
               value={poin}
               onChange={(event) => setPoin(event.target.value)}
             />
 
-            <Button sx={{ mt: 2 }} variant="contained" type="submit">
+            <Button variant="contained" type="submit">
               Submit
             </Button>
             <Button onClick={handleCloseSubTask} color="error">

@@ -2,18 +2,17 @@ import {
   Box,
   TextField,
   Button,
-  Typography,
   MenuItem,
   Modal,
   Divider,
   FormControl,
   InputLabel,
   Select,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 
 import { useState, useEffect } from "react";
-
-import SubjectIcon from "@mui/icons-material/Subject";
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { Editor } from "react-draft-wysiwyg";
@@ -44,6 +43,12 @@ export default function UpdateTask(props) {
   const [attachment, setAttachment] = useState(props.attachment);
   const axiosPrivate = useAxiosPrivate();
 
+  //Error Handling
+  const [mess, setMess] = useState("");
+  const [isErr, setIsErr] = useState(false);
+  const [openMess, setOpenMess] = useState(false);
+  const closeMess = () => setOpenMess(false);
+
   useEffect(() => {
     getCategory();
   }, []);
@@ -53,19 +58,24 @@ export default function UpdateTask(props) {
     const content = draftToHtml(convertToRaw(kebutuhan.getCurrentContent()));
     setIsLoading(true);
     try {
-      await axiosPrivate.patch(`/task/${id}`, {
+      const res = await axiosPrivate.patch(`/task/${id}`, {
         kategoriTaskId: props.categoryId,
         nama,
         kebutuhan: content,
         prioritas,
-        attachment,
+        attachment: JSON.stringify(attachment),
       });
+      setMess(res.data.message);
+      setOpenMess(true);
+      setIsErr(false);
       setIsLoading(false);
       getCategory();
       props.close();
       props.closeMenu();
     } catch (error) {
-      console.log(error.response);
+      setMess(error.response.data.message);
+      setOpenMess(true);
+      setIsErr(true);
       setIsLoading(false);
     }
   };
@@ -76,6 +86,16 @@ export default function UpdateTask(props) {
 
   return (
     <>
+      <Snackbar open={openMess} autoHideDuration={5000} onClose={closeMess}>
+        <Alert
+          variant="filled"
+          color={isErr ? "error" : "success"}
+          severity={isErr ? "error" : "success"}
+        >
+          {mess}
+        </Alert>
+      </Snackbar>
+
       <Modal
         className="modal"
         open={props.open}
@@ -115,55 +135,43 @@ export default function UpdateTask(props) {
                 justifyContent: "space-between",
               }}
             >
-              <Box>
-                <Typography id="modal-modal-title" variant="h5">
-                  Judul :
-                </Typography>
-                <TextField
-                  autoComplete="off"
-                  id="outlined-multiline-flexible"
+              <TextField
+                autoComplete="off"
+                id="outlined-multiline-flexible"
+                label="Judul"
+                required
+                value={nama}
+                onChange={(event) => setNama(event.target.value)}
+              />
+
+              <FormControl sx={{ minWidth: "10rem" }}>
+                <InputLabel id="demo-simple-select-label">
+                  Prioritas *{" "}
+                </InputLabel>
+                <Select
                   required
-                  fullWidth
-                  value={nama}
-                  onChange={(event) => setNama(event.target.value)}
-                />
-              </Box>
-              <Box sx={{ mr: 3, width: "20%" }}>
-                <Typography variant="h5">Prioritas : </Typography>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">
-                    Prioritas
-                  </InputLabel>
-                  <Select
-                    required
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    label="prioritas"
-                    value={prioritas}
-                    onChange={(event) => setPrioritas(event.target.value)}
-                  >
-                    <MenuItem value="Rendah">Rendah</MenuItem>
-                    <MenuItem value="Sedang">Sedang</MenuItem>
-                    <MenuItem value="Tinggi">Tinggi</MenuItem>
-                    <MenuItem value="Sangat Tinggi">Sangat Tinggi</MenuItem>
-                  </Select>
-                </FormControl>
-              </Box>
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="prioritas"
+                  value={prioritas}
+                  onChange={(event) => setPrioritas(event.target.value)}
+                >
+                  <MenuItem value="Rendah">Rendah</MenuItem>
+                  <MenuItem value="Sedang">Sedang</MenuItem>
+                  <MenuItem value="Tinggi">Tinggi</MenuItem>
+                  <MenuItem value="Sangat Tinggi">Sangat Tinggi</MenuItem>
+                </Select>
+              </FormControl>
             </Box>
             <Divider sx={{ my: 1 }} />
+
             <Box
               sx={{
-                p: 2,
                 mt: 2,
               }}
             >
               {/* Kebutuhan */}
               <Box sx={{ my: 2 }}>
-                {/* Judul Kebutuhan */}
-                <Box sx={{ display: "flex" }}>
-                  <SubjectIcon sx={{ mt: 0.3 }} />
-                  <Typography variant="h5">Kebutuhan : </Typography>
-                </Box>
                 <Editor
                   editorState={kebutuhan}
                   onEditorStateChange={(a) => setKebutuhan(a)}
@@ -172,6 +180,7 @@ export default function UpdateTask(props) {
                   editorClassName="kebutuhanE"
                   editorStyle={{
                     border: "1px solid #bebebe",
+                    minHeight: "15rem",
                     borderRadius: "4px",
                   }}
                   toolbar={{
@@ -182,14 +191,14 @@ export default function UpdateTask(props) {
                     history: { inDropdown: true },
                   }}
                 />
-                <Typography sx={{ my: 1 }} variant="h5">
-                  Attachment :{" "}
-                </Typography>
+
                 <TextField
                   autoComplete="off"
                   id="outlined-multiline-flexible"
-                  label="Attachment"
+                  label="Attachment (opsional)"
                   fullWidth
+                  helperText="*Link (Lebih dari 1, pisah dengan tanda koma (,))"
+                  sx={{ mt: 2 }}
                   value={attachment}
                   onChange={(event) => setAttachment(event.target.value)}
                 />

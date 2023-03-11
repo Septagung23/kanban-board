@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   TextField,
   Button,
@@ -9,6 +10,7 @@ import {
   FormControl,
   InputLabel,
   Select,
+  Snackbar,
 } from "@mui/material";
 
 import { useState, useEffect } from "react";
@@ -26,20 +28,30 @@ export default function UpdateProfile(props: any) {
   const [divisi, setDivisi] = useState<string>("");
   const getProfile = props.getProfile;
 
+  const [mess, setMess] = useState<string>("");
+  const [isErr, setIsErr] = useState<boolean>(false);
+  const [openMess, setOpenMess] = useState<boolean>(false);
+  const closeMess = () => setOpenMess(false);
+
   //Axios Fetch
   const UpdateProfile = async (event: any) => {
     event.preventDefault();
     try {
-      await axiosPrivate.patch(`/user/${props.profile?.id}`, {
+      const res = await axiosPrivate.patch(`/user/${props.profile?.id}`, {
         namaLengkap: nama,
         username,
         nomorHp: nomor,
         divisi,
       });
-      getProfile();
+      setMess(res.data.message);
+      setOpenMess(true);
+      setIsErr(false);
       props.close();
+      getProfile();
     } catch (error: any) {
-      console.log(error);
+      setMess(error.response.data.message);
+      setOpenMess(true);
+      setIsErr(true);
     }
   };
 
@@ -52,13 +64,19 @@ export default function UpdateProfile(props: any) {
 
   return (
     <>
+      <Snackbar open={openMess} autoHideDuration={5000} onClose={closeMess}>
+        <Alert
+          variant="filled"
+          color={isErr ? "error" : "success"}
+          severity={isErr ? "error" : "success"}
+        >
+          {mess}
+        </Alert>
+      </Snackbar>
       <Modal open={props.open} onClose={props.close}>
         <Box sx={modal} component="form" onSubmit={UpdateProfile}>
           <Typography variant="h4">Edit Profile</Typography>
-          <Divider />
-          <Typography sx={{ textAlign: "left", my: 1 }}>
-            Nama Lengkap
-          </Typography>
+          <Divider sx={{ mb: 3 }} />
           <TextField
             autoComplete="off"
             required
@@ -68,7 +86,6 @@ export default function UpdateProfile(props: any) {
             value={nama}
             onChange={(event) => setNama(event.target.value)}
           />
-          <Typography sx={{ textAlign: "left", my: 1 }}>Username</Typography>
           <TextField
             autoComplete="off"
             required
@@ -78,7 +95,6 @@ export default function UpdateProfile(props: any) {
             value={username}
             onChange={(event) => setUsername(event.target.value)}
           />
-          <Typography sx={{ textAlign: "left", my: 1 }}>Nomor HP</Typography>
           <TextField
             autoComplete="off"
             required
@@ -88,7 +104,6 @@ export default function UpdateProfile(props: any) {
             value={nomor}
             onChange={(event) => setNomor(event.target.value)}
           />
-          <Typography sx={{ textAlign: "left", my: 1 }}>Divisi</Typography>
           <FormControl fullWidth required>
             <InputLabel id="demo-simple-select-label">Divisi</InputLabel>
             <Select
@@ -104,7 +119,17 @@ export default function UpdateProfile(props: any) {
               <MenuItem value="Admin">Admin</MenuItem>
             </Select>
           </FormControl>
-          <Button variant="contained" sx={{ mt: 1 }} type="submit">
+          <Button
+            variant="contained"
+            sx={{
+              mt: 1,
+              bgcolor: "#3eb772",
+              "&:hover": {
+                backgroundColor: "#3eb772",
+              },
+            }}
+            type="submit"
+          >
             Submit
           </Button>
           <Button color="error" onClick={props.close}>

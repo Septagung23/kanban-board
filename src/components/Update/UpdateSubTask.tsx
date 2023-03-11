@@ -7,6 +7,9 @@ import {
   Typography,
   Modal,
   TextField,
+  Divider,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 
 import EditIcon from "@mui/icons-material/Edit";
@@ -21,59 +24,85 @@ export default function UpdateSubTask(props: any) {
   const handleCloseSubTask = () => setOpenModalSubTask(false);
   const axiosPrivate = useAxiosPrivate();
 
-  const [id, setId] = useState<string>(props?.id);
+  const id = props?.id;
+  const taskId = props.taskId;
+  const getSubtask = props.getSubtask;
   const [keterangan, setKeterangan] = useState<string>(props.keterangan);
   const [poin, setPoin] = useState<string>(props.poin);
   const [user, setUser] = useState<any>(props.user);
-  const [userId, setUserId] = useState<any>(user?.id);
-  const [nama, setNama] = useState<any>(user?.username);
-  const [taskId, setTaskId] = useState<string>(props.taskId);
+  const [nama, setNama] = useState<any>(props.userName);
   const [allUser, setAllUser] = useState<any>([]);
   const options = allUser?.map((u: any) => ({
     label: u.namaLengkap,
     id: u.id,
   }));
-  const getSubtask = props.getSubtask;
+
+  const [mess, setMess] = useState<string>("");
+  const [isErr, setIsErr] = useState<boolean>(false);
+  const [openMess, setOpenMess] = useState<boolean>(false);
+  const closeMess = () => setOpenMess(false);
 
   const updateSubTask = async (event: any) => {
     event.preventDefault();
     try {
-      await axiosPrivate.patch(`/subtask/${id}`, {
+      const res = await axiosPrivate.patch(`/subtask/${id}`, {
         taskId,
-        userId,
+        userId: user,
         keterangan,
         poin: parseInt(poin),
       });
+      setMess(res.data.message);
+      setOpenMess(true);
+      setIsErr(false);
       setOpenModalSubTask(false);
       getSubtask();
     } catch (error: any) {
-      console.log(error);
+      setMess(error.response.data.message);
+      setOpenMess(true);
+      setIsErr(true);
     }
   };
 
   const getUser = async () => {
     try {
       const res = await axiosPrivate.get(`/user`);
-      setAllUser(res.data);
-    } catch (error: any) {
-      console.log(error);
-    }
+      setAllUser(res.data.data);
+    } catch (error: any) {}
+  };
+
+  const getUserbyId = async () => {
+    try {
+      const res = await axiosPrivate.get(`/user/${props.user}`);
+      setUser(res.data.data);
+    } catch (error) {}
   };
 
   useEffect(() => {
     getUser();
     getSubtask();
+    getUserbyId();
   }, []);
 
   return (
     <>
+      <Snackbar open={openMess} autoHideDuration={5000} onClose={closeMess}>
+        <Alert
+          variant="filled"
+          color={isErr ? "error" : "success"}
+          severity={isErr ? "error" : "success"}
+        >
+          {mess}
+        </Alert>
+      </Snackbar>
+
       <IconButton onClick={handleOpenSubTask}>
         <EditIcon color="primary" />
       </IconButton>
 
-      <Modal hideBackdrop open={openModalSubTask} onClose={handleCloseSubTask}>
+      <Modal open={openModalSubTask} onClose={handleCloseSubTask}>
         <Box sx={modal}>
           <Typography>Edit Sub Task</Typography>
+          <Divider sx={{ my: 1 }} />
           <Box
             sx={{
               m: 1,
@@ -84,45 +113,44 @@ export default function UpdateSubTask(props: any) {
             component="form"
             onSubmit={updateSubTask}
           >
-            <Typography sx={{ textAlign: "left", my: 1 }}>
-              Keterangan
-            </Typography>
             <TextField
               autoComplete="off"
               required
+              fullWidth
               id="outlined-r-ket"
               label="Keterangan"
               value={keterangan}
               onChange={(event) => setKeterangan(event.target.value)}
             />
-            <Typography sx={{ textAlign: "left", my: 1 }}>Member</Typography>
             <Autocomplete
               disablePortal
+              fullWidth
               id="Member"
               options={options}
+              isOptionEqualToValue={(option, value) => option.id === value}
               value={nama}
               onChange={(event, values) => {
-                setUserId(values.id);
+                setNama(values.label);
+                setUser(values.id);
               }}
               renderInput={(params: any) => (
-                <TextField {...params} label={nama} />
+                <TextField {...params} label="Member * " />
               )}
             />
-            <Typography sx={{ textAlign: "left", my: 1 }}>Poin</Typography>
             <TextField
               required
               id="outlined-r-member"
+              fullWidth
               label="Poin"
               type="number"
               InputProps={{
                 inputProps: { min: 1 },
               }}
-              sx={{ width: "25ch" }}
               value={poin}
               onChange={(event) => setPoin(event.target.value)}
             />
 
-            <Button sx={{ mt: 2 }} variant="contained" type="submit">
+            <Button variant="contained" type="submit">
               Submit
             </Button>
             <Button onClick={handleCloseSubTask} color="error">

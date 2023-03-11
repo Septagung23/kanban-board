@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import {
@@ -14,13 +14,14 @@ import {
   FormControl,
   InputLabel,
   FormLabel,
+  Snackbar,
 } from "@mui/material";
 
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import Loading from "../components/Loading";
-import nore from "../assets/nore_w.png";
+import nore from "../assets/nore.png";
 
 export default function Login() {
   const { setAuth } = useAuth();
@@ -29,6 +30,8 @@ export default function Login() {
     password: "",
   });
   const [errMsg, setErrMsg] = useState<string>("");
+  const [openErr, setOpenErr] = useState(false);
+  const closeErr = () => setOpenErr(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
   const handleShowPassword = () => setOpen((show) => !show);
@@ -40,22 +43,28 @@ export default function Login() {
     event.preventDefault();
     setIsLoading(true);
     try {
-      const response = await axiosPrivate.post(`/auth/login`, formData, {
+      const res = await axiosPrivate.post(`/auth/login`, formData, {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });
-      const id = response.data.id;
-      const nama = response.data.namaLengkap;
-      const token = response.data.accessToken;
-      const role = response.data.role;
+      const id = res.data.data.id;
+      const nama = res.data.data.namaLengkap;
+      const token = res.data.data.accessToken;
+      const role = res.data.data.role;
       setAuth({ token, id, nama, role });
       setIsLoading(false);
       navigate("/");
     } catch (error: any) {
-      if (error?.response?.status === 401) {
-        setErrMsg("Unauthorized - Password/Username Salah");
+      if (error?.response?.data?.code === 400) {
+        setErrMsg(error?.response?.data?.message);
+        setOpenErr(true);
+      } else if (error?.response?.data?.code === 401) {
+        setErrMsg("Username/Password Salah");
+        setOpenErr(true);
+      } else if (error?.response?.data?.code === 503) {
+        setErrMsg(error?.response?.data?.message);
+        setOpenErr(true);
       }
-      console.log(error);
       setIsLoading(false);
     }
   };
@@ -65,147 +74,138 @@ export default function Login() {
   }
 
   return (
-    <Box
-      sx={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        position: "absolute",
-        justifyContent: "center",
-        textAlign: "center",
-        alignItems: "center",
-        background:
-          "linear-gradient(51deg, rgba(0,255,3,1) 0%, rgba(3,184,5,1) 35%, rgba(1,168,3,1) 50%, rgba(3,184,5,1) 65%, rgba(0,255,3,1) 100%)",
-      }}
-    >
+    <>
+      {errMsg && (
+        <Snackbar open={openErr} autoHideDuration={3000} onClose={closeErr}>
+          <Alert onClose={closeErr} severity="error" variant="filled">
+            {errMsg}
+          </Alert>
+        </Snackbar>
+      )}
       <Box
-        className="containerLogin"
         sx={{
-          width: "40%",
+          width: "100%",
+          height: "100%",
           display: "flex",
-          my: 5,
-          borderRadius: "16px",
-          background: "rgba(255, 255, 255, 0.05)",
-          position: "fixed",
-          boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+          position: "absolute",
+          justifyContent: "center",
+          textAlign: "center",
+          alignItems: "center",
+          backgroundColor: "#3eb772",
         }}
       >
         <Box
-          className="Login"
+          className="containerLogin"
           sx={{
-            width: "100%",
-            borderRadius: "16px",
-            color: "rgba(255, 255,255)",
-            m: 1,
+            display: "flex",
+            my: 5,
+            borderRadius: 1,
+            background: "#f5f5f5",
+            position: "fixed",
+            boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
           }}
         >
-          <img src={nore} style={{ height: "60px", width: "100px" }} />
-          <Typography variant="h3">Login</Typography>
           <Box
-            className="loginForm"
-            component="form"
-            onSubmit={login}
+            className="Login"
             sx={{
-              width: "auto",
-              mx: 4,
-              mt: 3,
-              display: "flex",
-              justifyContent: "center",
-              alignContent: "center",
-              flexWrap: "wrap",
-              flexDirection: "column",
-              gap: 1,
+              width: "100%",
+              m: 1,
             }}
           >
-            {errMsg && (
-              <Alert severity="error" variant="filled">
-                {errMsg}
-              </Alert>
-            )}
-
-            <FormLabel htmlFor="username">
-              <Typography sx={{ textAlign: "left", color: "white" }}>
-                Username
-              </Typography>
-            </FormLabel>
-            <TextField
-              autoComplete="off"
-              required
-              id="username"
-              label="Username"
-              inputProps={{
-                readOnly: readOnly,
+            <img src={nore} style={{ width: "180px" }} />
+            <Typography variant="h4">Login</Typography>
+            <Box
+              className="loginForm"
+              component="form"
+              onSubmit={login}
+              sx={{
+                width: "auto",
+                mx: 4,
+                mt: 3,
+                display: "flex",
+                justifyContent: "center",
+                alignContent: "center",
+                flexWrap: "wrap",
+                flexDirection: "column",
+                gap: 1,
               }}
-              onFocus={() => setReadOnly(false)}
-              onChange={(event) =>
-                setFormData({ ...formData, username: event.target.value })
-              }
-              value={formData.username}
-            />
-
-            <FormLabel htmlFor="password">
-              <Typography sx={{ textAlign: "left", mt: 2, color: "white" }}>
-                Password
-              </Typography>
-            </FormLabel>
-            <FormControl variant="outlined">
-              <InputLabel htmlFor="password">Password</InputLabel>
-              <OutlinedInput
+            >
+              <FormLabel htmlFor="username"></FormLabel>
+              <TextField
                 autoComplete="off"
-                id="password"
-                type={open ? "text" : "password"}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleShowPassword}
-                      edge="end"
-                    >
-                      {open ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                    </IconButton>
-                  </InputAdornment>
-                }
+                id="username"
+                label="Username"
                 inputProps={{
                   readOnly: readOnly,
                 }}
                 onFocus={() => setReadOnly(false)}
-                label="Password"
                 onChange={(event) =>
-                  setFormData({ ...formData, password: event.target.value })
+                  setFormData({ ...formData, username: event.target.value })
                 }
-                value={formData.password}
+                value={formData.username}
               />
-            </FormControl>
+              <FormControl variant="outlined">
+                <InputLabel id="password-login">Password</InputLabel>
+                <OutlinedInput
+                  autoComplete="off"
+                  id="password"
+                  type={open ? "text" : "password"}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleShowPassword}
+                        edge="end"
+                      >
+                        {open ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  inputProps={{
+                    readOnly: readOnly,
+                  }}
+                  onFocus={() => setReadOnly(false)}
+                  onChange={(event) =>
+                    setFormData({ ...formData, password: event.target.value })
+                  }
+                  value={formData.password}
+                  label="Password"
+                />
+              </FormControl>
 
-            {/* Button Login */}
-            <Button
-              type="submit"
-              sx={{ mt: 3, mb: 1 }}
-              variant="contained"
-              color="primary"
-              size="medium"
-            >
-              Login
-            </Button>
-          </Box>
-
-          <Divider sx={{ my: 1 }} />
-          <Typography variant="body1">
-            Doesn't Have an Account ?
-            <NavLink to="/register" style={{ textDecoration: "none" }}>
+              {/* Button Login */}
               <Button
+                className="Button"
+                type="submit"
                 sx={{
-                  mb: 0.1,
-                  color: "white",
-                  textTransform: "capitalize",
+                  mt: 3,
+                  mb: 1,
+                  bgcolor: "#3eb772",
+                  "&:hover": {
+                    backgroundColor: "#3eb772",
+                  },
                 }}
+                variant="contained"
+                color="primary"
+                size="medium"
               >
-                <Typography variant="body1">Register</Typography>
+                Login
               </Button>
-            </NavLink>
-          </Typography>
+            </Box>
+
+            <Divider sx={{ my: 1 }} />
+            <Typography variant="body1">
+              Doesn't Have an Account?{" "}
+              <Link
+                to="/register"
+                style={{ textDecoration: "none", color: "#3eb772" }}
+              >
+                Register
+              </Link>
+            </Typography>
+          </Box>
         </Box>
       </Box>
-    </Box>
+    </>
   );
 }

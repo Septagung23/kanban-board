@@ -11,10 +11,17 @@ import {
   IconButton,
   Select,
   MenuItem,
+  Snackbar,
+  Alert,
+  Tooltip,
 } from "@mui/material";
 import PersonAddAlt1OutlinedIcon from "@mui/icons-material/PersonAddAlt1Outlined";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
+import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
+import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -40,6 +47,12 @@ export default function Register() {
   const navigate = useNavigate();
   const axiosPrivate = useAxiosPrivate();
 
+  //Error Handling
+  const [mess, setMess] = useState("");
+  const [isErr, setIsErr] = useState(false);
+  const [openMess, setOpenMess] = useState(false);
+  const closeMess = () => setOpenMess(false);
+
   const register = async (e: any) => {
     e.preventDefault();
     setIsLoading(true);
@@ -52,7 +65,9 @@ export default function Register() {
       navigate("/login");
       setIsLoading(false);
     } catch (error: any) {
-      console.log(error);
+      setMess(error.response.data.message);
+      setOpenMess(true);
+      setIsErr(true);
       setIsLoading(false);
     }
   };
@@ -71,18 +86,27 @@ export default function Register() {
         justifyContent: "center",
         textAlign: "center",
         alignItems: "center",
-        background:
-          "linear-gradient(51deg, rgba(0,255,3,1) 0%, rgba(3,184,5,1) 35%, rgba(1,168,3,1) 50%, rgba(3,184,5,1) 65%, rgba(0,255,3,1) 100%)",
+        backgroundColor: "#3eb772",
       }}
     >
+      <Snackbar open={openMess} autoHideDuration={5000} onClose={closeMess}>
+        <Alert
+          variant="filled"
+          color={isErr ? "error" : "success"}
+          severity={isErr ? "error" : "success"}
+        >
+          {mess}
+        </Alert>
+      </Snackbar>
+
       <Box
         className="containerRegister"
         sx={{
-          minWidth: "40%",
           display: "flex",
-          borderRadius: "16px",
-          background: "rgba(255, 255, 255, 0.10)",
+          borderRadius: 1,
+          background: "#f5f5f5",
           position: "fixed",
+          pb: 2,
           boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
         }}
       >
@@ -91,18 +115,16 @@ export default function Register() {
           sx={{
             width: "100%",
             borderRadius: "16px",
-            color: "rgba(254, 250,224)",
-            m: 1,
           }}
         >
           <PersonAddAlt1OutlinedIcon sx={{ fontSize: "40px" }} />
-          <Typography variant="h5">Register</Typography>
-
+          <Typography variant="h5" sx={{ mb: 2 }}>
+            Register
+          </Typography>
           <Box
             className="registerForm"
             component="form"
             sx={{
-              width: "auto",
               mx: 4,
               display: "flex",
               justifyContent: "center",
@@ -111,22 +133,131 @@ export default function Register() {
               flexDirection: "column",
             }}
           >
-            <Typography sx={{ textAlign: "left" }}>Nama Lengkap</Typography>
+            <Box display="flex" alignItems="flex-start">
+              <TextField
+                fullWidth
+                size="small"
+                autoComplete="off"
+                required
+                id="outlined-r-nama"
+                label="Nama Lengkap"
+                onChange={(event) =>
+                  setFormRegister({
+                    ...formRegister,
+                    namaLengkap: event.target.value,
+                  })
+                }
+              />
+              <Tooltip title="Nama lengkap harus terdiri dari 1-60 karakter">
+                <IconButton>
+                  <HelpOutlineOutlinedIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
+
+            <Box display="flex" alignItems="flex-start">
+              <TextField
+                fullWidth
+                size="small"
+                autoComplete="off"
+                required
+                id="registerUsername"
+                label="Username"
+                inputProps={{
+                  readOnly: readOnly,
+                }}
+                onFocus={() => setReadOnly(false)}
+                onChange={(event) =>
+                  setFormRegister({
+                    ...formRegister,
+                    username: event.target.value,
+                  })
+                }
+              />
+              <Tooltip title="Username harus terdiri dari 4-30 karakter dan hanya boleh menggunakan titik (.) dan underscore (_) sebagai karakter spesial">
+                <IconButton>
+                  <HelpOutlineOutlinedIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
+
+            <Box display="flex" alignItems="flex-start" mb="0.8rem">
+              <FormControl variant="outlined" size="small" fullWidth>
+                <InputLabel htmlFor="registerPassword">Password * </InputLabel>
+                <OutlinedInput
+                  autoComplete="off"
+                  id="registerPassword"
+                  type={open ? "text" : "password"}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleShowPassword}
+                        edge="end"
+                      >
+                        {open ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  label="Password"
+                  onChange={(event) =>
+                    setFormRegister({
+                      ...formRegister,
+                      password: event.target.value,
+                    })
+                  }
+                />
+              </FormControl>
+              <Tooltip title="Password harus terdiri dari 8-32 karakter">
+                <IconButton>
+                  <HelpOutlineOutlinedIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
+
+            <Box display="flex" alignItems="flex-start" mb="0.8rem">
+              <FormControl variant="outlined" size="small" fullWidth>
+                <InputLabel htmlFor="registerConfirm-password">
+                  Konfirmasi *
+                </InputLabel>
+                <OutlinedInput
+                  autoComplete="off"
+                  id="registerConfirm-password"
+                  type={open ? "text" : "password"}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleShowPassword}
+                        edge="end"
+                      >
+                        {open ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  label="Password"
+                  onChange={(event) => setPasswordConfirm(event.target.value)}
+                />
+              </FormControl>
+              <IconButton>
+                {passwordConfirm ? (
+                  formRegister.password === passwordConfirm ? (
+                    <CheckCircleOutlinedIcon />
+                  ) : (
+                    <Tooltip title="Password dan konfirmasi password tidak sama">
+                      <CancelOutlinedIcon />
+                    </Tooltip>
+                  )
+                ) : (
+                  <Tooltip title="Konfirmasi password harus diisi">
+                    <ErrorOutlineIcon />
+                  </Tooltip>
+                )}
+              </IconButton>
+            </Box>
+
             <TextField
-              size="small"
-              autoComplete="off"
-              required
-              id="outlined-r-nama"
-              label="Nama Lengkap"
-              onChange={(event) =>
-                setFormRegister({
-                  ...formRegister,
-                  namaLengkap: event.target.value,
-                })
-              }
-            />
-            <Typography sx={{ textAlign: "left" }}>Nomor HP</Typography>
-            <TextField
+              fullWidth
               size="small"
               autoComplete="off"
               required
@@ -139,82 +270,9 @@ export default function Register() {
                 })
               }
             />
-            <Typography sx={{ textAlign: "left" }}>Username</Typography>
-            <TextField
-              size="small"
-              autoComplete="off"
-              required
-              id="registerUsername"
-              label="Username"
-              inputProps={{
-                readOnly: readOnly,
-              }}
-              onFocus={() => setReadOnly(false)}
-              onChange={(event) =>
-                setFormRegister({
-                  ...formRegister,
-                  username: event.target.value,
-                })
-              }
-            />
-            <Typography sx={{ textAlign: "left" }}>Password</Typography>
-            <FormControl variant="outlined" size="small">
-              <InputLabel htmlFor="registerPassword">Password</InputLabel>
-              <OutlinedInput
-                autoComplete="off"
-                id="registerPassword"
-                type={open ? "text" : "password"}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleShowPassword}
-                      edge="end"
-                    >
-                      {open ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                label="Password"
-                onChange={(event) =>
-                  setFormRegister({
-                    ...formRegister,
-                    password: event.target.value,
-                  })
-                }
-              />
-            </FormControl>
 
-            <Typography sx={{ textAlign: "left" }}>
-              Konfirmasi Password
-            </Typography>
-            <FormControl variant="outlined" size="small">
-              <InputLabel htmlFor="registerConfirm-password">
-                Konfirmasi
-              </InputLabel>
-              <OutlinedInput
-                autoComplete="off"
-                id="registerConfirm-password"
-                type={open ? "text" : "password"}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleShowPassword}
-                      edge="end"
-                    >
-                      {open ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                label="Password"
-                onChange={(event) => setPasswordConfirm(event.target.value)}
-              />
-            </FormControl>
-
-            <Typography sx={{ textAlign: "left" }}>Divisi</Typography>
             <FormControl fullWidth size="small">
-              <InputLabel id="demo-simple-select-label">Divisi</InputLabel>
+              <InputLabel id="demo-simple-select-label">Divisi * </InputLabel>
               <Select
                 id="divisi"
                 label="divisi"
@@ -234,7 +292,15 @@ export default function Register() {
             </FormControl>
             <Button
               type="submit"
-              sx={{ mt: 2, mb: 1 }}
+              sx={{
+                mt: 2,
+                mb: 1,
+                bgcolor: "#3eb772",
+                "&:hover": {
+                  backgroundColor: "#3eb772",
+                },
+              }}
+              className="Button"
               variant="contained"
               color="primary"
               size="medium"
@@ -246,19 +312,12 @@ export default function Register() {
 
           <Divider sx={{ my: 1 }} />
           <Typography variant="body1">
-            Already Have an Account ?
-            <Link to="/login" style={{ textDecoration: "none" }}>
-              <Button
-                sx={{
-                  mb: 0.1,
-                  color: "rgba(254, 250,224)",
-                  textTransform: "capitalize",
-                }}
-                color="primary"
-                size="small"
-              >
-                <Typography variant="body1">Login</Typography>
-              </Button>
+            Already Have an Account?{" "}
+            <Link
+              to="/login"
+              style={{ textDecoration: "none", color: "#3eb772" }}
+            >
+              Login
             </Link>
           </Typography>
         </Box>

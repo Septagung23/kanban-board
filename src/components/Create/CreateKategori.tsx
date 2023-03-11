@@ -6,6 +6,8 @@ import {
   Fab,
   Modal,
   Divider,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -24,6 +26,11 @@ export default function CreateKategori(props: any) {
   const [nama, setNama] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const [mess, setMess] = useState<string>("");
+  const [isErr, setIsErr] = useState<boolean>(false);
+  const [openMess, setOpenMess] = useState<boolean>(false);
+  const closeMess = () => setOpenMess(false);
+
   const axiosPrivate = useAxiosPrivate();
   const getCategory = props.getCategory;
 
@@ -35,16 +42,21 @@ export default function CreateKategori(props: any) {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await axiosPrivate.post(`/kategori-task`, {
+      const res = await axiosPrivate.post(`/kategori-task`, {
         nama,
         projectId: props.id,
       });
+      setMess(res.data.message);
+      setOpenMess(true);
+      setIsErr(false);
       setOpenModalCategory(false);
       setIsLoading(false);
       getCategory();
       setNama("");
     } catch (error: any) {
-      console.log(error);
+      setMess(error.response.data.message);
+      setOpenMess(true);
+      setIsErr(true);
       setIsLoading(false);
     }
   };
@@ -55,11 +67,30 @@ export default function CreateKategori(props: any) {
 
   return (
     <>
+      <Snackbar open={openMess} autoHideDuration={5000} onClose={closeMess}>
+        <Alert
+          variant="filled"
+          color={isErr ? "error" : "success"}
+          severity={isErr ? "error" : "success"}
+        >
+          {mess}
+        </Alert>
+      </Snackbar>
+
       <Fab
         className="createKategori"
-        color="primary"
         aria-label="add"
-        sx={{ position: "fixed", right: 0, bottom: 0, m: 5 }}
+        sx={{
+          position: "fixed",
+          right: 0,
+          bottom: 0,
+          m: 5,
+          bgcolor: "#3eb772",
+          color: "#f5f5f5",
+          "&:hover": {
+            backgroundColor: "#3eb772",
+          },
+        }}
         onClick={handleOpenCategory}
       >
         <AddIcon fontSize="large" />
@@ -79,15 +110,12 @@ export default function CreateKategori(props: any) {
             component="form"
             onSubmit={createCategory}
             sx={{
-              m: 1,
+              my: 1,
               display: "flex",
               flexDirection: "column",
               textAlign: "center",
             }}
           >
-            <Typography sx={{ textAlign: "left", my: 1 }}>
-              Nama Kategori
-            </Typography>
             <TextField
               autoComplete="off"
               required

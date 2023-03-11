@@ -8,6 +8,8 @@ import {
   FormControl,
   InputLabel,
   OutlinedInput,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
@@ -26,26 +28,47 @@ export default function ChangePass(props: any) {
   const [currentPassword, setCurrentPassword] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [passwordConfirm, setPasswordConfirm] = useState<string>("");
+
   const axiosPrivate = useAxiosPrivate();
   const { auth } = useAuth();
+
+  const [mess, setMess] = useState<string>("");
+  const [isErr, setIsErr] = useState<boolean>(false);
+  const [openMess, setOpenMess] = useState<boolean>(false);
+  const closeMess = () => setOpenMess(false);
 
   const updatePassword = async (event: any) => {
     event.preventDefault();
     try {
-      await axiosPrivate.patch("user/change-password", {
-        id: auth?.id,
+      const res = await axiosPrivate.patch("user/change-password", {
         newPassword: password,
         confirmNewPassword: passwordConfirm,
         currentPassword,
       });
+      setMess(res.data.message);
+      setOpenMess(true);
+      setIsErr(false);
       props.close();
+      setOpenPassword(false);
     } catch (error: any) {
-      console.log(error);
+      setMess(error.response.data.message);
+      setOpenMess(true);
+      setIsErr(true);
     }
   };
 
   return (
     <>
+      <Snackbar open={openMess} autoHideDuration={5000} onClose={closeMess}>
+        <Alert
+          variant="filled"
+          color={isErr ? "error" : "success"}
+          severity={isErr ? "error" : "success"}
+        >
+          {mess}
+        </Alert>
+      </Snackbar>
+
       <Modal open={props.open} onClose={props.close}>
         <Box sx={modal}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
@@ -62,55 +85,29 @@ export default function ChangePass(props: any) {
             component="form"
             onSubmit={updatePassword}
           >
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Typography sx={{ textAlign: "left", my: 1 }}>
-                Password Lama
-              </Typography>
-              <IconButton
-                aria-label="password"
-                edge="end"
-                onClick={handleShowPassword}
-                sx={{ px: 2 }}
-              >
-                {openPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-              </IconButton>
-            </Box>
-
             <FormControl variant="outlined">
-              <InputLabel htmlFor="passL">Password</InputLabel>
+              <InputLabel htmlFor="passL">Password Lama</InputLabel>
               <OutlinedInput
                 autoComplete="off"
                 id="passL"
                 type={openPassword ? "text" : "password"}
-                label="Password"
+                label="Password Lama"
                 onChange={(event) => setCurrentPassword(event.target.value)}
               />
             </FormControl>
 
-            <Typography sx={{ textAlign: "left", my: 1 }}>
-              Password Baru
-            </Typography>
             <FormControl variant="outlined">
-              <InputLabel htmlFor="passN">Password</InputLabel>
+              <InputLabel htmlFor="passN">Password Baru</InputLabel>
               <OutlinedInput
                 autoComplete="off"
                 id="passN"
                 type={openPassword ? "text" : "password"}
-                label="Password"
+                label="Password Baru"
                 onChange={(event) => setPassword(event.target.value)}
               />
             </FormControl>
 
-            <Typography sx={{ textAlign: "left", my: 1 }}>
-              Konfirmasi Password
-            </Typography>
-            <FormControl variant="outlined">
+            <FormControl variant="outlined" sx={{ mb: 0 }}>
               <InputLabel htmlFor="outlined-adornment-confirm-password">
                 Konfirmasi
               </InputLabel>
@@ -122,6 +119,25 @@ export default function ChangePass(props: any) {
                 onChange={(event) => setPasswordConfirm(event.target.value)}
               />
             </FormControl>
+
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Typography sx={{ textAlign: "left" }}>
+                Tampilkan Password
+              </Typography>
+              <IconButton
+                aria-label="password"
+                edge="end"
+                onClick={handleShowPassword}
+              >
+                {openPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+              </IconButton>
+            </Box>
 
             <Button sx={{ mt: 2 }} variant="contained" type="submit">
               Submit

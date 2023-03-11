@@ -32,9 +32,7 @@ export default function UpdateComment(props: any) {
       });
       closeComment();
       get();
-    } catch (error: any) {
-      console.log(error);
-    }
+    } catch (error: any) {}
   };
 
   return (

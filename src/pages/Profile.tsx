@@ -56,10 +56,8 @@ export default function Profile() {
   const getProfile = async () => {
     try {
       const res = await axiosPrivate.get(`/user/${auth.id}`);
-      setProfile(res.data);
-    } catch (error: any) {
-      console.log(error);
-    }
+      setProfile(res.data.data);
+    } catch (error: any) {}
   };
 
   useEffect(() => {
@@ -108,11 +106,11 @@ export default function Profile() {
             <Divider>
               <Typography
                 variant="h4"
-                color="primary"
                 sx={{
                   borderRadius: "80px",
                   border: "1px solid #1976d2",
                   p: "5px",
+                  color: "#3eb772",
                 }}
               >
                 {profile?.username}

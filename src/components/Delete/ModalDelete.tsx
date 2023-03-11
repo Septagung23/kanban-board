@@ -34,6 +34,7 @@ export default function ModalDelete(props: any) {
           <Button
             onClick={() => handleClose()}
             variant="contained"
+            color="error"
             size="small"
           >
             Tidak
@@ -42,7 +43,6 @@ export default function ModalDelete(props: any) {
             onClick={() => props.deleteFunction(id)}
             variant="contained"
             size="small"
-            color="error"
           >
             Ya
           </Button>

@@ -7,6 +7,8 @@ import {
   IconButton,
   Divider,
   TextField,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 
 import Appbar from "../components/Appbar";
@@ -20,6 +22,7 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 import EditIcon from "@mui/icons-material/Edit";
+import Nodata from "../components/Nodata";
 
 export default function Project() {
   const [project, setProject] = useState<any>([]);
@@ -27,6 +30,12 @@ export default function Project() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const axiosPrivate = useAxiosPrivate();
   const { auth } = useAuth();
+
+  //Error Handling
+  const [mess, setMess] = useState("");
+  const [isErr, setIsErr] = useState(false);
+  const [openMess, setOpenMess] = useState(false);
+  const closeMess = () => setOpenMess(false);
 
   useEffect(() => {
     getProject();
@@ -36,26 +45,27 @@ export default function Project() {
     setIsLoading(true);
     try {
       const res = await axiosPrivate.get("/project");
-      setProject(res.data);
-      setIsLoading(false);
+      setProject(res.data.data);
     } catch (error: any) {
+      setProject(null);
+    } finally {
       setIsLoading(false);
-      console.log(error);
     }
   };
 
   const deleteProject = async (id: string) => {
     try {
-      await axiosPrivate.delete(`/project/${id}`);
+      const res = await axiosPrivate.delete(`/project/${id}`);
+      setMess(res.data.message);
+      setOpenMess(true);
+      setIsErr(false);
       getProject();
     } catch (error: any) {
-      console.log(error);
+      setMess(error.response.data.message);
+      setOpenMess(true);
+      setIsErr(true);
     }
   };
-
-  if (isLoading) {
-    return <Loading />;
-  }
 
   let projects;
   if (project) {
@@ -126,29 +136,50 @@ export default function Project() {
   return (
     <>
       <Appbar />
+
+      <Snackbar open={openMess} autoHideDuration={5000} onClose={closeMess}>
+        <Alert
+          variant="filled"
+          color={isErr ? "error" : "success"}
+          severity={isErr ? "error" : "success"}
+        >
+          {mess}
+        </Alert>
+      </Snackbar>
+
       <Box className="container" sx={main}>
         <Box className="judul" sx={{ textAlign: "center" }}>
-          <Typography variant="h3">Project</Typography>
+          <Typography variant="h3">Project List</Typography>
         </Box>
-        <Box sx={{ mx: 6 }}>
-          <TextField
-            autoComplete="off"
-            variant="standard"
-            label="Search Project"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-          />
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            flexWrap: "wrap",
-            mx: 4,
-            my: 2,
-          }}
-        >
-          {projects}
-        </Box>
+        {!isLoading ? (
+          project ? (
+            <>
+              <Box sx={{ mx: 6 }}>
+                <TextField
+                  autoComplete="off"
+                  variant="standard"
+                  label="Search Project"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                />
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  mx: 4,
+                  my: 2,
+                }}
+              >
+                {projects}
+              </Box>
+            </>
+          ) : (
+            <Nodata message="Tidak ada project yang ditemukan" />
+          )
+        ) : (
+          <Loading />
+        )}
       </Box>
     </>
   );

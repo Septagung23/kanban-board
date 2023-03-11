@@ -1,42 +1,30 @@
 .App {
   text-align: center;
 }
-
-.MuiOutlinedInput-root {
-  margin-bottom: 0.8rem;
+.MuiButton-containedPrimary {
+  background-color: #3eb772 !important;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.MuiSvgIcon-colorPrimary {
+  color: #3eb772 !important;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.css-wb57ya-MuiFormControl-root-MuiTextField-root {
+  margin-bottom: 0.8rem !important;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.css-1u3bzj6-MuiFormControl-root-MuiTextField-root {
+  margin-bottom: 0.8rem !important;
 }
 
-.App-link {
-  color: #61dafb;
+.css-1nrlq1o-MuiFormControl-root {
+  margin-bottom: 0.8rem !important;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.MuiFormHelperText-root {
+  margin-left: 2px !important;
+}
+
+.MuiSelect-select {
+  text-align: left;
 }

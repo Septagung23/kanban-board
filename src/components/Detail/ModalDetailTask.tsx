@@ -13,6 +13,9 @@ import {
   Button,
   Avatar,
   TextField,
+  Snackbar,
+  Alert,
+  Tooltip,
 } from "@mui/material";
 
 import { Fragment, useEffect, useState } from "react";
@@ -26,6 +29,8 @@ import SaveIcon from "@mui/icons-material/Save";
 import Add from "@mui/icons-material/Add";
 import Edit from "@mui/icons-material/Edit";
 import LabelIcon from "@mui/icons-material/Label";
+import LinkIcon from "@mui/icons-material/Link";
+import SendIcon from "@mui/icons-material/Send";
 
 import CreateSubTask from "../Create/CreateSubTask";
 import UpdateSubTask from "../Update/UpdateSubTask";
@@ -88,12 +93,13 @@ export default function ModalDetail(props: any) {
   const { auth } = useAuth();
   const namaUser = auth?.nama;
   const [subTask, setSubTask] = useState<any>([]);
+
   const [subTaskId, setSubTaskId] = useState<string>("");
   const id = props.id;
   const nama = props.nama;
   const kebutuhan = props.kebutuhan;
   const prioritas = props.prioritas;
-  const attachment = props.attachment;
+  const attachment = props.attachment && props.attachment.split(", ");
   const categoryId = props.categoryId;
   const getCategory = props.getCategory;
   const deleteFunction = props.deleteFunction;
@@ -109,25 +115,35 @@ export default function ModalDetail(props: any) {
 
   const [labelSt, setLabelSt] = useState<any>([]);
 
+  //Error Handling
+  const [mess, setMess] = useState("");
+  const [isErr, setIsErr] = useState(false);
+  const [openMess, setOpenMess] = useState(false);
+  const closeMess = () => setOpenMess(false);
+
   //Axios Fetch
   const axiosPrivate = useAxiosPrivate();
 
   const getSubtask = async () => {
     try {
       const res = await axiosPrivate.get(`/subtask/${id}`);
-      setSubTask(res.data);
+      setSubTask(res.data.data);
     } catch (error) {
-      console.log(error);
       setSubTask(null);
     }
   };
 
   const deleteSubTask = async (id: string) => {
     try {
-      await axiosPrivate.delete(`/subtask/${id}`);
+      const res = await axiosPrivate.delete(`/subtask/${id}`);
+      setMess(res.data.message);
+      setOpenMess(true);
+      setIsErr(false);
       getSubtask();
     } catch (error: any) {
-      console.log(error);
+      setMess(error.response.data.message);
+      setOpenMess(true);
+      setIsErr(true);
     }
   };
 
@@ -140,18 +156,15 @@ export default function ModalDetail(props: any) {
       });
       setCommentLine("");
       getComment();
-    } catch (error: any) {
-      console.log(error);
-    }
+    } catch (error: any) {}
   };
 
   const getComment = async () => {
     try {
       const res = await axiosPrivate.get(`/komentar/${id}`);
-      setComment(res.data);
+      setComment(res.data.data);
     } catch (error: any) {
       setComment(null);
-      console.log(error);
     }
   };
 
@@ -159,17 +172,14 @@ export default function ModalDetail(props: any) {
     try {
       await axiosPrivate.delete(`/komentar/${id}`);
       getComment();
-    } catch (error: any) {
-      console.log(error.response.data);
-    }
+    } catch (error: any) {}
   };
 
   const getLabel = async () => {
     try {
       const res = await axiosPrivate.get(`/label-task/${id}`);
-      setLabel(res.data);
+      setLabel(res.data.data);
     } catch (error: any) {
-      console.log(error);
       setLabel(null);
     }
   };
@@ -192,16 +202,19 @@ export default function ModalDetail(props: any) {
           {label?.map((l: any) => (
             <Box
               sx={{
-                width: "0.8rem",
-                height: "0.5rem",
+                minWidth: "1.5rem",
+                minHeight: "1rem",
                 backgroundColor: `${l?.bgColor}`,
                 color: `${l?.color}`,
                 borderRadius: 5,
                 px: 1,
-                textAlign: "left",
+                display: "flex",
+                alignItems: "center",
               }}
               key={l.id}
-            ></Box>
+            >
+              <Typography variant="body2">{l?.nama}</Typography>
+            </Box>
           ))}
         </Box>
       </a>
@@ -223,16 +236,25 @@ export default function ModalDetail(props: any) {
             position: "absolute",
             top: "50%",
             left: "50%",
-            width: "60%",
-            height: "80%",
+            width: "80%",
+            height: "85%",
             transform: "translate(-50%, -50%)",
             backgroundColor: "#ffffff",
             boxShadow: 4,
-            p: 4,
+            p: 3,
             display: "flex",
             overflowY: "scroll",
           }}
         >
+          <Snackbar open={openMess} autoHideDuration={5000} onClose={closeMess}>
+            <Alert
+              variant="filled"
+              color={isErr ? "error" : "success"}
+              severity={isErr ? "error" : "success"}
+            >
+              {mess}
+            </Alert>
+          </Snackbar>
           {/* Container */}
           <Box width="100%" className="container">
             {/* Judul */}
@@ -286,8 +308,7 @@ export default function ModalDetail(props: any) {
             {/* Content */}
             <Box
               sx={{
-                p: 2,
-                mt: 2,
+                mt: 1,
               }}
             >
               {/* Kebutuhan */}
@@ -298,13 +319,44 @@ export default function ModalDetail(props: any) {
                 </Box>
                 <Box
                   sx={{
-                    backgroundColor: "#ffffff",
                     px: 1,
                     borderRadius: 1,
                     border: "1px solid grey",
                   }}
                 >
                   {parse(kebutuhan)}
+                </Box>
+              </Box>
+
+              {/* Attachment */}
+              <Box sx={{ mb: 2 }}>
+                <Box sx={{ display: "flex", my: 1 }}>
+                  <LinkIcon sx={{ mt: 0.3 }} />
+                  <Typography variant="h5">Attachment</Typography>
+                </Box>
+
+                <Box sx={{ borderRadius: 1, border: "1px solid grey" }}>
+                  <List>
+                    {attachment ? (
+                      <ul>
+                        {attachment.map((a: string) => (
+                          <li>
+                            <a
+                              href={`https://${a}`}
+                              target="_blank"
+                              style={{ textDecoration: "none" }}
+                            >
+                              {a}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <Typography sx={{ textAlign: "center", color: "grey" }}>
+                        Tidak ada Attachment
+                      </Typography>
+                    )}
+                  </List>
                 </Box>
               </Box>
 
@@ -325,104 +377,132 @@ export default function ModalDetail(props: any) {
 
                 <Box
                   sx={{
-                    backgroundColor: "#ffffff",
                     p: 0,
                     borderRadius: 1,
                     border: "1px solid grey",
                   }}
                 >
                   <List>
-                    {subTask?.map((st: any) => (
-                      <Fragment key={st?.id}>
-                        <ListItem sx={{ p: 0, display: "block" }}>
-                          <Box
-                            sx={{
-                              width: 1,
-                              mx: 1,
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                            }}
-                          >
+                    {subTask ? (
+                      subTask?.map((st: any) => (
+                        <Fragment key={st?.id}>
+                          <ListItem sx={{ px: 1, py: 0, display: "block" }}>
                             <Box
                               sx={{
+                                width: 1,
+                                mx: 1,
                                 display: "flex",
-                                gap: 1,
+                                justifyContent: "space-between",
                                 alignItems: "center",
                               }}
                             >
-                              <Typography variant="h6">
-                                {st.keterangan}
-                              </Typography>
-                            </Box>
-                            <Box
-                              sx={{
-                                display: "flex",
-                                justifyContent: "flex-end",
-                                alignItems: "center",
-                              }}
-                            >
-                              <Chip
-                                label={`Poin : ${st.poin}`}
-                                sx={{ mr: 3 }}
-                              />
-
-                              {/* */}
-                              <IconButton
-                                onClick={() => {
-                                  handleOpenlabel(st.id);
-                                  setLabelSt(st.labelSubtask);
-                                }}
-                              >
-                                <LabelIcon color="success" />
-                              </IconButton>
-
-                              <LabelSubTask
-                                open={openModalLabel}
-                                close={handleCloselabel}
-                                label={labelSt}
-                                subtaskId={subTaskId}
-                                get={getSubtask}
-                              />
-
-                              <UpdateSubTask
-                                id={st.id}
-                                keterangan={st.keterangan}
-                                poin={st.poin}
-                                user={st.user}
-                                taskId={id}
-                                getSubtask={getSubtask}
-                              />
-
-                              <IconButton
-                                color="error"
-                                onClick={() => deleteSubTask(st.id)}
-                              >
-                                <DeleteIcon />
-                              </IconButton>
-                              {/* */}
-                            </Box>
-                          </Box>
-
-                          <Box sx={{ display: "flex", gap: 0.5, mx: 1 }}>
-                            {st?.labelSubtask?.map((lSt: any) => (
                               <Box
                                 sx={{
-                                  width: "0.8rem",
-                                  height: "0.5rem",
-                                  bgcolor: `${lSt.bgColor}`,
-                                  color: `${lSt.color}`,
-                                  borderRadius: 8,
+                                  display: "flex",
+                                  gap: 1,
+                                  alignItems: "center",
                                 }}
-                                key={lSt.id}
-                              ></Box>
-                            ))}
-                          </Box>
-                        </ListItem>
+                              >
+                                <Typography variant="h6">
+                                  {st.keterangan}
+                                </Typography>
+                              </Box>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "flex-end",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <Tooltip title={st.user.namaLengkap}>
+                                  <Avatar sx={{ mr: 1, width: 32, height: 32 }}>
+                                    <Typography>
+                                      {st.user.namaLengkap?.split(" ").length >
+                                      1
+                                        ? `${
+                                            st.user.namaLengkap?.split(
+                                              " "
+                                            )[0][0]
+                                          }${
+                                            st.user.namaLengkap?.split(
+                                              " "
+                                            )[1][0]
+                                          }`
+                                        : `${
+                                            st.user.namaLengkap?.split(
+                                              " "
+                                            )[0][0]
+                                          }`}
+                                    </Typography>
+                                  </Avatar>
+                                </Tooltip>
+                                <Chip
+                                  label={`Poin : ${st.poin}`}
+                                  sx={{ mr: 3 }}
+                                />
 
-                        {/*  */}
-                      </Fragment>
-                    ))}
+                                <IconButton
+                                  onClick={() => {
+                                    handleOpenlabel(st.id);
+                                    setLabelSt(st.labelSubtask);
+                                  }}
+                                  color="primary"
+                                >
+                                  <LabelIcon />
+                                </IconButton>
+
+                                <LabelSubTask
+                                  open={openModalLabel}
+                                  close={handleCloselabel}
+                                  label={labelSt}
+                                  subtaskId={subTaskId}
+                                  get={getSubtask}
+                                />
+
+                                <UpdateSubTask
+                                  id={st.id}
+                                  keterangan={st.keterangan}
+                                  poin={st.poin}
+                                  user={st.user.id}
+                                  userName={st.user.namaLengkap}
+                                  taskId={id}
+                                  getSubtask={getSubtask}
+                                />
+
+                                <IconButton
+                                  color="error"
+                                  onClick={() => deleteSubTask(st.id)}
+                                >
+                                  <DeleteIcon />
+                                </IconButton>
+                                {/* */}
+                              </Box>
+                            </Box>
+
+                            <Box sx={{ display: "flex", gap: 0.5, mx: 1 }}>
+                              {st?.labelSubtask?.map((lSt: any) => (
+                                <Box
+                                  sx={{
+                                    width: "0.8rem",
+                                    height: "0.5rem",
+                                    bgcolor: `${lSt.bgColor}`,
+                                    color: `${lSt.color}`,
+                                    borderRadius: 8,
+                                  }}
+                                  key={lSt.id}
+                                ></Box>
+                              ))}
+                            </Box>
+                          </ListItem>
+
+                          {/*  */}
+                        </Fragment>
+                      ))
+                    ) : (
+                      <Typography sx={{ textAlign: "center", color: "grey" }}>
+                        Tidak ada Subtask
+                      </Typography>
+                    )}
                   </List>
                 </Box>
               </Box>
@@ -457,99 +537,112 @@ export default function ModalDetail(props: any) {
                     value={commentLine}
                     onChange={(event) => setCommentLine(event.target.value)}
                   />
-                  <Button size="small" startIcon={<SaveIcon />} type="submit">
-                    save
+                  <Button size="small" startIcon={<SendIcon />} type="submit">
+                    Submit
                   </Button>
                 </Box>
 
                 <Box
                   sx={{
-                    backgroundColor: "#ffffff",
                     p: 1,
                     borderRadius: 1.5,
                     border: "1px solid grey",
                   }}
                 >
-                  {comment?.map((m: any) => (
-                    <Box
-                      sx={{
-                        height: "5rem",
-                      }}
-                      key={m.id}
-                    >
+                  {comment ? (
+                    comment?.map((m: any) => (
                       <Box
                         sx={{
-                          display: "flex",
-                          alignItems: "flex-start",
-                          gap: "0.6rem",
+                          height: "5rem",
                         }}
+                        key={m.id}
                       >
-                        <Avatar sx={{ width: 42, height: 42 }}>
-                          <Typography variant="h5">
-                            {m?.user?.namaLengkap.split(" ").length > 1
-                              ? `${m?.user?.namaLengkap?.split(" ")[0][0]}${
-                                  m?.user?.namaLengkap?.split(" ")[1][0]
-                                }`
-                              : `${m?.user?.namaLengkap?.split(" ")[0][0]}`}
-                          </Typography>
-                        </Avatar>
-                        <Box sx={{ width: 1 }}>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "flex-end",
-                              gap: 0.5,
-                            }}
-                          >
-                            <Typography sx={{ fontWeight: "bold" }}>
-                              {m?.user?.namaLengkap}
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "flex-start",
+                            gap: "0.6rem",
+                          }}
+                        >
+                          <Avatar sx={{ width: 42, height: 42 }}>
+                            <Typography variant="h5">
+                              {m?.user?.namaLengkap.split(" ").length > 1
+                                ? `${m?.user?.namaLengkap?.split(" ")[0][0]}${
+                                    m?.user?.namaLengkap?.split(" ")[1][0]
+                                  }`
+                                : `${m?.user?.namaLengkap?.split(" ")[0][0]}`}
                             </Typography>
-                            {m?.updatedAt ? (
-                              <Typography variant="caption">
-                                {dayjs(m?.updatedAt).format("DD-MM-YY, HH:mm")}{" "}
-                                (Edited)
+                          </Avatar>
+                          <Box sx={{ width: 1 }}>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "flex-end",
+                                gap: 0.5,
+                              }}
+                            >
+                              <Typography sx={{ fontWeight: "bold" }}>
+                                {m?.user?.namaLengkap}
                               </Typography>
-                            ) : (
-                              <Typography variant="caption">
-                                {dayjs(m?.createdAt).format("DD-MM-YY, HH:mm")}{" "}
+                              {m?.updatedAt ? (
+                                <Typography variant="caption">
+                                  {dayjs(m?.updatedAt).format(
+                                    "DD-MM-YY, HH:mm"
+                                  )}{" "}
+                                  (Edited)
+                                </Typography>
+                              ) : (
+                                <Typography variant="caption">
+                                  {dayjs(m?.createdAt).format(
+                                    "DD-MM-YY, HH:mm"
+                                  )}{" "}
+                                </Typography>
+                              )}
+                            </Box>
+
+                            <Box>
+                              <Typography variant="body1">
+                                {m.konten}
                               </Typography>
-                            )}
-                          </Box>
+                            </Box>
 
-                          <Box>
-                            <Typography variant="body1">{m.konten}</Typography>
-                          </Box>
-
-                          <Box sx={{ display: "flex", alignItems: "center" }}>
-                            {auth.id !== m.user.id ? null : (
-                              <UpdateComment
-                                id={m?.id}
-                                comment={m}
-                                get={getComment}
-                              />
-                            )}
-                            {auth.id === m.user.id || auth.role.id === 1 ? (
-                              <Button
-                                variant="text"
-                                size="small"
-                                sx={{
-                                  textTransform: "capitalize",
-                                  color: "black",
-                                  minWidth: "2rem",
-                                  minHeight: "2rem",
-                                }}
-                                onClick={() => deleteComment(m?.id)}
-                              >
-                                Delete
-                              </Button>
-                            ) : null}
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                              {auth.id !== m.user.id ? null : (
+                                <UpdateComment
+                                  id={m?.id}
+                                  comment={m}
+                                  get={getComment}
+                                />
+                              )}
+                              {auth.id === m.user.id || auth.role.id === 1 ? (
+                                <Button
+                                  variant="text"
+                                  size="small"
+                                  sx={{
+                                    textTransform: "capitalize",
+                                    color: "black",
+                                    minWidth: "2rem",
+                                    minHeight: "2rem",
+                                  }}
+                                  onClick={() => deleteComment(m?.id)}
+                                >
+                                  Delete
+                                </Button>
+                              ) : null}
+                            </Box>
                           </Box>
                         </Box>
                       </Box>
-                    </Box>
-                  ))}
+                    ))
+                  ) : (
+                    <Typography sx={{ textAlign: "center", color: "grey" }}>
+                      Tidak ada Comment
+                    </Typography>
+                  )}
                 </Box>
               </Box>
+
+              <Box sx={{ minHeight: "1px", my: 1 }}> </Box>
             </Box>
           </Box>
         </Box>
@@ -656,184 +749,4 @@ export default function ModalDetail(props: any) {
       />
     </>
   );
-}
-
-{
-  /* <Menu
-        open={openMenuLabel}
-        onClose={handleCloseMenuLabel}
-        anchorEl={anchorElLabel}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "center",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            px: 2,
-          }}
-        >
-          <Typography>Label</Typography>
-          <IconButton>
-            <Add fontSize="small" />
-          </IconButton>
-        </Box>
-        <Divider />
-        <Box>
-          <MenuItem>
-            <Checkbox sx={{ py: 0, pl: 0 }} />
-            <Box
-              sx={{
-                width: "10rem",
-                backgroundColor: "#3FAFC0",
-                borderRadius: 1,
-                px: 1,
-              }}
-            >
-              Label
-            </Box>
-            <EditIcon fontSize="small" sx={{ pl: 1 }} />
-          </MenuItem>
-        </Box>
-      </Menu> 
-       <Button
-                            variant="text"
-                            size="small"
-                            sx={{ textTransform: "capitalize", color: "black" }}
-                            onClick={() => openEditComment(m?.id)}
-                          >
-                            Edit
-                          </Button>  <Modal open={editComment} onClose={closeEditComment}>
-                        <Box sx={modal}>
-                          <TextField
-                            multiline
-                            fullWidth
-                            autoComplete="off"
-                            value={m.konten}
-                            onChange={(event) =>
-                              setCommentLine(event.target.value)
-                            }
-                          />
-
-                          <Button
-                            variant="contained"
-                            size="small"
-                            sx={{ mt: 1 }}
-                            onClick={closeEditComment}
-                          >
-                            Save
-                          </Button>
-                        </Box>
-                      </Modal>  <Label open={openMenuLabel} close={handleCloseMenuLabel} /> 
-                      <Box
-              sx={{
-                width: "2rem",
-                height: "2rem",
-                borderRadius: "50%",
-                bgcolor: `${bgColor}`,
-                display: "grid",
-                placeItems: "center",
-              }}
-            >
-              <Box
-                sx={{
-                  width: "0.5rem",
-                  height: "0.5rem",
-                  borderRadius: "50%",
-                  bgcolor: `${color}`,
-                }}
-              ></Box>
-            </Box>
-                      
-
-            <LabelSubTask
-        open={labelSubTask}
-        close={closeLabelSubTask}
-        id={subTaskId}
-        label={labelSt}
-      /> 
-
-      Label Sub Task 
-      <LabelSubTask open={openModalLabel} close={handleCloselabel} /> 
-      <Label
-        open={openLabelSt}
-        close={closeAddLabelSt}
-        isSubtask={true}
-        stId={subTaskId}
-        get={getSubtask}
-      /> 
-      <UpdateLabel
-        open={editLabelSt}
-        close={closeEditLabelSt}
-        get={getSubtask}
-        id={id}
-        labelId={labelIdSt}
-        nama={labelNameSt}
-        bgColor={bgColorSt}
-        color={colorSt}
-      />
-
-      <Menu
-                          open={openMenuLabelS}
-                          onClose={handleCloseMenuLabelS}
-                          anchorEl={anchorElLabelS}
-                          anchorOrigin={{
-                            vertical: "center",
-                            horizontal: "left",
-                          }}
-                          transformOrigin={{
-                            vertical: "top",
-                            horizontal: "left",
-                          }}
-                        >
-                          <Box
-                            sx={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                              px: 2,
-                              minWidth: "11rem",
-                            }}
-                          >
-                            <Typography>Label</Typography>
-                            <IconButton onClick={() => addLabelSt(st.id)}>
-                              <Add fontSize="small" />
-                            </IconButton>
-                          </Box>
-                        {/* {subTask?.labelSubtask?.map((lSt: any) => (
-                            <div>
-                              <Divider />
-                              <Box sx={{ p: 1 }}>
-                                <Box
-                                  sx={{ display: "flex", alignItems: "center" }}
-                                >
-                                  <Box
-                                    sx={{
-                                      width: "10rem",
-                                      height: "1.5rem",
-                                      backgroundColor: `${lSt.bgColor}`,
-                                      color: `${lSt.color}`,
-                                      borderRadius: 1,
-                                      px: 1,
-                                    }}
-                                  >
-                                    <Typography>{lSt.nama}</Typography>
-                                  </Box>
-                                  <IconButton sx={{ py: 0 }}>
-                                    <Edit fontSize="small" />
-                                  </IconButton>
-                                </Box>
-                              </Box>
-                            </div>
-                          ))} 
-                          {st.keterangan}
-                        </Menu>
-                      */
 }

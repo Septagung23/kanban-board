@@ -34,6 +34,9 @@ export default function Register() {
   const [open, setOpen] = useState<boolean>(false);
   const handleShowPassword = () => setOpen((show) => !show);
 
+  const [openConfirmPass, setOpenConfirmPass] = useState<boolean>(false);
+  const handleShowConfrimPass = () => setOpenConfirmPass((show) => !show);
+
   const [formRegister, setFormRegister] = useState<any>({
     namaLengkap: "",
     username: "",
@@ -114,7 +117,7 @@ export default function Register() {
           className="Register"
           sx={{
             width: "100%",
-            borderRadius: "16px",
+            my: 1,
           }}
         >
           <PersonAddAlt1OutlinedIcon sx={{ fontSize: "40px" }} />
@@ -125,7 +128,7 @@ export default function Register() {
             className="registerForm"
             component="form"
             sx={{
-              mx: 4,
+              mx: 3,
               display: "flex",
               justifyContent: "center",
               alignContent: "center",
@@ -223,15 +226,19 @@ export default function Register() {
                 <OutlinedInput
                   autoComplete="off"
                   id="registerConfirm-password"
-                  type={open ? "text" : "password"}
+                  type={openConfirmPass ? "text" : "password"}
                   endAdornment={
                     <InputAdornment position="end">
                       <IconButton
                         aria-label="toggle password visibility"
-                        onClick={handleShowPassword}
+                        onClick={handleShowConfrimPass}
                         edge="end"
                       >
-                        {open ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                        {openConfirmPass ? (
+                          <VisibilityOffIcon />
+                        ) : (
+                          <VisibilityIcon />
+                        )}
                       </IconButton>
                     </InputAdornment>
                   }
@@ -242,10 +249,10 @@ export default function Register() {
               <IconButton>
                 {passwordConfirm ? (
                   formRegister.password === passwordConfirm ? (
-                    <CheckCircleOutlinedIcon />
+                    <CheckCircleOutlinedIcon color="success" />
                   ) : (
                     <Tooltip title="Password dan konfirmasi password tidak sama">
-                      <CancelOutlinedIcon />
+                      <CancelOutlinedIcon color="error" />
                     </Tooltip>
                   )
                 ) : (
@@ -263,6 +270,7 @@ export default function Register() {
               required
               id="outlined-r-nomor"
               label="Nomor"
+              helperText="Contoh : 628123456789 (gunakan kode negara tanpa tanda + dan spasi)"
               onChange={(event) =>
                 setFormRegister({
                   ...formRegister,

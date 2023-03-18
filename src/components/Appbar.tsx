@@ -257,6 +257,7 @@ export default function Appbar() {
             display: "flex",
             alignItems: "center",
             mx: 1,
+            pt: 1,
             minWidth: "11rem",
           }}
         >
@@ -321,17 +322,19 @@ export default function Appbar() {
           horizontal: "left",
         }}
       >
-        <NavLink to="/" style={{ textDecoration: "none", color: "black" }}>
-          <MenuItem>Project List</MenuItem>
-        </NavLink>
-        {(auth?.role?.id === 1 || auth?.role?.id === 2) && (
-          <NavLink
-            to="/create-project"
-            style={{ textDecoration: "none", color: "black" }}
-          >
-            <MenuItem>Add Project</MenuItem>
+        <Box>
+          <NavLink to="/" style={{ textDecoration: "none", color: "black" }}>
+            <MenuItem>Project List</MenuItem>
           </NavLink>
-        )}
+          {(auth?.role?.id === 1 || auth?.role?.id === 2) && (
+            <NavLink
+              to="/create-project"
+              style={{ textDecoration: "none", color: "black" }}
+            >
+              <MenuItem>Add Project</MenuItem>
+            </NavLink>
+          )}
+        </Box>
       </Menu>
     </>
   );

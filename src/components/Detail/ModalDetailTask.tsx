@@ -193,12 +193,14 @@ export default function ModalDetail(props: any) {
   return (
     <>
       {/* Card */}
-      <a onClick={() => handleOpenDetail()}>
-        <CardContent sx={{ px: 1, py: 0 }}>
-          <Typography variant="h6">{nama}</Typography>
+      <a onClick={() => handleOpenDetail()} style={{ padding: "10px 0" }}>
+        <CardContent sx={{ p: 1 }}>
+          <Typography variant="body1" sx={{ textAlign: "left" }}>
+            {nama}
+          </Typography>
         </CardContent>
         <Divider />
-        <Box sx={{ display: "flex", gap: 0.5, p: 1 }}>
+        <Box sx={{ display: "flex", gap: 0.5, p: 1, flexWrap: "wrap" }}>
           {label?.map((l: any) => (
             <Box
               sx={{
@@ -213,7 +215,7 @@ export default function ModalDetail(props: any) {
               }}
               key={l.id}
             >
-              <Typography variant="body2">{l?.nama}</Typography>
+              <Typography variant="caption">{l?.nama}</Typography>
             </Box>
           ))}
         </Box>
@@ -313,9 +315,16 @@ export default function ModalDetail(props: any) {
             >
               {/* Kebutuhan */}
               <Box sx={{ my: 2 }}>
-                <Box sx={{ display: "flex", my: 1 }}>
-                  <SubjectIcon sx={{ mt: 0.3 }} />
-                  <Typography variant="h5">Kebutuhan</Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    my: 1,
+                    gap: 0.5,
+                    alignItems: "center",
+                  }}
+                >
+                  <SubjectIcon />
+                  <Typography variant="h6">Kebutuhan</Typography>
                 </Box>
                 <Box
                   sx={{
@@ -330,17 +339,24 @@ export default function ModalDetail(props: any) {
 
               {/* Attachment */}
               <Box sx={{ mb: 2 }}>
-                <Box sx={{ display: "flex", my: 1 }}>
-                  <LinkIcon sx={{ mt: 0.3 }} />
-                  <Typography variant="h5">Attachment</Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    my: 1,
+                    gap: 0.5,
+                    alignItems: "center",
+                  }}
+                >
+                  <LinkIcon />
+                  <Typography variant="h6">Attachment</Typography>
                 </Box>
 
                 <Box sx={{ borderRadius: 1, border: "1px solid grey" }}>
                   <List>
-                    {attachment ? (
-                      <ul>
+                    {props.attachment ? (
+                      <ul style={{ paddingLeft: 25 }}>
                         {attachment.map((a: string) => (
-                          <li>
+                          <li key={a}>
                             <a
                               href={`https://${a}`}
                               target="_blank"
@@ -366,11 +382,18 @@ export default function ModalDetail(props: any) {
                   sx={{
                     display: "flex",
                     justifyContent: "space-between",
+                    alignItems: "center",
                   }}
                 >
-                  <Box style={{ display: "flex" }}>
-                    <FormatListBulletedIcon sx={{ mt: 0.3 }} />
-                    <Typography variant="h5">Sub Task</Typography>
+                  <Box
+                    style={{
+                      display: "flex",
+                      gap: "4px",
+                      alignItems: "center",
+                    }}
+                  >
+                    <FormatListBulletedIcon />
+                    <Typography variant="h6">Sub Task</Typography>
                   </Box>
                   <CreateSubTask id={id} get={getSubtask} />
                 </Box>
@@ -469,12 +492,11 @@ export default function ModalDetail(props: any) {
                                   getSubtask={getSubtask}
                                 />
 
-                                <IconButton
-                                  color="error"
-                                  onClick={() => deleteSubTask(st.id)}
-                                >
-                                  <DeleteIcon />
-                                </IconButton>
+                                <ModalDelete
+                                  id={st.id}
+                                  nama={st.keterangan}
+                                  deleteFunction={deleteSubTask}
+                                />
                                 {/* */}
                               </Box>
                             </Box>
@@ -483,14 +505,20 @@ export default function ModalDetail(props: any) {
                               {st?.labelSubtask?.map((lSt: any) => (
                                 <Box
                                   sx={{
-                                    width: "0.8rem",
-                                    height: "0.5rem",
-                                    bgcolor: `${lSt.bgColor}`,
+                                    minWidth: "1rem",
+                                    backgroundColor: `${lSt.bgColor}`,
                                     color: `${lSt.color}`,
-                                    borderRadius: 8,
+                                    borderRadius: 5,
+                                    px: 1,
+                                    display: "flex",
+                                    alignItems: "center",
                                   }}
                                   key={lSt.id}
-                                ></Box>
+                                >
+                                  <Typography variant="body2">
+                                    {lSt.nama}
+                                  </Typography>
+                                </Box>
                               ))}
                             </Box>
                           </ListItem>
@@ -509,13 +537,13 @@ export default function ModalDetail(props: any) {
 
               {/* Comment */}
               <Box sx={{ mt: 2 }}>
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <ChatBubbleOutlineIcon sx={{ mt: 0.3 }} />
-                  <Typography variant="h5">Comment</Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                  <ChatBubbleOutlineIcon />
+                  <Typography variant="h6">Comment</Typography>
                 </Box>
 
                 <Box
-                  sx={{ my: 1, display: "flex", alignItems: "center" }}
+                  sx={{ my: 1, display: "flex", alignItems: "flex-start" }}
                   component="form"
                   onSubmit={createComment}
                 >
@@ -526,20 +554,22 @@ export default function ModalDetail(props: any) {
                         }`
                       : `${namaUser?.split(" ")[0][0]}`}
                   </Avatar>
-                  <TextField
-                    multiline
-                    hiddenLabel
-                    autoComplete="off"
-                    fullWidth
-                    label="Write a Comment"
-                    size="small"
-                    sx={{ mx: 1 }}
-                    value={commentLine}
-                    onChange={(event) => setCommentLine(event.target.value)}
-                  />
-                  <Button size="small" startIcon={<SendIcon />} type="submit">
-                    Submit
-                  </Button>
+                  <Box sx={{ display: "flex", width: 1 }}>
+                    <TextField
+                      multiline
+                      hiddenLabel
+                      autoComplete="off"
+                      fullWidth
+                      label="Write a Comment"
+                      size="small"
+                      sx={{ mx: 1 }}
+                      value={commentLine}
+                      onChange={(event) => setCommentLine(event.target.value)}
+                    />
+                    <Button size="small" startIcon={<SendIcon />} type="submit">
+                      Submit
+                    </Button>
+                  </Box>
                 </Box>
 
                 <Box
@@ -615,19 +645,20 @@ export default function ModalDetail(props: any) {
                                 />
                               )}
                               {auth.id === m.user.id || auth.role.id === 1 ? (
-                                <Button
-                                  variant="text"
-                                  size="small"
-                                  sx={{
-                                    textTransform: "capitalize",
-                                    color: "black",
-                                    minWidth: "2rem",
-                                    minHeight: "2rem",
-                                  }}
-                                  onClick={() => deleteComment(m?.id)}
-                                >
-                                  Delete
-                                </Button>
+                                // <Button
+                                //   variant="text"
+                                //   size="small"
+                                //   sx={{
+                                //     textTransform: "capitalize",
+                                //     color: "black",
+                                //     minWidth: "2rem",
+                                //     minHeight: "2rem",
+                                //   }}
+                                //   onClick={() => deleteComment(m?.id)}
+                                // >
+                                //   Delete
+                                // </Button>
+                                <ModalDelete from="Comment" id={m.id} />
                               ) : null}
                             </Box>
                           </Box>
@@ -653,6 +684,7 @@ export default function ModalDetail(props: any) {
         <MenuItem onClick={handleOpenTask}>Edit Task</MenuItem>
 
         <ModalDelete
+          from="Task"
           categoryId={categoryId}
           id={id}
           nama={nama}
@@ -669,7 +701,7 @@ export default function ModalDetail(props: any) {
         kebutuhan={kebutuhan}
         prioritas={prioritas}
         categoryId={categoryId}
-        attachment={attachment}
+        attachment={props.attachment}
         getCategory={getCategory}
         open={openModalTask}
         close={handleCloseTask}
@@ -683,11 +715,11 @@ export default function ModalDetail(props: any) {
         anchorEl={anchorElLabel}
         anchorOrigin={{
           vertical: "top",
-          horizontal: "left",
+          horizontal: "right",
         }}
         transformOrigin={{
           vertical: "top",
-          horizontal: "left",
+          horizontal: "right",
         }}
       >
         <Box

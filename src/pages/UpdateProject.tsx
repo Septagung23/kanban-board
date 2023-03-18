@@ -77,93 +77,94 @@ export default function UpdateProject() {
     }
   };
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
   return (
     <>
       <Appbar />
-      <Box className="container" sx={main}>
-        <Box className="judul" sx={{ textAlign: "center" }}>
-          <AddIcon sx={{ fontSize: "60px" }} />
-          <Typography variant="h3">Edit Project</Typography>
-        </Box>
 
-        <Box
-          className="input"
-          component="form"
-          sx={{ width: "80%", alignSelf: "center", my: 3, gap: 3 }}
-          onSubmit={updateProject}
-        >
-          <TextField
-            autoComplete="off"
-            required
-            fullWidth
-            id="namaProject"
-            label="Nama"
-            value={nama}
-            onChange={(event) => setNama(event.target.value)}
-          />
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <Box className="container" sx={main}>
+          <Box className="judul" sx={{ textAlign: "center" }}>
+            <AddIcon sx={{ fontSize: "60px" }} />
+            <Typography variant="h3">Edit Project</Typography>
+          </Box>
+
           <Box
-            sx={{
-              display: "flex",
-              alignItems: "flex-start",
-              justifyContent: "space-between",
-            }}
+            className="input"
+            component="form"
+            sx={{ width: "80%", alignSelf: "center", my: 3, gap: 3 }}
+            onSubmit={updateProject}
           >
-            <Autocomplete
-              disablePortal
-              id="Client"
-              sx={{ width: 500, mr: 3 }}
-              options={options}
-              value={clientNama}
-              onChange={(event, values) => {
-                setClientId(values.id);
-              }}
-              renderInput={(params) => (
-                <TextField {...params} label={clientNama} />
-              )}
+            <TextField
+              autoComplete="off"
+              required
+              fullWidth
+              id="namaProject"
+              label="Nama"
+              value={nama}
+              onChange={(event) => setNama(event.target.value)}
             />
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "space-between",
+              }}
+            >
+              <Autocomplete
+                disablePortal
+                id="Client"
+                sx={{ width: 500, mr: 3 }}
+                options={options}
+                value={clientNama}
+                onChange={(event, values) => {
+                  setClientId(values.id);
+                }}
+                renderInput={(params) => (
+                  <TextField {...params} label={clientNama} />
+                )}
+              />
 
-            <FormControl sx={{ width: 300 }}>
-              <InputLabel id="demo-simple-select-label">Layanan *</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                label="Layanan"
-                value={jenisLayanan}
-                onChange={(event) => setJenisLayanan(event.target.value)}
-              >
-                <MenuItem value="Langganan">Langganan</MenuItem>
-                <MenuItem value="Lepas">Lepas</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
+              <FormControl sx={{ width: 300 }}>
+                <InputLabel id="demo-simple-select-label">Layanan *</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="Layanan"
+                  value={jenisLayanan}
+                  onChange={(event) => setJenisLayanan(event.target.value)}
+                >
+                  <MenuItem value="Langganan">Langganan</MenuItem>
+                  <MenuItem value="Lepas">Lepas</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
 
-          <TextField
-            autoComplete="off"
-            fullWidth
-            id="outlined-multiline-flexible"
-            label="Keterangan (opsional)"
-            multiline
-            rows={5}
-            value={keterangan}
-            onChange={(event) => setKeterangan(event.target.value)}
-          />
-          {/* Button */}
-          <Box className="button" sx={{ my: 3, textAlign: "right" }}>
-            <Link to="/" style={{ textDecoration: "none" }}>
-              <Button variant="contained" sx={{ mr: 1 }} color="error">
-                Back
+            <TextField
+              autoComplete="off"
+              fullWidth
+              id="outlined-multiline-flexible"
+              label="Keterangan (opsional)"
+              multiline
+              rows={5}
+              value={keterangan}
+              onChange={(event) => setKeterangan(event.target.value)}
+            />
+            {/* Button */}
+            <Box className="button" sx={{ my: 3, textAlign: "right" }}>
+              <Link to="/" style={{ textDecoration: "none" }}>
+                <Button variant="contained" sx={{ mr: 1 }} color="error">
+                  Back
+                </Button>
+              </Link>
+              <Button variant="contained" type="submit">
+                Submit
               </Button>
-            </Link>
-            <Button variant="contained" type="submit">
-              Submit
-            </Button>
+            </Box>
           </Box>
         </Box>
-      </Box>
+      )}
     </>
   );
 }

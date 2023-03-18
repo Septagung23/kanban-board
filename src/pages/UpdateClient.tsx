@@ -66,82 +66,85 @@ export default function UpdateClient() {
     }
   };
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
   return (
     <>
       <Appbar />
-      <Snackbar open={openMess} autoHideDuration={5000} onClose={closeMess}>
-        <Alert variant="filled" color="error" severity="error">
-          {mess}
-        </Alert>
-      </Snackbar>
-      <Box className="container" sx={main}>
-        <Box className="judul" sx={{ textAlign: "center" }}>
-          <GroupsIcon sx={{ fontSize: "60px" }} />
-          <Typography variant="h3">Edit Client</Typography>
-        </Box>
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <>
+          <Snackbar open={openMess} autoHideDuration={5000} onClose={closeMess}>
+            <Alert variant="filled" color="error" severity="error">
+              {mess}
+            </Alert>
+          </Snackbar>
+          <Box className="container" sx={main}>
+            <Box className="judul" sx={{ textAlign: "center" }}>
+              <GroupsIcon sx={{ fontSize: "60px" }} />
+              <Typography variant="h3">Edit Client</Typography>
+            </Box>
 
-        <Box
-          className="input"
-          component="form"
-          onSubmit={updateClient}
-          sx={{ width: "80%", alignSelf: "center", my: 2, gap: 3 }}
-        >
-          <TextField
-            fullWidth
-            required
-            autoComplete="off"
-            id="outlined-required"
-            label="Nama"
-            value={nama}
-            onChange={(event) => setNama(event.target.value)}
-          />
+            <Box
+              className="input"
+              component="form"
+              onSubmit={updateClient}
+              sx={{ width: "80%", alignSelf: "center", my: 2, gap: 3 }}
+            >
+              <TextField
+                fullWidth
+                required
+                autoComplete="off"
+                id="outlined-required"
+                label="Nama"
+                value={nama}
+                onChange={(event) => setNama(event.target.value)}
+              />
 
-          <TextField
-            fullWidth
-            autoComplete="off"
-            required
-            id="outlined-required"
-            label="Nomor"
-            inputMode="numeric"
-            value={nomor}
-            onChange={(event) => setNomor(event.target.value)}
-          />
+              <TextField
+                fullWidth
+                autoComplete="off"
+                required
+                id="outlined-required"
+                label="Nomor"
+                inputMode="numeric"
+                helperText="Contoh : 628123456789 (gunakan kode negara tanpa tanda + dan spasi)"
+                value={nomor}
+                onChange={(event) => setNomor(event.target.value)}
+              />
 
-          <TextField
-            id="outlined-required"
-            label="Perusahaan (opsional)"
-            autoComplete="off"
-            fullWidth
-            value={perusahaan}
-            onChange={(event) => setPerusahaan(event.target.value)}
-          />
+              <TextField
+                id="outlined-required"
+                label="Perusahaan (opsional)"
+                autoComplete="off"
+                fullWidth
+                value={perusahaan}
+                onChange={(event) => setPerusahaan(event.target.value)}
+              />
 
-          <TextField
-            fullWidth
-            multiline
-            id="outlined-required"
-            autoComplete="off"
-            label="Alamat (opsional)"
-            minRows={2}
-            value={alamat}
-            onChange={(event) => setAlamat(event.target.value)}
-          />
-          <Box className="button" sx={{ my: 3, textAlign: "right" }}>
-            <Link to="/client" style={{ textDecoration: "none" }}>
-              <Button variant="contained" sx={{ mr: 1 }} color="error">
-                Back
-              </Button>
-            </Link>
-            <Button variant="contained" type="submit">
-              Submit
-            </Button>
+              <TextField
+                fullWidth
+                multiline
+                id="outlined-required"
+                autoComplete="off"
+                label="Alamat (opsional)"
+                minRows={2}
+                value={alamat}
+                onChange={(event) => setAlamat(event.target.value)}
+              />
+              <Box className="button" sx={{ my: 3, textAlign: "right" }}>
+                <Link to="/client" style={{ textDecoration: "none" }}>
+                  <Button variant="contained" sx={{ mr: 1 }} color="error">
+                    Back
+                  </Button>
+                </Link>
+                <Button variant="contained" type="submit">
+                  Submit
+                </Button>
+              </Box>
+            </Box>
           </Box>
-        </Box>
-      </Box>
+        </>
+      )}
     </>
   );
 }

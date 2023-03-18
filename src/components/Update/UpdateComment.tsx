@@ -10,6 +10,7 @@ import {
 import { useState } from "react";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import dayjs from "dayjs";
+import SendIcon from "@mui/icons-material/Send";
 import SaveIcon from "@mui/icons-material/Save";
 
 export default function UpdateComment(props: any) {
@@ -87,23 +88,20 @@ export default function UpdateComment(props: any) {
                   {dayjs(content?.createdAt).format("DD-MM-YY, HH:mm")}
                 </Typography>
               </Box>
-              <TextField
-                multiline
-                autoComplete="off"
-                fullWidth
-                size="small"
-                value={comment}
-                onChange={(event) => setComment(event.target.value)}
-              />
-              <Button
-                size="small"
-                startIcon={<SaveIcon />}
-                type="submit"
-                variant="contained"
-                sx={{ mt: 1 }}
-              >
-                save
-              </Button>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <TextField
+                  multiline
+                  autoComplete="off"
+                  fullWidth
+                  size="small"
+                  value={comment}
+                  sx={{ minWidth: "20rem" }}
+                  onChange={(event) => setComment(event.target.value)}
+                />
+                <Button size="small" startIcon={<SendIcon />} type="submit">
+                  Submit
+                </Button>
+              </Box>
             </Box>
           </Box>
         </Box>

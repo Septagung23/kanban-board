@@ -63,7 +63,7 @@ export default function UpdateTask(props) {
         nama,
         kebutuhan: content,
         prioritas,
-        attachment: JSON.stringify(attachment),
+        attachment,
       });
       setMess(res.data.message);
       setOpenMess(true);
@@ -133,6 +133,7 @@ export default function UpdateTask(props) {
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
+                gap: 1,
               }}
             >
               <TextField
@@ -140,6 +141,7 @@ export default function UpdateTask(props) {
                 id="outlined-multiline-flexible"
                 label="Judul"
                 required
+                fullWidth
                 value={nama}
                 onChange={(event) => setNama(event.target.value)}
               />

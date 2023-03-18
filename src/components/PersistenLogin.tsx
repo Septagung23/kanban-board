@@ -2,7 +2,8 @@ import { Outlet } from "react-router-dom";
 import { useState, useEffect } from "react";
 import useRefreshToken from "../hooks/useRefreshToken";
 import { useAuth } from "../hooks/useAuth";
-import Loading from "./Loading";
+import nore from "../assets/nore.png";
+import CircularProgress from "@mui/joy/CircularProgress";
 
 export default function PersistLogin() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -21,5 +22,24 @@ export default function PersistLogin() {
     !auth?.token ? verifyRefreshToken() : setIsLoading(false);
   }, []);
 
-  return <>{isLoading ? <Loading /> : <Outlet />}</>;
+  return (
+    <>
+      {isLoading ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
+            alignItems: "center",
+            minHeight: "100vh",
+          }}
+        >
+          <img src={nore} width="300px" />
+          <CircularProgress color="success" variant="soft" size="lg" />
+        </div>
+      ) : (
+        <Outlet />
+      )}
+    </>
+  );
 }

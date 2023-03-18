@@ -19,13 +19,44 @@ export default function ModalDelete(props: any) {
 
   return (
     <>
-      {props.categoryId ? (
+      {props.from === "Task" ? (
         <MenuItem onClick={() => handleOpen()}>Delete Task</MenuItem>
+      ) : props.from === "Client" ? (
+        <MenuItem onClick={() => handleOpen()}>
+          <IconButton color="error" size="small">
+            <DeleteIcon />
+          </IconButton>
+          Delete Client
+        </MenuItem>
+      ) : props.from === "User" ? (
+        <MenuItem onClick={() => handleOpen()}>
+          <IconButton color="error" size="small">
+            <DeleteIcon />
+          </IconButton>
+          Delete User
+        </MenuItem>
+      ) : props.from === "Category" ? (
+        <MenuItem onClick={() => handleOpen()}>Delete Category</MenuItem>
+      ) : props.from === "Comment" ? (
+        <Button
+          variant="text"
+          size="small"
+          sx={{
+            textTransform: "capitalize",
+            color: "black",
+            minWidth: "2rem",
+            minHeight: "2rem",
+          }}
+          onClick={() => handleOpen()}
+        >
+          Delete
+        </Button>
       ) : (
         <IconButton color="error" onClick={() => handleOpen()} size="small">
           <DeleteIcon />
         </IconButton>
       )}
+
       <Dialog open={open} onClose={handleClose}>
         <DialogContent>
           Apakah anda yakin ingin menghapus <strong>{username}</strong> ?

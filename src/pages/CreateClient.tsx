@@ -82,6 +82,7 @@ export default function CreateClient() {
             fullWidth
             value={nomor}
             onChange={(event) => setNomor(event.target.value)}
+            helperText="Contoh : 628123456789 (gunakan kode negara tanpa tanda + dan spasi)"
           />
 
           <TextField

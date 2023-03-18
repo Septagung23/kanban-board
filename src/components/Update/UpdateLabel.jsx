@@ -126,6 +126,7 @@ export default function UpdateLabel(props) {
           {mess}
         </Alert>
       </Snackbar>
+
       <Modal open={props.open} onClose={props.close}>
         <Box
           sx={modal}
@@ -177,14 +178,14 @@ export default function UpdateLabel(props) {
                   onChange={(event) => setColor(event.target.value)}
                 >
                   <FormControlLabel
-                    value="#ffffff"
-                    control={<Radio size="small" />}
-                    label="Light"
-                  />
-                  <FormControlLabel
                     value="#000000"
                     control={<Radio size="small" />}
                     label="Dark"
+                  />
+                  <FormControlLabel
+                    value="#ffffff"
+                    control={<Radio size="small" />}
+                    label="Light"
                   />
                 </RadioGroup>
               </FormControl>

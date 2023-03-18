@@ -1,4 +1,6 @@
 import { Box } from "@mui/material";
+import CircularProgress from "@mui/joy/CircularProgress";
+
 export default function Loading() {
   return (
     <Box
@@ -9,7 +11,7 @@ export default function Loading() {
         transform: "translate(-50%, -50%)",
       }}
     >
-      <h1>Wait a Few Sec ...</h1>
+      <CircularProgress color="success" variant="soft" />
     </Box>
   );
 }

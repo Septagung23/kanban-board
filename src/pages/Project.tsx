@@ -1,15 +1,12 @@
 import {
   Box,
   Typography,
-  Card,
-  CardContent,
-  CardActions,
   IconButton,
-  Divider,
-  TextField,
+  Tooltip,
   Snackbar,
   Alert,
 } from "@mui/material";
+import { DataGrid, GridRowsProp, GridColDef } from "@mui/x-data-grid";
 
 import Appbar from "../components/Appbar";
 import ModalDelete from "../components/Delete/ModalDelete";
@@ -22,11 +19,12 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 import EditIcon from "@mui/icons-material/Edit";
+import ViewKanbanIcon from "@mui/icons-material/ViewKanban";
 import Nodata from "../components/Nodata";
+import TableSkeleton from "../components/TableSkeleton";
 
 export default function Project() {
   const [project, setProject] = useState<any>([]);
-  const [query, setQuery] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const axiosPrivate = useAxiosPrivate();
   const { auth } = useAuth();
@@ -67,71 +65,153 @@ export default function Project() {
     }
   };
 
-  let projects;
-  if (project) {
-    projects = project
-      ?.filter((p: any) => {
-        return p.nama.toLowerCase().indexOf(query.toLowerCase()) === 0;
-      })
-      ?.map((pr: any) => (
-        <Card
-          sx={{
-            m: 1,
-            minWidth: 345,
-            minHeight: 1,
-            boxShadow: 3,
-            borderRadius: 2,
-          }}
-          key={pr.id}
-        >
-          {auth?.role?.id === 3 ? null : (
-            <CardActions
-              sx={{ display: "flex", justifyContent: "flex-end", pb: 0 }}
-            >
-              <Link to={`project/${pr.id}`}>
-                <IconButton>
-                  <EditIcon color="primary" />
-                </IconButton>
-              </Link>
-              <ModalDelete
-                id={pr.id}
-                nama={pr.nama}
-                deleteFunction={deleteProject}
-              />
-            </CardActions>
-          )}
-          <Divider />
+  const rows: GridRowsProp = project.map((p: any) => ({
+    id: p.id,
+    nama: p.nama,
+    jenis: p.jenisLayanan,
+    perusahaan: p.client.perusahaan ? p.client.perusahaan : p.client.nama,
+    keterangan: p.keterangan,
+  }));
+
+  const columns: GridColDef[] = [
+    {
+      field: "view",
+      headerName: "Board",
+      sortable: false,
+      disableColumnMenu: true,
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (cellValues) => {
+        return (
           <Link
-            to={`/board/${pr.id}`}
+            to={`/board/${cellValues.id}`}
             style={{ textDecoration: "none", color: "black" }}
           >
-            <CardContent sx={{ pt: 1 }}>
-              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                <Typography variant="h4">{pr.nama}</Typography>
-                <Typography sx={{ color: "grey" }}>
-                  {pr.jenisLayanan}
-                </Typography>
-              </Box>
-              <Typography sx={{ color: "grey" }}>
-                {pr?.client?.perusahaan
-                  ? pr?.client?.perusahaan
-                  : pr?.client?.nama}
-              </Typography>
-
-              <Box
-                sx={{
-                  my: 2,
-                  mr: 1,
-                  maxWidth: 340,
-                }}
-              >
-                <Typography variant="body1">{pr.keterangan}</Typography>
-              </Box>
-            </CardContent>
+            <Tooltip title="Go To Board">
+              <IconButton>
+                <ViewKanbanIcon />
+              </IconButton>
+            </Tooltip>
           </Link>
-        </Card>
-      ));
-  }
+        );
+      },
+    },
+    {
+      field: "nama",
+      headerName: "Nama",
+      width: 250,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "perusahaan",
+      headerName: "Perusahaan",
+      width: 250,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "jenis",
+      headerName: "Jenis Layanan",
+      width: 200,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "keterangan",
+      headerName: "Keterangan",
+      width: 350,
+      align: "left",
+      headerAlign: "center",
+    },
+    {
+      field: "edit",
+      headerName: "Edit",
+      sortable: false,
+      disableColumnMenu: true,
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (cellValues) => {
+        return (
+          <Link to={`project/${cellValues.id}`}>
+            <IconButton>
+              <EditIcon color="primary" />
+            </IconButton>
+          </Link>
+        );
+      },
+    },
+    {
+      field: "delete",
+      headerName: "Hapus",
+      sortable: false,
+      disableColumnMenu: true,
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (cellValues) => {
+        return (
+          <ModalDelete
+            id={cellValues.id}
+            nama={cellValues.row.nama}
+            deleteFunction={deleteProject}
+          />
+        );
+      },
+    },
+  ];
+
+  const columnMember: GridColDef[] = [
+    {
+      field: "view",
+      headerName: "Board",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (cellValues) => {
+        return (
+          <Link
+            to={`/board/${cellValues.id}`}
+            style={{ textDecoration: "none", color: "black" }}
+          >
+            <IconButton>
+              <ViewKanbanIcon />
+            </IconButton>
+          </Link>
+        );
+      },
+    },
+    {
+      field: "nama",
+      headerName: "Nama",
+      width: 300,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "perusahaan",
+      headerName: "Perusahaan",
+      width: 300,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "jenis",
+      headerName: "Jenis Layanan",
+      width: 300,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "keterangan",
+      headerName: "Keterangan",
+      width: 350,
+      align: "center",
+      headerAlign: "center",
+    },
+  ];
 
   return (
     <>
@@ -153,32 +233,46 @@ export default function Project() {
         </Box>
         {!isLoading ? (
           project ? (
-            <>
-              <Box sx={{ mx: 6 }}>
-                <TextField
-                  autoComplete="off"
-                  variant="standard"
-                  label="Search Project"
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                />
-              </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  mx: 4,
-                  my: 2,
-                }}
-              >
-                {projects}
-              </Box>
-            </>
+            <div
+              style={{
+                height: 480,
+                display: "flex",
+                marginLeft: "10px",
+                marginRight: "10px",
+                justifyContent: "center",
+              }}
+            >
+              <DataGrid
+                rows={rows}
+                columns={auth.role.id === 3 ? columnMember : columns}
+              />
+            </div>
           ) : (
+            // <>
+            //   <Box sx={{ mx: 6 }}>
+            //     <TextField
+            //       autoComplete="off"
+            //       variant="standard"
+            //       label="Search Project"
+            //       value={query}
+            //       onChange={(event) => setQuery(event.target.value)}
+            //     />
+            //   </Box>
+            //   <Box
+            //     sx={{
+            //       display: "flex",
+            //       flexWrap: "wrap",
+            //       mx: 4,
+            //       my: 2,
+            //     }}
+            //   >
+            //     {projects}
+            //   </Box>
+            // </>
             <Nodata message="Tidak ada project yang ditemukan" />
           )
         ) : (
-          <Loading />
+          <TableSkeleton />
         )}
       </Box>
     </>

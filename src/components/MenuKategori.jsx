@@ -28,6 +28,7 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import Loading from "./Loading";
 import { modal } from "../constant/styles";
 import "../App.css";
+import ModalDelete from "./Delete/ModalDelete";
 
 export default function MenuKategori(props) {
   const axiosPrivate = useAxiosPrivate();
@@ -166,9 +167,15 @@ export default function MenuKategori(props) {
         <MenuItem onClick={handleOpenCategory}>
           <Typography>Edit Category</Typography>
         </MenuItem>
-        <MenuItem onClick={() => deleteCategory(props.id)}>
+        {/* <MenuItem onClick={() => deleteCategory(props.id)}>
           <Typography>Delete Category</Typography>
-        </MenuItem>
+        </MenuItem> */}
+        <ModalDelete
+          from="Category"
+          nama={title}
+          id={props.id}
+          deleteFunction={deleteCategory}
+        />
       </Menu>
 
       {/* Edit Category */}
@@ -244,10 +251,12 @@ export default function MenuKategori(props) {
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
+                gap: 1,
               }}
             >
               <TextField
                 autoComplete="off"
+                fullWidth
                 id="outlined-multiline-flexible"
                 label="Judul"
                 required

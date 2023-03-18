@@ -10,6 +10,7 @@ import {
   OutlinedInput,
   Snackbar,
   Alert,
+  InputAdornment,
 } from "@mui/material";
 
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
@@ -24,6 +25,12 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 export default function ChangePass(props: any) {
   const [openPassword, setOpenPassword] = useState<boolean>(false);
   const handleShowPassword = () => setOpenPassword((show) => !show);
+
+  const [openPasswordNew, setOpenPasswordNew] = useState<boolean>(false);
+  const handleShowPasswordNew = () => setOpenPasswordNew((show) => !show);
+
+  const [openConfirmPass, setOpenConfirmPass] = useState<boolean>(false);
+  const handleShowConfirmPass = () => setOpenConfirmPass((show) => !show);
 
   const [currentPassword, setCurrentPassword] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -93,6 +100,21 @@ export default function ChangePass(props: any) {
                 type={openPassword ? "text" : "password"}
                 label="Password Lama"
                 onChange={(event) => setCurrentPassword(event.target.value)}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleShowPassword}
+                      edge="end"
+                    >
+                      {openPassword ? (
+                        <VisibilityOffIcon />
+                      ) : (
+                        <VisibilityIcon />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                }
               />
             </FormControl>
 
@@ -101,9 +123,24 @@ export default function ChangePass(props: any) {
               <OutlinedInput
                 autoComplete="off"
                 id="passN"
-                type={openPassword ? "text" : "password"}
+                type={openPasswordNew ? "text" : "password"}
                 label="Password Baru"
                 onChange={(event) => setPassword(event.target.value)}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleShowPasswordNew}
+                      edge="end"
+                    >
+                      {openPasswordNew ? (
+                        <VisibilityOffIcon />
+                      ) : (
+                        <VisibilityIcon />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                }
               />
             </FormControl>
 
@@ -114,30 +151,26 @@ export default function ChangePass(props: any) {
               <OutlinedInput
                 autoComplete="off"
                 id="outlined-adornment-confirm-password"
-                type={openPassword ? "text" : "password"}
+                type={openConfirmPass ? "text" : "password"}
                 label="Password"
                 onChange={(event) => setPasswordConfirm(event.target.value)}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleShowConfirmPass}
+                      edge="end"
+                    >
+                      {openConfirmPass ? (
+                        <VisibilityOffIcon />
+                      ) : (
+                        <VisibilityIcon />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                }
               />
             </FormControl>
-
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Typography sx={{ textAlign: "left" }}>
-                Tampilkan Password
-              </Typography>
-              <IconButton
-                aria-label="password"
-                edge="end"
-                onClick={handleShowPassword}
-              >
-                {openPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-              </IconButton>
-            </Box>
 
             <Button sx={{ mt: 2 }} variant="contained" type="submit">
               Submit

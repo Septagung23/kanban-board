@@ -59,7 +59,13 @@ export default function ModalDelete(props: any) {
 
       <Dialog open={open} onClose={handleClose}>
         <DialogContent>
-          Apakah anda yakin ingin menghapus <strong>{username}</strong> ?
+          Apakah anda yakin ingin menghapus{" "}
+          {props.from === "Comment" ? (
+            "Comment ini"
+          ) : (
+            <strong>{username}</strong>
+          )}{" "}
+          ?
         </DialogContent>
         <DialogActions>
           <Button

@@ -645,20 +645,11 @@ export default function ModalDetail(props: any) {
                                 />
                               )}
                               {auth.id === m.user.id || auth.role.id === 1 ? (
-                                // <Button
-                                //   variant="text"
-                                //   size="small"
-                                //   sx={{
-                                //     textTransform: "capitalize",
-                                //     color: "black",
-                                //     minWidth: "2rem",
-                                //     minHeight: "2rem",
-                                //   }}
-                                //   onClick={() => deleteComment(m?.id)}
-                                // >
-                                //   Delete
-                                // </Button>
-                                <ModalDelete from="Comment" id={m.id} />
+                                <ModalDelete
+                                  from="Comment"
+                                  id={m.id}
+                                  deleteFunction={deleteComment}
+                                />
                               ) : null}
                             </Box>
                           </Box>

@@ -389,7 +389,7 @@ export default function User() {
                     helperText="Contoh : 628123456789 (gunakan kode negara tanpa tanda + dan spasi)"
                   />
 
-                  <FormControl required fullWidth>
+                  <FormControl required fullWidth className="fromControlUser">
                     <InputLabel id="demo-simple-select-label">
                       Divisi
                     </InputLabel>
@@ -409,7 +409,7 @@ export default function User() {
                     </Select>
                   </FormControl>
 
-                  <FormControl required fullWidth>
+                  <FormControl required fullWidth className="fromControlUser">
                     <InputLabel id="demo-simple-select-label">Role</InputLabel>
                     <Select
                       id="role"
@@ -427,7 +427,7 @@ export default function User() {
                     </Select>
                   </FormControl>
 
-                  <FormControl required fullWidth>
+                  <FormControl required fullWidth className="fromControlUser">
                     <InputLabel htmlFor="pass">Password</InputLabel>
                     <OutlinedInput
                       autoComplete="off"

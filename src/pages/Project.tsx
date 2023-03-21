@@ -5,12 +5,14 @@ import {
   Tooltip,
   Snackbar,
   Alert,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import { DataGrid, GridRowsProp, GridColDef } from "@mui/x-data-grid";
 
 import Appbar from "../components/Appbar";
 import ModalDelete from "../components/Delete/ModalDelete";
-import Loading from "../components/Loading";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { useAuth } from "../hooks/useAuth";
 import { main } from "../constant/styles";
@@ -25,9 +27,20 @@ import TableSkeleton from "../components/TableSkeleton";
 
 export default function Project() {
   const [project, setProject] = useState<any>([]);
+  const [id, setId] = useState<string>("");
+  const [nama, setNama] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const axiosPrivate = useAxiosPrivate();
   const { auth } = useAuth();
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openMenu = Boolean(anchorEl);
+  const handleOpen = (event: any, id: string, nama: string) => {
+    setAnchorEl(event?.currentTarget);
+    setId(id);
+    setNama(nama);
+  };
+  const handleClose = () => setAnchorEl(null);
 
   //Error Handling
   const [mess, setMess] = useState("");
@@ -74,29 +87,30 @@ export default function Project() {
   }));
 
   const columns: GridColDef[] = [
-    {
-      field: "view",
-      headerName: "Board",
-      sortable: false,
-      disableColumnMenu: true,
-      width: 100,
-      align: "center",
-      headerAlign: "center",
-      renderCell: (cellValues) => {
-        return (
-          <Link
-            to={`/board/${cellValues.id}`}
-            style={{ textDecoration: "none", color: "black" }}
-          >
-            <Tooltip title="Go To Board">
-              <IconButton>
-                <ViewKanbanIcon />
-              </IconButton>
-            </Tooltip>
-          </Link>
-        );
-      },
-    },
+    // {
+    //   field: "view",
+    //   headerName: "Board",
+    //   sortable: false,
+    //   disableColumnMenu: true,
+    //   width: 100,
+    //   align: "center",
+    //   headerAlign: "center",
+    //   renderCell: (cellValues) => {
+    //     return (
+    //       <Link
+    //         to={`/board/${cellValues.id}`}
+    //         style={{ textDecoration: "none", color: "black" }}
+    //       >
+    //         <Tooltip title="Go To Board">
+    //           <IconButton>
+    //             <ViewKanbanIcon />
+    //           </IconButton>
+    //         </Tooltip>
+    //       </Link>
+    //     );
+    //   },
+    // },
+
     {
       field: "nama",
       headerName: "Nama",
@@ -121,43 +135,67 @@ export default function Project() {
     {
       field: "keterangan",
       headerName: "Keterangan",
-      width: 350,
+      width: 450,
       align: "left",
       headerAlign: "center",
     },
+
+    // {
+    //   field: "edit",
+    //   headerName: "Edit",
+    //   sortable: false,
+    //   disableColumnMenu: true,
+    //   width: 100,
+    //   align: "center",
+    //   headerAlign: "center",
+    //   renderCell: (cellValues) => {
+    //     return (
+    //       <Link to={`project/${cellValues.id}`}>
+    //         <IconButton>
+    //           <EditIcon color="primary" />
+    //         </IconButton>
+    //       </Link>
+    //     );
+    //   },
+    // },
+    // {
+    //   field: "delete",
+    //   headerName: "Hapus",
+    //   sortable: false,
+    //   disableColumnMenu: true,
+    //   width: 100,
+    //   align: "center",
+    //   headerAlign: "center",
+    //   renderCell: (cellValues) => {
+    //     return (
+    //       <ModalDelete
+    //         id={cellValues.id}
+    //         nama={cellValues.row.nama}
+    //         deleteFunction={deleteProject}
+    //       />
+    //     );
+    //   },
+    // },
+
     {
-      field: "edit",
-      headerName: "Edit",
-      sortable: false,
-      disableColumnMenu: true,
-      width: 100,
+      field: "action",
+      headerName: "Action",
       align: "center",
       headerAlign: "center",
-      renderCell: (cellValues) => {
+      disableColumnMenu: true,
+      sortable: false,
+      width: 200,
+      renderCell: (cellValues: any) => {
         return (
-          <Link to={`project/${cellValues.id}`}>
-            <IconButton>
-              <EditIcon color="primary" />
+          <>
+            <IconButton
+              onClick={(event) =>
+                handleOpen(event, cellValues.id, cellValues.row.nama)
+              }
+            >
+              <MoreHorizIcon />
             </IconButton>
-          </Link>
-        );
-      },
-    },
-    {
-      field: "delete",
-      headerName: "Hapus",
-      sortable: false,
-      disableColumnMenu: true,
-      width: 100,
-      align: "center",
-      headerAlign: "center",
-      renderCell: (cellValues) => {
-        return (
-          <ModalDelete
-            id={cellValues.id}
-            nama={cellValues.row.nama}
-            deleteFunction={deleteProject}
-          />
+          </>
         );
       },
     },
@@ -246,6 +284,45 @@ export default function Project() {
                 rows={rows}
                 columns={auth.role.id === 3 ? columnMember : columns}
               />
+
+              <Menu
+                open={openMenu}
+                onClose={handleClose}
+                anchorEl={anchorEl}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
+              >
+                <Link
+                  to={`/board/${id}`}
+                  style={{ textDecoration: "none", color: "black" }}
+                >
+                  <MenuItem>
+                    <IconButton>
+                      <ViewKanbanIcon fontSize="small" />
+                    </IconButton>
+                    Board
+                  </MenuItem>
+                </Link>
+
+                <Link
+                  to={`project/${id}`}
+                  style={{ textDecoration: "none", color: "black" }}
+                >
+                  <MenuItem>
+                    <IconButton>
+                      <EditIcon color="primary" fontSize="small" />
+                    </IconButton>
+                    Edit Project
+                  </MenuItem>
+                </Link>
+
+                <ModalDelete
+                  from="Project"
+                  id={id}
+                  nama={nama}
+                  deleteFunction={deleteProject}
+                />
+              </Menu>
             </div>
           ) : (
             // <>

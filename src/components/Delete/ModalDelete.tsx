@@ -35,6 +35,13 @@ export default function ModalDelete(props: any) {
           </IconButton>
           Delete User
         </MenuItem>
+      ) : props.from === "Project" ? (
+        <MenuItem onClick={() => handleOpen()}>
+          <IconButton color="error" size="small">
+            <DeleteIcon />
+          </IconButton>
+          Delete Project
+        </MenuItem>
       ) : props.from === "Category" ? (
         <MenuItem onClick={() => handleOpen()}>Delete Category</MenuItem>
       ) : props.from === "Comment" ? (

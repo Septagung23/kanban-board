@@ -218,7 +218,9 @@ export default function User() {
     {
       field: "action",
       headerName: "Action",
-      minWidth: 100,
+      minWidth: 200,
+      disableColumnMenu: true,
+      sortable: false,
       align: "center",
       headerAlign: "center",
       renderCell: (cellValues) => {

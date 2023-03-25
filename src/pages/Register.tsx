@@ -29,6 +29,7 @@ import { useNavigate } from "react-router-dom";
 
 import Loading from "../components/Loading";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { FormRegister } from "../types";
 
 export default function Register() {
   const [open, setOpen] = useState<boolean>(false);
@@ -37,14 +38,14 @@ export default function Register() {
   const [openConfirmPass, setOpenConfirmPass] = useState<boolean>(false);
   const handleShowConfrimPass = () => setOpenConfirmPass((show) => !show);
 
-  const [formRegister, setFormRegister] = useState<any>({
+  const [formRegister, setFormRegister] = useState<FormRegister>({
     namaLengkap: "",
     username: "",
     password: "",
     nomorHp: "",
     divisi: "",
   });
-  const [passwordConfirm, setPasswordConfirm] = useState<any>();
+  const [passwordConfirm, setPasswordConfirm] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [readOnly, setReadOnly] = useState<boolean>(true);
   const navigate = useNavigate();

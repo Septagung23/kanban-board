@@ -78,7 +78,7 @@ export default function Project() {
     }
   };
 
-  const rows: GridRowsProp = project.map((p: any) => ({
+  const rows: GridRowsProp = project?.map((p: any) => ({
     id: p.id,
     nama: p.nama,
     jenis: p.jenisLayanan,

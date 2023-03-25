@@ -82,7 +82,7 @@ export default function Client() {
     }
   };
 
-  const rows: GridRowsProp = client.map((c: any) => ({
+  const rows: GridRowsProp = client?.map((c: any) => ({
     id: c.id,
     nama: c.nama,
     perusahaan: c.perusahaan ? c.perusahaan : "Perseorangan",

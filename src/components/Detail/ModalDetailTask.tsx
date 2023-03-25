@@ -58,7 +58,7 @@ export default function ModalDetail(props: any) {
   const handleClickMenuLabel = (event: any) => setAncElLab(event.currentTarget);
   const handleCloseMenuLabel = () => setAncElLab(null);
 
-  const [openModalDetail, setOpenModalDetail] = useState<any>(false);
+  const [openModalDetail, setOpenModalDetail] = useState<boolean>(false);
   const handleOpenDetail = () => {
     setOpenModalDetail(true);
   };

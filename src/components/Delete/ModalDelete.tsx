@@ -19,31 +19,17 @@ export default function ModalDelete(props: any) {
 
   return (
     <>
-      {props.from === "Task" ? (
-        <MenuItem onClick={() => handleOpen()}>Delete Task</MenuItem>
-      ) : props.from === "Client" ? (
+      {props.from === "Task" || props.from === "Category" ? (
+        <MenuItem onClick={() => handleOpen()}>Delete {props.from}</MenuItem>
+      ) : props.from === "Client" ||
+        props.from === "User" ||
+        props.from === "Project" ? (
         <MenuItem onClick={() => handleOpen()}>
           <IconButton color="error" size="small">
             <DeleteIcon />
           </IconButton>
-          Delete Client
+          Delete {props.from}
         </MenuItem>
-      ) : props.from === "User" ? (
-        <MenuItem onClick={() => handleOpen()}>
-          <IconButton color="error" size="small">
-            <DeleteIcon />
-          </IconButton>
-          Delete User
-        </MenuItem>
-      ) : props.from === "Project" ? (
-        <MenuItem onClick={() => handleOpen()}>
-          <IconButton color="error" size="small">
-            <DeleteIcon />
-          </IconButton>
-          Delete Project
-        </MenuItem>
-      ) : props.from === "Category" ? (
-        <MenuItem onClick={() => handleOpen()}>Delete Category</MenuItem>
       ) : props.from === "Comment" ? (
         <Button
           variant="text"
